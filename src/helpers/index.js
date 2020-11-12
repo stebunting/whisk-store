@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 // Format price from stored öre to krona
 export function priceFormat(num, userOptions = {}) {
   const options = {
@@ -10,4 +12,25 @@ export function priceFormat(num, userOptions = {}) {
   str = str.replace(',', '');
   str += userOptions.includeSymbol === false ? '' : ' SEK';
   return str;
+}
+
+// Format date/time range
+export function rangeFormat(range) {
+  const date = DateTime
+    .fromObject({
+      weekNumber: range.week,
+      weekday: range.day
+    }).setZone('Europe/Stockholm')
+    .toLocaleString(DateTime.DATE_HUGE);
+
+  const startTime = DateTime
+    .fromISO(range.time.start)
+    .setZone('Europe/Stockholm')
+    .toLocaleString(DateTime.TIME_24_SIMPLE);
+
+  const endTime = DateTime
+    .fromISO(range.time.end)
+    .setZone('Europe/Stockholm')
+    .toLocaleString(DateTime.TIME_24_SIMPLE);
+  return `${date} (${startTime} - ${endTime})`;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
+import DeliveryDate from './DeliverySelector/DeliveryDate';
 import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 
@@ -28,6 +29,9 @@ function CheckoutForm() {
         <DeliverySelector
           deliveryType={formDetails.deliveryType}
           handleChange={handleChange}
+        />
+        <DeliveryDate
+          deliveryType={formDetails.deliveryType}
         />
         {formDetails.deliveryType === 'delivery' && (
           <DeliveryEntry
