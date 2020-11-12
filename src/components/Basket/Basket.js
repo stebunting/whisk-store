@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { priceFormat } from '../../helpers';
@@ -30,7 +31,11 @@ function Basket({ basket, actions }) {
         <tbody>
           {basket.items && basket.items.map((item) => (
             <tr key={item.productId}>
-              <td>{item.name}</td>
+              <td>
+                <Link to={`/product/${item.productId}`}>
+                  {item.name}
+                </Link>
+              </td>
               <td>{item.quantity}</td>
               <td>{priceFormat(item.grossPrice)}</td>
               <td>{priceFormat(item.linePrice)}</td>

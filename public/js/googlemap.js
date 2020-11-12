@@ -3,6 +3,7 @@
 function initMap() {
   const googleApiLoadedEvent = new Event('google-api-loaded');
   document.dispatchEvent(googleApiLoadedEvent);
+  window.googleApiLoaded = true;
 
   const mapStyle = new google.maps.StyledMapType([
     // https://snazzymaps.com/style/36739/light-grey

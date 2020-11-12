@@ -1,19 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DeliveryRadio from './DeliveryRadio';
+import Radio from '../Inputs/Radio';
 import DeliveryZones from './DeliveryZones';
 
 function DeliverySelector({ deliveryType, handleChange }) {
   return (
     <div className="row">
       <div className="col-sm-6 offset-md-4" id="deliveryType">
-        <DeliveryRadio
+        <Radio
+          name="deliveryType"
           id="collection"
           label="Collection from Whisk"
           checked={deliveryType === 'collection'}
           handleChange={handleChange}
         />
-        <DeliveryRadio
+        <Radio
+          name="deliveryType"
           id="delivery"
           label="Delivery"
           checked={deliveryType === 'delivery'}

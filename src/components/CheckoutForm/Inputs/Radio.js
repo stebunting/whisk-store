@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function DeliveryRadio({
+function Radio({
+  name,
   id,
   label,
   checked,
@@ -13,7 +14,7 @@ function DeliveryRadio({
         className="form-check-input"
         type="radio"
         id={id}
-        name="deliveryType"
+        name={name}
         value={id}
         checked={checked}
         onChange={handleChange}
@@ -27,11 +28,12 @@ function DeliveryRadio({
     </div>
   );
 }
-DeliveryRadio.propTypes = {
+Radio.propTypes = {
+  name: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   checked: PropTypes.bool.isRequired,
   handleChange: PropTypes.func.isRequired,
 };
 
-export default DeliveryRadio;
+export default Radio;
