@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import useBasket from '../../hooks/useBasket';
+import { bindActionCreators } from 'redux';
+import * as productActions from '../../redux/actions/productActions';
+import * as basketActions from '../../redux/actions/basketActions';
+import { productType } from '../../types';
 
-function ProductList({ products }) {
-  const basket = useBasket();
+function ProductList({ products, basket, actions }) {
+  useEffect(() => {
+    if (products.length === 0) actions.loadProducts();
+    if (!basket.basketId) actions.loadBasket();
+  }, [actions, products.length, basket]);
 
   return (
     <ul>
@@ -21,10 +28,30 @@ function ProductList({ products }) {
   );
 }
 ProductList.propTypes = {
-  products: PropTypes.arrayOf(PropTypes.shape({
-    productId: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  })).isRequired
+  products: PropTypes.arrayOf(productType).isRequired,
+  basket: PropTypes.shape({
+    basketId: PropTypes.string
+  }).isRequired,
+  actions: PropTypes.shape({
+    loadProducts: PropTypes.func.isRequired,
+    loadBasket: PropTypes.func.isRequired
+  }).isRequired
 };
 
-export default ProductList;
+function mapStateToProps({ products, basket }) {
+  return {
+    products,
+    basket
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: {
+      loadProducts: bindActionCreators(productActions.loadProducts, dispatch),
+      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch)
+    }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

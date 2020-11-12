@@ -1,35 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Provider as ReduxProvider } from 'react-redux';
+import configureStore from '../../redux/configureStore';
 import ProductList from '../ProductList/ProductList';
 import Product from '../Product/Product';
 import Basket from '../Basket/Basket';
 
 function App() {
-  // Get all products on component mount
-  const [productData, setProductData] = useState([]);
-  useEffect(() => {
-    fetch(`${process.env.API_URL}/api/products`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'ok') setProductData(data.products);
-      })
-      .catch((error) => console.error(error));
-  }, []);
+  const store = configureStore();
 
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <ProductList products={productData} />
-        </Route>
-        <Route path="/product/:id">
-          <Product />
-        </Route>
-        <Route path="/basket">
-          <Basket />
-        </Route>
-      </Switch>
-    </Router>
+    <ReduxProvider store={store}>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={ProductList} />
+          <Route path="/product/:productId" component={Product} />
+          <Route path="/basket" component={Basket} />
+        </Switch>
+      </Router>
+    </ReduxProvider>
   );
 }
 
