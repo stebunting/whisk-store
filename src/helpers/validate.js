@@ -1,89 +1,58 @@
-function validate(value, validationType) {
-  let valid = true;
+export function validate(values, validationType) {
+  const value = values[validationType];
+  let valid;
 
-  // Check that something has been entered
-  if (value.length > 0) {
-    // Check for valid number
-    if (validationType === 'number') {
-      const reg = /[^0-9]/;
-      valid = !reg.test(value);
+  switch (validationType) {
+    case 'name': {
+      const re = /^[a-zA-ZÀ-ƶ '-]{1,}$/;
+      valid = re.test(value);
+      break;
+    }
 
-    // Check for valid number
-    } else if (validationType === 'doorcode') {
-      const reg = /[^0-9#*]/;
-      valid = !reg.test(value);
+    case 'email': {
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      valid = re.test(value);
+      break;
+    }
 
-    // Check for valid name
-    } else if (validationType === 'name') {
-      const reg = /[^a-zA-ZÀ-ƶ '-]/;
-      valid = !reg.test(value);
-
-    // Check for valid e-mail address
-    } else if (validationType === 'email') {
-      // Ensure @ followed by .
-      const emailSplit = value.split('@');
-      if (emailSplit.length < 2) {
-        valid = false;
-      } else {
-        const domainSplit = emailSplit[emailSplit.length - 1].split('.');
-        if (domainSplit.length < 2) {
-          valid = false;
-        } else {
-          const reg = /[^a-zA-Z0-9-]/;
-          valid = !reg.test(domainSplit[0]);
-        }
-      }
-
-    // Check for valid phone number
-    } else if (validationType === 'telephone') {
+    case 'telephone': {
       const phoneNumber = value.replace(/-/g, '').replace(/ /g, '').replace('(', '').replace(')', '');
       if ((phoneNumber.charAt(0) !== '0' && phoneNumber.charAt(0) !== '+') || phoneNumber.length < 10) {
         valid = false;
       } else {
-        const reg = /[^0-9+]/;
-        valid = !reg.test(phoneNumber);
+        const re = /[^0-9+]/;
+        valid = !re.test(phoneNumber);
       }
-
-    // Check that address is not empty
-    } else if (validationType === 'address') {
-      valid = true;
-
-    // Check that notes is not empty
-    } else if (validationType === 'notes') {
-      valid = value !== 'Select items from above';
-
-    // Check that password is not empty
-    } else if (validationType === 'password') {
-      valid = true;
-
-    // Check that date is not empty
-    } else if (validationType === 'date') {
-      const date = value.split('-');
-      if (date.length !== 3) {
-        valid = false;
-      } else {
-        const year = parseInt(date[0], 10);
-        const month = parseInt(date[1], 10);
-        const day = parseInt(date[2], 10);
-        if (year < 2020 || month < 1 || month > 12 || day < 1 || day > 31) {
-          valid = false;
-        } else {
-          const reg = /[^0-9-]/;
-          valid = !reg.test(value);
-        }
-      }
-
-    // If invalid data-validation-type
-    } else {
-      valid = false;
+      break;
     }
 
-  // If no input
-  } else {
-    valid = false;
+    case 'address': {
+      valid = values.deliveryType === 'collection'
+          || (values.verifiedAddress === value && values.verifiedAddress !== '');
+      break;
+    }
+
+    case 'date': {
+      valid = value !== 'undefined';
+      break;
+    }
+
+    default:
+      valid = false;
   }
 
-  return valid;
+  return [valid, { [validationType]: valid }];
 }
 
-export default validate;
+export function validateAll(values, valid) {
+  let allValidated = {};
+  let allValid = true;
+
+  Object.keys(valid).forEach((element) => {
+    const [validity, validObject] = validate(values, element);
+    allValidated = { ...allValidated, ...validObject };
+    allValid = allValid && validity;
+  });
+
+  return [allValid, allValidated];
+}

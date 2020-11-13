@@ -573,7 +573,6 @@ textarea {
 
 select {
   width: auto;
-  -webkit-appearance: none;
 }
 
 .total-to-pay-text {

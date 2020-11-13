@@ -7,7 +7,7 @@ function DeliveryEntry({
   address,
   validAddress,
   deliveryNotes,
-  updateAddress,
+  autoCompleteRef,
   handleChange,
   handleBlur,
 }) {
@@ -20,7 +20,7 @@ function DeliveryEntry({
         placeholder="Address"
         value={address}
         valid={validAddress}
-        updateAddress={updateAddress}
+        autoCompleteRef={autoCompleteRef}
         handleChange={handleChange}
         handleBlur={handleBlur}
       />
@@ -40,7 +40,10 @@ DeliveryEntry.propTypes = {
   address: PropTypes.string.isRequired,
   validAddress: PropTypes.bool,
   deliveryNotes: PropTypes.string.isRequired,
-  updateAddress: PropTypes.func.isRequired,
+  autoCompleteRef: PropTypes.oneOfType([
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+    PropTypes.func
+  ]).isRequired,
   handleChange: PropTypes.func.isRequired,
   handleBlur: PropTypes.func.isRequired
 };

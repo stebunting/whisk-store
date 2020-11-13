@@ -19,9 +19,9 @@ function PaymentEntry({ paymentMethod, handleChange, handleSubmit }) {
             />
             <Radio
               name="paymentMethod"
-              id="invoice"
-              label="Invoice"
-              checked={paymentMethod === 'invoice'}
+              id="paymentLink"
+              label="Payment Link (SMS after order)"
+              checked={paymentMethod === 'paymentLink'}
               handleChange={handleChange}
             />
 

@@ -7,6 +7,7 @@ require('dotenv').config();
 
 module.exports = {
   entry: './src/index.js',
+  mode: 'development',
   module: {
     rules: [
       {

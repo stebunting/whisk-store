@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import useAutoComplete from '../../hooks/useAutoComplete';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
 import DeliveryDate from './DeliverySelector/DeliveryDate';
 import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
-import validate from '../../helpers/validate';
+import { validate, validateAll } from '../../helpers/validate';
 
 function CheckoutForm() {
+  // Initialise form state
   const [formDetails, setFormDetails] = useState({
     deliveryType: 'collection',
     paymentMethod: 'swish',
+    date: 'undefined',
     address: '',
     verifiedAddress: null,
     deliveryNotes: '',
@@ -17,39 +20,25 @@ function CheckoutForm() {
     email: '',
     telephone: ''
   });
-  const [valid, setValid] = useState({
+  const [validity, setValidity] = useState({
+    date: null,
+    address: null,
     name: null,
     email: null,
-    telephone: null,
-    address: null
+    telephone: null
   });
 
-  const validateAddress = () => (
-    formDetails.address === formDetails.verifiedAddress
-  );
+  // Set up Google Autocomplete
+  const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
+  useEffect(() => {
+    setFormDetails((prevState) => ({
+      ...prevState,
+      address: autoCompleteResult,
+      verifiedAddress: autoCompleteResult
+    }));
+  }, [autoCompleteResult]);
 
-  const validateAll = () => {
-    const allValidated = {};
-    let allValid = true;
-    Object.keys(valid).forEach((element) => {
-      const validElement = element === 'address'
-        ? validateAddress()
-        : validate(formDetails[element], element);
-      allValidated[element] = validElement;
-      allValid = allValid && validElement;
-    });
-    setValid(allValidated);
-    return allValid;
-  };
-
-  const updateAddress = (newAddress) => {
-    setFormDetails({
-      ...formDetails,
-      address: newAddress,
-      verifiedAddress: newAddress
-    });
-  };
-
+  // Set state on form input
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormDetails({
@@ -58,16 +47,24 @@ function CheckoutForm() {
     });
   };
 
+  // Validate input field when moving away
   const handleBlur = (event) => {
-    const { name, value } = event.target;
-    setValid(name === 'address'
-      ? { ...valid, address: validateAddress() }
-      : { ...valid, [name]: validate(value, name) });
+    const { name } = event.target;
+    setValidity(Object.prototype.hasOwnProperty.call(validity, [name])
+      ? { ...validity, ...validate(formDetails, name)[1] }
+      : validity);
   };
 
+  // Submit payment form
   const handleSubmit = (event) => {
     event.preventDefault();
-    validateAll();
+    const [allValid, validated] = validateAll(formDetails, validity);
+    setValidity(validated);
+    if (allValid) {
+      console.log('SUBMITTING');
+    } else {
+      console.log('FAILED VALIDATION');
+    }
   };
 
   return (
@@ -80,13 +77,16 @@ function CheckoutForm() {
         />
         <DeliveryDate
           deliveryType={formDetails.deliveryType}
+          validDate={validity.date}
+          handleChange={handleChange}
         />
         {formDetails.deliveryType === 'delivery' && window.googleApiLoaded && (
           <DeliveryEntry
             address={formDetails.address}
-            validAddress={valid.address}
+            validAddress={validity.address}
             deliveryNotes={formDetails.deliveryNotes}
-            updateAddress={updateAddress}
+            setFormDetails={setFormDetails}
+            autoCompleteRef={autoCompleteRef}
             handleChange={handleChange}
             handleBlur={handleBlur}
           />
@@ -94,11 +94,11 @@ function CheckoutForm() {
       </fieldset>
       <DetailsEntry
         name={formDetails.name}
-        validName={valid.name}
+        validName={validity.name}
         email={formDetails.email}
-        validEmail={valid.email}
+        validEmail={validity.email}
         telephone={formDetails.telephone}
-        validTelephone={valid.telephone}
+        validTelephone={validity.telephone}
         handleChange={handleChange}
         handleBlur={handleBlur}
       />
