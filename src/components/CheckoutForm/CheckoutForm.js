@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import useAutoComplete from '../../hooks/useAutoComplete';
+import useScript from '../../hooks/useScript';
+import { validate, validateAll } from '../../helpers/validate';
+import { sendOrder } from '../../api/apiCalls';
+import { initialiseBoundaries } from '../../zones/boundaries';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
 import DeliveryDate from './DeliverySelector/DeliveryDate';
 import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
-import { validate, validateAll } from '../../helpers/validate';
 
 function CheckoutForm() {
   // Initialise form state
@@ -38,6 +41,11 @@ function CheckoutForm() {
     }));
   }, [autoCompleteResult]);
 
+  const googleMapsLoaded = useScript(
+    `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
+    () => initialiseBoundaries()
+  );
+
   // Set state on form input
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -61,9 +69,7 @@ function CheckoutForm() {
     const [allValid, validated] = validateAll(formDetails, validity);
     setValidity(validated);
     if (allValid) {
-      console.log('SUBMITTING');
-    } else {
-      console.log('FAILED VALIDATION');
+      sendOrder(formDetails).then((data) => console.log(data));
     }
   };
 
@@ -80,7 +86,7 @@ function CheckoutForm() {
           validDate={validity.date}
           handleChange={handleChange}
         />
-        {formDetails.deliveryType === 'delivery' && window.googleApiLoaded && (
+        {formDetails.deliveryType === 'delivery' && googleMapsLoaded && (
           <DeliveryEntry
             address={formDetails.address}
             validAddress={validity.address}

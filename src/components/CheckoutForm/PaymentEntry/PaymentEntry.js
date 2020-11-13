@@ -24,7 +24,6 @@ function PaymentEntry({ paymentMethod, handleChange, handleSubmit }) {
               checked={paymentMethod === 'paymentLink'}
               handleChange={handleChange}
             />
-
             <button className="btn btn-success" type="submit" id="submitorder" value="submit">Order and Pay</button>
           </form>
         </div>
