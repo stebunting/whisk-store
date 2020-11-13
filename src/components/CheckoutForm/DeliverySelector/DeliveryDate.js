@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { basketType } from '../../../types';
-import { rangeFormat } from '../../../helpers/index';
+import { basketType } from '../../../functions/types';
+import { rangeFormat } from '../../../functions/helpers';
 import Select from '../Inputs/Select';
 
 function DeliveryDate({

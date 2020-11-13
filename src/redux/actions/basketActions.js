@@ -1,5 +1,5 @@
 import * as types from './actionTypes';
-import { getBasket, updateBasketApi } from '../../api/apiCalls';
+import { getBasket, updateBasketApi } from '../../functions/apiCalls';
 
 export function loadBasketSuccess(basket) {
   return {

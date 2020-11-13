@@ -1,5 +1,5 @@
 import * as types from './actionTypes';
-import { getProducts } from '../../api/apiCalls';
+import { getProducts } from '../../functions/apiCalls';
 
 export function loadProductsSuccess(products) {
   return {

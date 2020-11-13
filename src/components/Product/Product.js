@@ -5,8 +5,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
-import { priceFormat } from '../../helpers';
-import { productType } from '../../types';
+import { priceFormat } from '../../functions/helpers';
+import { productType } from '../../functions/types';
 
 function Product({
   products,

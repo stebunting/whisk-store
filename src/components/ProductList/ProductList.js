@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
-import { productType } from '../../types';
+import { productType } from '../../functions/types';
 
 function ProductList({ products, basket, actions }) {
   useEffect(() => {

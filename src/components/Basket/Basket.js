@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { priceFormat } from '../../helpers';
+import { priceFormat } from '../../functions/helpers';
 import * as basketActions from '../../redux/actions/basketActions';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
-import { basketType } from '../../types';
+import { basketType } from '../../functions/types';
 
 function Basket({ basket, actions }) {
   useEffect(() => {
