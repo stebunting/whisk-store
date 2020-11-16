@@ -34,6 +34,7 @@ function CheckoutForm() {
     email: null,
     telephone: null
   });
+  const [orderStatus, setOrderStatus] = useState('');
 
   // Set up Google Autocomplete
   const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
@@ -88,9 +89,13 @@ function CheckoutForm() {
     const [allValid, validated] = validateAll(formDetails, validity);
     setValidity(validated);
     if (allValid) {
-      sendOrder(formDetails).then((data) => (
-        history.push('/orderconfirmation', { ...data })
-      ));
+      setOrderStatus('CALLING API');
+      sendOrder(formDetails).then((data) => {
+        setOrderStatus(data.status);
+        if (data.status === 'CONFIRMED') {
+          return history.push('/orderconfirmation', { ...data });
+        }
+      });
     }
   };
 
@@ -131,6 +136,7 @@ function CheckoutForm() {
       />
       <PaymentEntry
         paymentMethod={formDetails.paymentMethod}
+        orderStatus={orderStatus}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
       />

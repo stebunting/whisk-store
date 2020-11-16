@@ -11,7 +11,7 @@ function OrderConfirmation() {
   let message;
   switch (paymentMethod) {
     case 'paymentLink':
-      message = 'Order Confirmed! Please look out for your payment link coming soon!'
+      message = 'Order Confirmed! Please look out for your payment link coming soon!';
       break;
 
     default:
