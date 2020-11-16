@@ -13,11 +13,66 @@ function Basket({ basket, actions }) {
     if (!basket.basketId) actions.loadBasket();
   }, [actions, basket]);
 
+  function handleClick() {
+    actions.resetBasket();
+  }
+
+  const basketContent = basket.items.length > 0
+    ? (
+      <>
+        {basket.items.map((item) => (
+          <tr key={item.productId}>
+            <td>
+              <Link to={`/product/${item.productId}`}>
+                {item.name}
+              </Link>
+            </td>
+            <td>{item.quantity}</td>
+            <td>{priceFormat(item.grossPrice)}</td>
+            <td>{priceFormat(item.linePrice)}</td>
+          </tr>
+        ))}
+        <tr>
+          <th colSpan="3">MOMS TOTAL</th>
+          <td>
+            {basket.statement && priceFormat(
+              basket.statement.bottomLine.totalMoms,
+              { includeOre: true }
+            )}
+          </td>
+        </tr>
+        <tr>
+          <th colSpan="3">TOTAL</th>
+          <td>
+            {basket.statement && priceFormat(
+              basket.statement.bottomLine.totalPrice
+            )}
+          </td>
+        </tr>
+      </>
+    )
+    : (
+      <tr key="noItems" colSpan="4">
+        <td>
+          NO ITEMS IN BASKET
+        </td>
+      </tr>
+    );
+
   return (
     <>
       <ul>
         <li><h2>Basket</h2></li>
         <li>{basket.basketId}</li>
+        <li>
+          <button
+            className="btn btn-primary btn-sm"
+            type="button"
+            onClick={handleClick}
+          >
+            Reset Basket
+          </button>
+        </li>
       </ul>
       <table className="table">
         <thead>
@@ -29,35 +84,7 @@ function Basket({ basket, actions }) {
           </tr>
         </thead>
         <tbody>
-          {basket.items && basket.items.map((item) => (
-            <tr key={item.productId}>
-              <td>
-                <Link to={`/product/${item.productId}`}>
-                  {item.name}
-                </Link>
-              </td>
-              <td>{item.quantity}</td>
-              <td>{priceFormat(item.grossPrice)}</td>
-              <td>{priceFormat(item.linePrice)}</td>
-            </tr>
-          ))}
-          <tr>
-            <th colSpan="3">MOMS TOTAL</th>
-            <td>
-              {basket.statement && priceFormat(
-                basket.statement.bottomLine.totalMoms,
-                { includeOre: true }
-              )}
-            </td>
-          </tr>
-          <tr>
-            <th colSpan="3">TOTAL</th>
-            <td>
-              {basket.statement && priceFormat(
-                basket.statement.bottomLine.totalPrice
-              )}
-            </td>
-          </tr>
+          {basketContent}
         </tbody>
       </table>
       <CheckoutForm />
@@ -67,7 +94,8 @@ function Basket({ basket, actions }) {
 Basket.propTypes = {
   basket: basketType.isRequired,
   actions: PropTypes.shape({
-    loadBasket: PropTypes.func.isRequired
+    loadBasket: PropTypes.func.isRequired,
+    resetBasket: PropTypes.func.isRequired
   }).isRequired
 };
 
@@ -80,7 +108,8 @@ function mapStateToProps({ basket }) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch)
+      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
+      resetBasket: bindActionCreators(basketActions.resetBasket, dispatch)
     }
   };
 }

@@ -22,10 +22,10 @@ function Select({
       <option value="undefined">{defaultText}</option>
       {options.map((option) => (
         <option
-          key={option.key}
+          key={option.value}
           value={option.value}
         >
-          {option.value}
+          {option.text}
         </option>
       ))}
     </select>
@@ -35,8 +35,8 @@ Select.propTypes = {
   valid: PropTypes.bool,
   defaultText: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
-    key: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
+    value: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired
   })).isRequired,
   handleChange: PropTypes.func.isRequired,
 };

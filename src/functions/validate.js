@@ -27,7 +27,9 @@ export function validate(values, validationType) {
     }
 
     case 'address': {
-      valid = values.deliveryType === 'collection'
+      valid = values.zone === null
+        ? null
+        : values.deliveryType === 'collection'
           || (values.verifiedAddress === value && values.verifiedAddress !== '');
       break;
     }

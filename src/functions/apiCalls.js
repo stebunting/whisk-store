@@ -19,7 +19,6 @@ export function getProducts() {
 export function getBasket() {
   // cookies.remove(cookieName, { path: '/' });
   const basketId = cookies.get(cookieName);
-
   const url = basketId
     ? `${process.env.API_URL}/api/basket/${basketId}`
     : `${process.env.API_URL}/api/basket`;
@@ -27,6 +26,23 @@ export function getBasket() {
 
   return new Promise((resolve, reject) => {
     fetch(url, { method })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          cookies.set(cookieName, data.basket.basketId, { path: '/' });
+          resolve(data.basket);
+        }
+        reject(new Error());
+      }).catch((error) => reject(error));
+  });
+}
+
+export function resetBasket() {
+  const basketId = cookies.get(cookieName);
+  const url = `${process.env.API_URL}/api/basket/${basketId}`;
+
+  return new Promise((resolve, reject) => {
+    fetch(url, { method: 'delete' })
       .then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') {
@@ -64,7 +80,7 @@ export function sendOrder(payload) {
       body: JSON.stringify(payload)
     }).then((response) => response.json())
       .then((data) => {
-        if (data.status === 'ok') resolve(data);
+        if (data.status === 'ok') resolve(data.order);
         reject(new Error());
       }).catch((error) => reject(error));
   });

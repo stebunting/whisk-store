@@ -5,6 +5,7 @@ import configureStore from '../../redux/configureStore';
 import ProductList from '../ProductList/ProductList';
 import Product from '../Product/Product';
 import Basket from '../Basket/Basket';
+import OrderConfirmation from '../OrderConfirmation/OrderConfirmation';
 
 function App() {
   const store = configureStore();
@@ -16,6 +17,7 @@ function App() {
           <Route exact path="/" component={ProductList} />
           <Route path="/product/:productId" component={Product} />
           <Route path="/basket" component={Basket} />
+          <Route path="/orderconfirmation" component={OrderConfirmation} />
         </Switch>
       </Router>
     </ReduxProvider>

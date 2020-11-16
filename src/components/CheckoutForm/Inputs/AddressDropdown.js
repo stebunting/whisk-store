@@ -7,6 +7,7 @@ function AddressDropdown({
   placeholder,
   value,
   valid,
+  zone,
   autoCompleteRef,
   handleChange,
   handleBlur
@@ -18,7 +19,9 @@ function AddressDropdown({
 
   return (
     <div className="form-group row">
-      <label htmlFor={id} className="col-sm-4 col-form-label">{label}</label>
+      <label htmlFor={id} className="col-sm-4 col-form-label">
+        {label}
+      </label>
       <div className="col-sm-6">
         <input
           type="text"
@@ -31,6 +34,10 @@ function AddressDropdown({
           onBlur={handleBlur}
           ref={autoCompleteRef}
         />
+        <div>
+          Zone&nbsp;
+          {zone}
+        </div>
       </div>
     </div>
   );
@@ -41,6 +48,7 @@ AddressDropdown.propTypes = {
   placeholder: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   valid: PropTypes.bool,
+  zone: PropTypes.number.isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
     PropTypes.func

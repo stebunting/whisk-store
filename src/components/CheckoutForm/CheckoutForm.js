@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import useAutoComplete from '../../hooks/useAutoComplete';
 import useScript from '../../hooks/useScript';
 import { validate, validateAll } from '../../functions/validate';
 import { sendOrder } from '../../functions/apiCalls';
-import { initialiseBoundaries } from '../../functions/boundaries';
+import { getZone, initialiseBoundaries } from '../../functions/boundaries';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
 import DeliveryDate from './DeliverySelector/DeliveryDate';
 import DeliveryEntry from './DeliverySelector/DeliveryEntry';
@@ -11,6 +12,8 @@ import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
 
 function CheckoutForm() {
+  const history = useHistory();
+
   // Initialise form state
   const [formDetails, setFormDetails] = useState({
     deliveryType: 'collection',
@@ -18,6 +21,7 @@ function CheckoutForm() {
     date: 'undefined',
     address: '',
     verifiedAddress: null,
+    zone: -1,
     deliveryNotes: '',
     name: '',
     email: '',
@@ -34,16 +38,31 @@ function CheckoutForm() {
   // Set up Google Autocomplete
   const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
   useEffect(() => {
+    const formattedAddress = autoCompleteResult.formatted_address || '';
+    const latlon = Object.keys(autoCompleteResult).length > 0
+      ? autoCompleteResult.geometry.location
+      : null;
+    const zone = getZone(latlon);
     setFormDetails((prevState) => ({
       ...prevState,
-      address: autoCompleteResult,
-      verifiedAddress: autoCompleteResult
+      address: formattedAddress,
+      verifiedAddress: formattedAddress,
+      zone
+    }));
+    setValidity((prevState) => ({
+      ...prevState,
+      ...validate({
+        address: formattedAddress,
+        verifiedAddress: formattedAddress,
+        zone
+      }, 'address')[1]
     }));
   }, [autoCompleteResult]);
 
+  // Load google maps script, initialise boundaries onLoad
   const googleMapsLoaded = useScript(
     `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
-    () => initialiseBoundaries()
+    initialiseBoundaries
   );
 
   // Set state on form input
@@ -69,7 +88,9 @@ function CheckoutForm() {
     const [allValid, validated] = validateAll(formDetails, validity);
     setValidity(validated);
     if (allValid) {
-      sendOrder(formDetails).then((data) => console.log(data));
+      sendOrder(formDetails).then((data) => (
+        history.push('/orderconfirmation', { ...data })
+      ));
     }
   };
 
@@ -90,8 +111,8 @@ function CheckoutForm() {
           <DeliveryEntry
             address={formDetails.address}
             validAddress={validity.address}
+            zone={formDetails.zone}
             deliveryNotes={formDetails.deliveryNotes}
-            setFormDetails={setFormDetails}
             autoCompleteRef={autoCompleteRef}
             handleChange={handleChange}
             handleBlur={handleBlur}

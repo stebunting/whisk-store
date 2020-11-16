@@ -36,6 +36,7 @@ function inZone(zone, location) {
 }
 
 export function getZone(location) {
+  if (location === null) return -1;
   for (let i = 0; i <= 2; i += 1) {
     if (inZone(i, location)) {
       return i;

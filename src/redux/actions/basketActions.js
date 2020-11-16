@@ -1,5 +1,5 @@
 import * as types from './actionTypes';
-import { getBasket, updateBasketApi } from '../../functions/apiCalls';
+import * as actions from '../../functions/apiCalls';
 
 export function loadBasketSuccess(basket) {
   return {
@@ -15,16 +15,29 @@ export function updateBasketSuccess(basket) {
   };
 }
 
+export function resetBasketSuccess(basket) {
+  return {
+    type: types.RESET_BASKET_SUCCESS,
+    basket
+  };
+}
+
 export function loadBasket() {
   return function thunkLoadBasket(dispatch) {
-    return getBasket().then((data) => dispatch(loadBasketSuccess(data)));
+    return actions.getBasket().then((data) => dispatch(loadBasketSuccess(data)));
   };
 }
 
 export function updateBasket(productId, quantity) {
   return function thunkUpdateBasket(dispatch) {
-    return updateBasketApi(productId, quantity).then((data) => (
+    return actions.updateBasketApi(productId, quantity).then((data) => (
       dispatch(updateBasketSuccess(data))
     ));
+  };
+}
+
+export function resetBasket() {
+  return function thunkResetBasket(dispatch) {
+    return actions.resetBasket().then((data) => dispatch(resetBasketSuccess(data)));
   };
 }

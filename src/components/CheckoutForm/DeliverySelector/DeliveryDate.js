@@ -22,8 +22,8 @@ function DeliveryDate({
           valid={validDate}
           defaultText={`Select a ${deliveryType} option...`}
           options={deliveryOptions.map((range) => ({
-            key: `${range.year}${range.week}${range.day}`,
-            value: rangeFormat(range)
+            value: `${range.year}-${range.week}-${range.day}`,
+            text: rangeFormat(range)
           }))}
           handleChange={handleChange}
         />

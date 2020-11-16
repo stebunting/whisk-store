@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 
 function useAutoComplete() {
   const ref = useRef(null);
-  const [newAddress, setNewAddress] = useState('');
+  const [newAddress, setNewAddress] = useState({});
 
   const autocompleteRef = useCallback((node) => {
     let autocomplete;
@@ -39,8 +39,7 @@ function useAutoComplete() {
       autocompleteListener = window.google.maps.event.addListener(
         autocomplete, 'place_changed', () => {
           const googleLocation = autocomplete.getPlace();
-          setNewAddress(googleLocation.formatted_address);
-          // const latlon = googleLocation.geometry.location;
+          setNewAddress(googleLocation);
         }
       );
       node.addEventListener('keydown', keydownListener);
