@@ -12,7 +12,7 @@ function DeliveryDate({
   handleChange
 }) {
   const deliveryOptions = basket.items.length > 0
-    ? basket.items[0][deliveryType]
+    ? basket.items[0][deliveryType].dates
     : [];
 
   return (

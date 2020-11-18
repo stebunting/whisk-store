@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import useAutoComplete from '../../hooks/useAutoComplete';
 import useScript from '../../hooks/useScript';
+import { initialiseBoundaries, getZone } from '../../functions/boundaries';
 import { validate, validateAll } from '../../functions/validate';
-import { sendOrder } from '../../functions/apiCalls';
-import { getZone, initialiseBoundaries } from '../../functions/boundaries';
+import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
 import DeliveryDate from './DeliverySelector/DeliveryDate';
 import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
+import * as basketActions from '../../redux/actions/basketActions';
 
-function CheckoutForm() {
+function CheckoutForm({ actions }) {
   const history = useHistory();
+
+  // Load google maps script, initialise boundaries onLoad
+  const googleMapsLoaded = useScript(
+    `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
+    initialiseBoundaries
+  );
 
   // Initialise form state
   const [formDetails, setFormDetails] = useState({
@@ -35,6 +45,7 @@ function CheckoutForm() {
     telephone: null
   });
   const [orderStatus, setOrderStatus] = useState('');
+  const [errors, setErrors] = useState([]);
 
   // Set up Google Autocomplete
   const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
@@ -58,13 +69,8 @@ function CheckoutForm() {
         zone
       }, 'address')[1]
     }));
-  }, [autoCompleteResult]);
-
-  // Load google maps script, initialise boundaries onLoad
-  const googleMapsLoaded = useScript(
-    `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
-    initialiseBoundaries
-  );
+    actions.updateBasketZone({ zone, address: formattedAddress });
+  }, [autoCompleteResult, actions]);
 
   // Set state on form input
   const handleChange = (event) => {
@@ -83,19 +89,60 @@ function CheckoutForm() {
       : validity);
   };
 
+  const fetchSwishStatus = async (swishId, timerId) => {
+    const swish = await checkSwishStatus(swishId);
+    console.log(swish);
+    setOrderStatus(swish.status);
+    switch (swish.status) {
+      case 'DECLINED':
+      case 'ERROR':
+      case 'CANCELLED':
+        clearInterval(timerId);
+        setErrors([...errors, {
+          code: swish.errorCode,
+          message: swish.errorMessage
+        }]);
+        console.log(swish);
+        break;
+
+      case 'PAID':
+        clearInterval(timerId);
+        return history.push('/orderconfirmation', { ...swish });
+
+      default:
+        break;
+    }
+  };
+
   // Submit payment form
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors([]);
     const [allValid, validated] = validateAll(formDetails, validity);
     setValidity(validated);
+
     if (allValid) {
+      // Send Order to Server
       setOrderStatus('CALLING API');
-      sendOrder(formDetails).then((data) => {
-        setOrderStatus(data.status);
-        if (data.status === 'CONFIRMED') {
-          return history.push('/orderconfirmation', { ...data });
-        }
-      });
+      const data = await sendOrder(formDetails);
+      setOrderStatus(data.status);
+      if (data.status === 'PAID') {
+        return history.push('/orderconfirmation', { ...data });
+      }
+
+      // If Swish Payment Created
+      const SWISH_UPDATE_INTERVAL = 2000;
+      if (data.status === 'CREATED') {
+        const { id: swishId } = data;
+        const timerId = setInterval(() => (
+          fetchSwishStatus(swishId, timerId)
+        ), SWISH_UPDATE_INTERVAL);
+      } else {
+        setErrors([{
+          code: data.errorCode,
+          message: data.errorMessage
+        }]);
+      }
     }
   };
 
@@ -137,11 +184,29 @@ function CheckoutForm() {
       <PaymentEntry
         paymentMethod={formDetails.paymentMethod}
         orderStatus={orderStatus}
+        errors={errors}
         handleChange={handleChange}
-        handleSubmit={handleSubmit}
+        handleSubmit={(event) => handleSubmit(event)}
       />
     </>
   );
 }
+CheckoutForm.propTypes = {
+  actions: PropTypes.shape({
+    updateBasketZone: PropTypes.func.isRequired
+  }).isRequired
+};
 
-export default CheckoutForm;
+function mapStateToProps() {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: {
+      updateBasketZone: bindActionCreators(basketActions.updateBasketZoneApi, dispatch)
+    }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CheckoutForm);

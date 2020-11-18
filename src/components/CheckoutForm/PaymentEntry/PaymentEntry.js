@@ -1,27 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Radio from '../Inputs/Radio';
+import css from './paymentEntry.module.less';
 
 function PaymentEntry({
   paymentMethod,
   orderStatus,
+  errors,
   handleChange,
   handleSubmit
 }) {
-  let message = '';
-  console.log(orderStatus);
-  switch (orderStatus) {
-    case 'CALLING API':
-      message = '...';
-      break;
+  const message = orderStatus === 'CREATED'
+    ? 'Please open Swish on your mobile phone to complete payment'
+    : '';
 
-    case 'ORDERED':
-      message = 'Please open Swish on your mobile phone to complete payment';
-      break;
-
-    default:
-      break;
-  }
+  const buttonStatus = orderStatus === 'CALLING API' || orderStatus === 'CREATED'
+    ? { disabled: true, text: 'Ordering...' }
+    : { disabled: false, text: 'Order and Pay' };
 
   return (
     <fieldset id="submit-fieldset">
@@ -46,23 +41,34 @@ function PaymentEntry({
             />
             <button
               className="btn btn-success"
-              disabled={orderStatus !== ''}
+              disabled={buttonStatus.disabled}
               type="submit"
               id="submitorder"
               value="submit"
             >
-              Order and Pay
+              {buttonStatus.text}
             </button>
-            <div>{message}</div>
           </form>
         </div>
       </div>
+      {message && <div className={css.message}>{message}</div>}
+      {errors.length > 0 && (
+      <ul className={css.errors}>
+        {errors.map((error) => (
+          <li key={error.code}>{error.message}</li>
+        ))}
+      </ul>
+      )}
     </fieldset>
   );
 }
 PaymentEntry.propTypes = {
   paymentMethod: PropTypes.string.isRequired,
   orderStatus: PropTypes.string.isRequired,
+  errors: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired
+  })).isRequired,
   handleChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired
 };

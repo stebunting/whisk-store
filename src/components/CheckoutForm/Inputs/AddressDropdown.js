@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 function AddressDropdown({
   id,
@@ -7,7 +8,7 @@ function AddressDropdown({
   placeholder,
   value,
   valid,
-  zone,
+  delivery,
   autoCompleteRef,
   handleChange,
   handleBlur
@@ -34,10 +35,7 @@ function AddressDropdown({
           onBlur={handleBlur}
           ref={autoCompleteRef}
         />
-        <div>
-          Zone&nbsp;
-          {zone}
-        </div>
+        <div>{delivery.deliverable || delivery.zone < 0 || 'NO DELIVERY TO THIS LOCATION'}</div>
       </div>
     </div>
   );
@@ -48,7 +46,12 @@ AddressDropdown.propTypes = {
   placeholder: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   valid: PropTypes.bool,
-  zone: PropTypes.number.isRequired,
+  delivery: PropTypes.shape({
+    zone: PropTypes.number.isRequired,
+    price: PropTypes.number,
+    momsRate: PropTypes.number,
+    deliverable: PropTypes.bool
+  }).isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
     PropTypes.func
@@ -60,4 +63,10 @@ AddressDropdown.defaultProps = {
   valid: null
 };
 
-export default AddressDropdown;
+function mapStateToProps({ basket }) {
+  return {
+    delivery: basket.delivery
+  };
+}
+
+export default connect(mapStateToProps)(AddressDropdown);

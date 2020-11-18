@@ -58,10 +58,42 @@ export function resetBasket() {
 export function updateBasketApi(productId, quantity) {
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/basket/${basketId}`, {
+    fetch(`${process.env.API_URL}/api/basket/update/quantity/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ productId, quantity })
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') resolve(data.basket);
+        reject(new Error());
+      }).catch((error) => reject(error));
+  });
+}
+
+// Update basket in backend, returns new basket
+export function updateBasketZoneApi(location) {
+  const basketId = cookies.get(cookieName);
+  return new Promise((resolve, reject) => {
+    fetch(`${process.env.API_URL}/api/basket/update/zone/${basketId}`, {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ location })
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') resolve(data.basket);
+        reject(new Error());
+      }).catch((error) => reject(error));
+  });
+}
+
+// Remove item from basket in backend, returns new basket
+export function removeItemFromBasketApi(productId) {
+  const basketId = cookies.get(cookieName);
+  return new Promise((resolve, reject) => {
+    fetch(`${process.env.API_URL}/api/basket/update/remove/${basketId}`, {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId })
     }).then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.basket);
@@ -79,6 +111,18 @@ export function sendOrder(payload) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') resolve(data.order);
+        reject(new Error());
+      }).catch((error) => reject(error));
+  });
+}
+
+// Send completed order to backend
+export function checkSwishStatus(swishId) {
+  return new Promise((resolve, reject) => {
+    fetch(`${process.env.API_URL}/api/order/swish/${swishId}`)
+      .then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.order);
         reject(new Error());

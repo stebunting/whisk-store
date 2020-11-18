@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { priceFormat } from '../../functions/helpers';
 import * as basketActions from '../../redux/actions/basketActions';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
+import QuantityDropdown from './QuantityDropdown';
 import { basketType } from '../../functions/types';
 
 function Basket({ basket, actions }) {
@@ -27,11 +28,32 @@ function Basket({ basket, actions }) {
                 {item.name}
               </Link>
             </td>
-            <td>{item.quantity}</td>
+            <td>
+              <QuantityDropdown
+                defaultValue={item.quantity}
+                name={`update-${item.productId}`}
+                handleChange={(event) => actions.updateBasket(item.productId, event.target.value)}
+              />
+              <button
+                className="btn btn-primary btn-sm"
+                type="button"
+                onClick={() => actions.removeItemFromBasket(item.productId)}
+              >
+                Remove
+              </button>
+            </td>
             <td>{priceFormat(item.grossPrice)}</td>
             <td>{priceFormat(item.linePrice)}</td>
           </tr>
         ))}
+        <tr>
+          <th colSpan="3">DELIVERY</th>
+          <td>
+            {basket.statement && priceFormat(
+              basket.statement.bottomLine.totalDelivery
+            )}
+          </td>
+        </tr>
         <tr>
           <th colSpan="3">MOMS TOTAL</th>
           <td>
@@ -64,15 +86,6 @@ function Basket({ basket, actions }) {
       <ul>
         <li><h2>Basket</h2></li>
         <li>{basket.basketId}</li>
-        <li>
-          <button
-            className="btn btn-primary btn-sm"
-            type="button"
-            onClick={handleClick}
-          >
-            Reset Basket
-          </button>
-        </li>
       </ul>
       <table className="table">
         <thead>
@@ -87,6 +100,15 @@ function Basket({ basket, actions }) {
           {basketContent}
         </tbody>
       </table>
+      <div>
+        <button
+          className="btn btn-primary btn-sm"
+          type="button"
+          onClick={handleClick}
+        >
+          Reset Basket
+        </button>
+      </div>
       <CheckoutForm />
     </>
   );
@@ -95,7 +117,9 @@ Basket.propTypes = {
   basket: basketType.isRequired,
   actions: PropTypes.shape({
     loadBasket: PropTypes.func.isRequired,
-    resetBasket: PropTypes.func.isRequired
+    resetBasket: PropTypes.func.isRequired,
+    updateBasket: PropTypes.func.isRequired,
+    removeItemFromBasket: PropTypes.func.isRequired
   }).isRequired
 };
 
@@ -109,7 +133,9 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
-      resetBasket: bindActionCreators(basketActions.resetBasket, dispatch)
+      resetBasket: bindActionCreators(basketActions.resetBasket, dispatch),
+      updateBasket: bindActionCreators(basketActions.updateBasket, dispatch),
+      removeItemFromBasket: bindActionCreators(basketActions.removeItemFromBasket, dispatch)
     }
   };
 }

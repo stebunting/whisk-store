@@ -6,7 +6,10 @@ const CopyPlugin = require('copy-webpack-plugin');
 require('dotenv').config();
 
 module.exports = {
-  entry: './src/index.js',
+  entry: [
+    '/node_modules/regenerator-runtime/runtime.js',
+    './src/index.js'
+  ],
   mode: 'development',
   module: {
     rules: [

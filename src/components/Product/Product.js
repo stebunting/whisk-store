@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
 import { priceFormat } from '../../functions/helpers';
-import { productType } from '../../functions/types';
+import { productType, basketType } from '../../functions/types';
+import QuantityDropdown from '../Basket/QuantityDropdown';
 
 function Product({
   products,
@@ -19,11 +20,18 @@ function Product({
     if (!basket.basketId) actions.loadBasket();
   }, [actions, products.length, basket]);
 
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const basketItem = basket.items
+    .filter((item) => item.productId === product.productId);
+  const quantityInBasket = basketItem.length > 0
+    ? basketItem[0].quantity
+    : 0;
 
   function handleSubmit(event) {
     event.preventDefault();
-    actions.updateBasket(product.productId, quantity);
+    actions.updateBasket(product.productId, quantityInBasket + quantity);
+    setQuantity(1);
   }
 
   return (
@@ -36,22 +44,21 @@ function Product({
       <li>{product.description}</li>
       <li>{priceFormat(product.grossPrice)}</li>
       <form id="update-basket" onSubmit={handleSubmit}>
-        <label htmlFor="updateQuantity">
-          Quantity
-          <input
-            type="number"
-            name="updateQuantity"
-            id="updateQuantity"
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-          />
-          <input
-            type="submit"
-            name="add-to-basket"
-            id="add-to-basket"
-            value="Add to Basket"
-          />
-        </label>
+        <QuantityDropdown
+          defaultValue={quantity}
+          name="updateQuantity"
+          handleChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+        />
+        <input
+          type="submit"
+          name="add-to-basket"
+          id="add-to-basket"
+          value="Add to Basket"
+        />
+        <div>
+          {quantityInBasket}
+          &nbsp;in Basket
+        </div>
       </form>
     </ul>
   );
@@ -59,9 +66,7 @@ function Product({
 Product.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   product: productType.isRequired,
-  basket: PropTypes.shape({
-    basketId: PropTypes.string
-  }).isRequired,
+  basket: basketType.isRequired,
   actions: PropTypes.shape({
     loadProducts: PropTypes.func.isRequired,
     loadBasket: PropTypes.func.isRequired,

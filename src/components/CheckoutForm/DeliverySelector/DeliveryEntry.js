@@ -6,7 +6,6 @@ import AddressDropdown from '../Inputs/AddressDropdown';
 function DeliveryEntry({
   address,
   validAddress,
-  zone,
   deliveryNotes,
   autoCompleteRef,
   handleChange,
@@ -21,7 +20,6 @@ function DeliveryEntry({
         placeholder="Address"
         value={address}
         valid={validAddress}
-        zone={zone}
         autoCompleteRef={autoCompleteRef}
         handleChange={handleChange}
         handleBlur={handleBlur}
@@ -41,7 +39,6 @@ function DeliveryEntry({
 DeliveryEntry.propTypes = {
   address: PropTypes.string.isRequired,
   validAddress: PropTypes.bool,
-  zone: PropTypes.number.isRequired,
   deliveryNotes: PropTypes.string.isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),

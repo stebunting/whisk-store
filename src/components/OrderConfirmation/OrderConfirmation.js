@@ -14,6 +14,10 @@ function OrderConfirmation() {
       message = 'Order Confirmed! Please look out for your payment link coming soon!';
       break;
 
+    case 'swish':
+      message = 'Order Confirmed! Thank you for your order.';
+      break;
+
     default:
       history.push('/');
       break;

@@ -9,6 +9,12 @@ export default function basketReducer(state = initialState.basket, action) {
     case types.UPDATE_BASKET_SUCCESS:
       return action.basket;
 
+    case types.UPDATE_BASKET_ZONE_SUCCESS:
+      return action.basket;
+
+    case types.REMOVE_ITEM_FROM_BASKET_SUCCESS:
+      return action.basket;
+
     case types.RESET_BASKET_SUCCESS:
       return action.basket;
 
