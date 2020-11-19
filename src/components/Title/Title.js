@@ -7,7 +7,7 @@ function Title() {
     <>
       <div className={css.pageHeader}>
         <BasketIcon invisible />
-        <h1 className={css.pageTitle}>Store</h1>
+        <h1 id="pageTitle" className={css.pageTitle}>Store</h1>
         <BasketIcon />
       </div>
     </>

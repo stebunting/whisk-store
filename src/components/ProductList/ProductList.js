@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
+import useTitle from '../../hooks/useTitle';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
 import { productType } from '../../functions/types';
 import css from './productList.module.less';
 
 function ProductList({ products, basket, actions }) {
+  useTitle('Store');
   useEffect(() => {
     if (products.length === 0) actions.loadProducts();
     if (!basket.basketId) actions.loadBasket();

@@ -3,64 +3,66 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import useTitle from '../../hooks/useTitle';
 import { priceFormat } from '../../functions/helpers';
 import * as basketActions from '../../redux/actions/basketActions';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import QuantityDropdown from './QuantityDropdown';
 import { basketType } from '../../functions/types';
+import css from './basket.module.less';
 
 function Basket({ basket, actions }) {
+  useTitle('Basket');
   useEffect(() => {
     if (!basket.basketId) actions.loadBasket();
   }, [actions, basket]);
-
-  function handleClick() {
-    actions.resetBasket();
-  }
 
   const basketContent = basket.items.length > 0
     ? (
       <>
         {basket.items.map((item) => (
           <tr key={item.productId}>
-            <td>
+            <td className={css.tableCell}>
               <Link to={`/product/${item.productId}`}>
                 {item.name}
               </Link>
             </td>
-            <td className="form-row">
-              <div className="col-sm">
-                <QuantityDropdown
-                  defaultValue={item.quantity}
-                  name={`update-${item.productId}`}
-                  handleChange={(event) => actions.updateBasket(item.productId, event.target.value)}
-                />
-              </div>
-              <div className="col-sm-auto">
-                <button
-                  className="btn btn-link form-control"
-                  type="button"
-                  onClick={() => actions.removeItemFromBasket(item.productId)}
-                >
-                  <img src="icons/delete.svg" alt="Remove item from basket" />
-                </button>
+            <td className={css.tableCell}>
+              <div className="form-row">
+                <div className="col-sm">
+                  <QuantityDropdown
+                    defaultValue={item.quantity}
+                    name={`update-${item.productId}`}
+                    handleChange={(event) => actions
+                      .updateBasket(item.productId, event.target.value)}
+                  />
+                </div>
+                <div className="col-sm-auto">
+                  <button
+                    className="btn btn-link form-control"
+                    type="button"
+                    onClick={() => actions.removeItemFromBasket(item.productId)}
+                  >
+                    <img src="/icons/delete.svg" alt="Remove item from basket" />
+                  </button>
+                </div>
               </div>
             </td>
-            <td>{priceFormat(item.grossPrice)}</td>
-            <td>{priceFormat(item.linePrice)}</td>
+            <td className={css.tableCellAmount}>{priceFormat(item.grossPrice)}</td>
+            <td className={css.tableCellAmount}>{priceFormat(item.linePrice)}</td>
           </tr>
         ))}
         <tr>
-          <th colSpan="3">DELIVERY</th>
-          <td>
+          <th className={css.bottomLine} colSpan="3">DELIVERY</th>
+          <td className={css.bottomLine}>
             {basket.statement && priceFormat(
               basket.statement.bottomLine.totalDelivery
             )}
           </td>
         </tr>
         <tr>
-          <th colSpan="3">MOMS TOTAL</th>
-          <td>
+          <th className={css.bottomLine} colSpan="3">MOMS TOTAL</th>
+          <td className={css.bottomLine}>
             {basket.statement && priceFormat(
               basket.statement.bottomLine.totalMoms,
               { includeOre: true }
@@ -68,8 +70,8 @@ function Basket({ basket, actions }) {
           </td>
         </tr>
         <tr>
-          <th colSpan="3">TOTAL</th>
-          <td>
+          <th className={css.bottomLine} colSpan="3">TOTAL</th>
+          <td className={css.bottomLine}>
             {basket.statement && priceFormat(
               basket.statement.bottomLine.totalPrice
             )}
@@ -87,28 +89,19 @@ function Basket({ basket, actions }) {
 
   return (
     <>
-      <table className="table">
+      <table className="table table-striped">
         <thead>
           <tr>
-            <th>NAME</th>
-            <th>QUANTITY</th>
-            <th>PRICE</th>
-            <th>SUB-TOTAL</th>
+            <th scope="col">NAME</th>
+            <th scope="col">QUANTITY</th>
+            <th className={css.tableCellAmount} scope="col">PRICE</th>
+            <th className={css.tableCellAmount} scope="col">SUB-TOTAL</th>
           </tr>
         </thead>
         <tbody>
           {basketContent}
         </tbody>
       </table>
-      <div>
-        <button
-          className="btn btn-primary btn-sm"
-          type="button"
-          onClick={handleClick}
-        >
-          Reset Basket
-        </button>
-      </div>
       <CheckoutForm />
     </>
   );

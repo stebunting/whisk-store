@@ -13,7 +13,7 @@ function BasketIcon({ invisible }) {
         to="/basket"
       >
         <img
-          src="icons/basket.svg"
+          src="/icons/basket.svg"
           alt="View Basket"
         />
       </Link>

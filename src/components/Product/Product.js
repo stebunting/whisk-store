@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import useTitle from '../../hooks/useTitle';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
 import { priceFormat } from '../../functions/helpers';
@@ -16,6 +17,7 @@ function Product({
   basket,
   actions
 }) {
+  useTitle(product.name);
   const history = useHistory();
   useEffect(() => {
     if (products.length === 0) {
