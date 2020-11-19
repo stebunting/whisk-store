@@ -35,7 +35,6 @@ function AddressDropdown({
           onBlur={handleBlur}
           ref={autoCompleteRef}
         />
-        <div>{delivery.deliverable || delivery.zone < 0 || 'NO DELIVERY TO THIS LOCATION'}</div>
       </div>
     </div>
   );

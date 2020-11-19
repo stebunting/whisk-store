@@ -14,12 +14,13 @@ import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
 import * as basketActions from '../../redux/actions/basketActions';
+import { basketType } from '../../functions/types';
 
-function CheckoutForm({ actions }) {
+function CheckoutForm({ basket, actions }) {
   const history = useHistory();
 
   // Load google maps script, initialise boundaries onLoad
-  const googleMapsLoaded = useScript(
+  window.googleMapsLoaded = useScript(
     `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
     initialiseBoundaries
   );
@@ -32,6 +33,7 @@ function CheckoutForm({ actions }) {
     address: '',
     verifiedAddress: null,
     zone: -1,
+    deliverable: false,
     deliveryNotes: '',
     name: '',
     email: '',
@@ -55,6 +57,8 @@ function CheckoutForm({ actions }) {
       ? autoCompleteResult.geometry.location
       : null;
     const zone = getZone(latlon);
+    actions.updateBasketZone({ zone, address: formattedAddress });
+
     setFormDetails((prevState) => ({
       ...prevState,
       address: formattedAddress,
@@ -67,10 +71,14 @@ function CheckoutForm({ actions }) {
         address: formattedAddress,
         verifiedAddress: formattedAddress,
         zone
-      }, 'address')[1]
+      }, 'address', prevState.address)[1]
     }));
-    actions.updateBasketZone({ zone, address: formattedAddress });
   }, [autoCompleteResult, actions]);
+
+  useEffect(() => {
+    const deliverable = basket.delivery && basket.delivery.deliverable;
+    setFormDetails((prevState) => ({ ...prevState, deliverable }));
+  }, [basket]);
 
   // Set state on form input
   const handleChange = (event) => {
@@ -159,7 +167,7 @@ function CheckoutForm({ actions }) {
           validDate={validity.date}
           handleChange={handleChange}
         />
-        {formDetails.deliveryType === 'delivery' && googleMapsLoaded && (
+        {formDetails.deliveryType === 'delivery' && window.googleMapsLoaded && (
           <DeliveryEntry
             address={formDetails.address}
             validAddress={validity.address}
@@ -192,13 +200,16 @@ function CheckoutForm({ actions }) {
   );
 }
 CheckoutForm.propTypes = {
+  basket: basketType.isRequired,
   actions: PropTypes.shape({
     updateBasketZone: PropTypes.func.isRequired
   }).isRequired
 };
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps({ basket }) {
+  return {
+    basket
+  };
 }
 
 function mapDispatchToProps(dispatch) {

@@ -1,4 +1,4 @@
-export function validate(values, validationType) {
+export function validate(values, validationType, prevState) {
   const value = values[validationType];
   let valid;
 
@@ -27,10 +27,18 @@ export function validate(values, validationType) {
     }
 
     case 'address': {
-      valid = values.zone === null
-        ? null
-        : values.deliveryType === 'collection'
-          || (values.verifiedAddress === value && values.verifiedAddress !== '');
+      if (values.deliveryType === 'collection' || (prevState === null && values.address === '')) {
+        valid = null;
+      } else {
+        // First check whether it is set to collection
+        valid = values.deliveryType === 'collection'
+            // Check that verified address has been set
+            || (values.verifiedAddress !== ''
+            // And check that the address is equal to the verified address
+            && values.verifiedAddress === values.address
+            // And check that the deliverable flag is set
+            && values.deliverable);
+      }
       break;
     }
 
@@ -51,7 +59,7 @@ export function validateAll(values, valid) {
   let allValid = true;
 
   Object.keys(valid).forEach((element) => {
-    const [validity, validObject] = validate(values, element);
+    const [validity, validObject] = validate(values, element, true);
     allValidated = { ...allValidated, ...validObject };
     allValid = allValid && validity;
   });

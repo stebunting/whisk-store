@@ -29,7 +29,7 @@ function Basket({ basket, actions }) {
             </td>
             <td className={css.tableCell}>
               <div className="form-row">
-                <div className="col-sm">
+                <div className="col-xs">
                   <QuantityDropdown
                     defaultValue={item.quantity}
                     name={`update-${item.productId}`}
@@ -81,7 +81,7 @@ function Basket({ basket, actions }) {
     )
     : (
       <tr key="noItems" colSpan="4">
-        <td>
+        <td className={css.emptyBasketText} colSpan="4">
           NO ITEMS IN BASKET
         </td>
       </tr>
@@ -102,7 +102,7 @@ function Basket({ basket, actions }) {
           {basketContent}
         </tbody>
       </table>
-      <CheckoutForm />
+      {basket.items.length > 0 && <CheckoutForm />}
     </>
   );
 }
