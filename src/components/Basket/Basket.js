@@ -28,19 +28,23 @@ function Basket({ basket, actions }) {
                 {item.name}
               </Link>
             </td>
-            <td>
-              <QuantityDropdown
-                defaultValue={item.quantity}
-                name={`update-${item.productId}`}
-                handleChange={(event) => actions.updateBasket(item.productId, event.target.value)}
-              />
-              <button
-                className="btn btn-primary btn-sm"
-                type="button"
-                onClick={() => actions.removeItemFromBasket(item.productId)}
-              >
-                Remove
-              </button>
+            <td className="form-row">
+              <div className="col-sm">
+                <QuantityDropdown
+                  defaultValue={item.quantity}
+                  name={`update-${item.productId}`}
+                  handleChange={(event) => actions.updateBasket(item.productId, event.target.value)}
+                />
+              </div>
+              <div className="col-sm-auto">
+                <button
+                  className="btn btn-link form-control"
+                  type="button"
+                  onClick={() => actions.removeItemFromBasket(item.productId)}
+                >
+                  <img src="icons/delete.svg" alt="Remove item from basket" />
+                </button>
+              </div>
             </td>
             <td>{priceFormat(item.grossPrice)}</td>
             <td>{priceFormat(item.linePrice)}</td>
@@ -83,10 +87,6 @@ function Basket({ basket, actions }) {
 
   return (
     <>
-      <ul>
-        <li><h2>Basket</h2></li>
-        <li>{basket.basketId}</li>
-      </ul>
       <table className="table">
         <thead>
           <tr>

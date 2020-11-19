@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
 import { productType } from '../../functions/types';
+import css from './productList.module.less';
 
 function ProductList({ products, basket, actions }) {
   useEffect(() => {
@@ -14,14 +15,22 @@ function ProductList({ products, basket, actions }) {
   }, [actions, products.length, basket]);
 
   return (
-    <ul>
-      <li>
-        <Link to="/basket">View Basket</Link>
-        {` (${basket.basketId})`}
-      </li>
+    <ul className={css.productList}>
       {products.map((product) => (
-        <li key={product.productId}>
-          <Link to={`/product/${product.productId}`}>{product.name}</Link>
+        <li
+          className={css.productItem}
+          key={product.productId}
+        >
+          <Link to={`/product/${product.productId}`}>
+            <img
+              className={css.productImage}
+              src={`/store/images/${product.images[0].url}`}
+              alt={product.name}
+            />
+          </Link>
+          <Link to={`/product/${product.productId}`}>
+            {product.name}
+          </Link>
         </li>
       ))}
     </ul>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,6 +8,7 @@ import * as basketActions from '../../redux/actions/basketActions';
 import { priceFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import QuantityDropdown from '../Basket/QuantityDropdown';
+import css from './product.module.less';
 
 function Product({
   products,
@@ -15,10 +16,18 @@ function Product({
   basket,
   actions
 }) {
+  const history = useHistory();
   useEffect(() => {
-    if (products.length === 0) actions.loadProducts();
+    if (products.length === 0) {
+      actions.loadProducts();
+    } else if (product.productId === '') {
+      history.push('/');
+    }
+  }, [actions, products.length, product.productId, history]);
+
+  useEffect(() => {
     if (!basket.basketId) actions.loadBasket();
-  }, [actions, products.length, basket]);
+  }, [actions, basket]);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -28,39 +37,53 @@ function Product({
     ? basketItem[0].quantity
     : 0;
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleClick() {
     actions.updateBasket(product.productId, quantityInBasket + quantity);
     setQuantity(1);
+    history.push('/basket');
   }
 
   return (
-    <ul>
-      <li>
-        <Link to="/basket">View Basket</Link>
-        {` (${basket.basketId})`}
-      </li>
-      <li><h2>{product.name}</h2></li>
-      <li>{product.description}</li>
-      <li>{priceFormat(product.grossPrice)}</li>
-      <form id="update-basket" onSubmit={handleSubmit}>
-        <QuantityDropdown
-          defaultValue={quantity}
-          name="updateQuantity"
-          handleChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-        />
-        <input
-          type="submit"
-          name="add-to-basket"
-          id="add-to-basket"
-          value="Add to Basket"
-        />
-        <div>
-          {quantityInBasket}
-          &nbsp;in Basket
+    <>
+      <ul className={css.productImages}>
+        {product.images.map((image) => (
+          <li key={image.url}>
+            <img
+              className={css.productImage}
+              src={`/store/images/${image.url}`}
+              alt={image.description}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className={css.description}>
+        {product.description}
+      </div>
+
+      <p>{priceFormat(product.grossPrice)}</p>
+
+      <form id="update-basket">
+        <div className="form-row">
+          <div className="col-sm-2">
+            <QuantityDropdown
+              defaultValue={quantity}
+              name="updateQuantity"
+              handleChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+            />
+          </div>
+          <div className="col-sm-auto">
+            <button
+              className="form-control btn btn-secondary btn-sm"
+              type="button"
+              onClick={handleClick}
+            >
+              Add to Basket
+            </button>
+          </div>
         </div>
       </form>
-    </ul>
+    </>
   );
 }
 Product.propTypes = {
@@ -81,6 +104,7 @@ function mapStateToProps({ products, basket }, ownProps) {
     productId: '',
     name: '',
     description: '',
+    images: [],
     grossPrice: 0
   };
   const filteredProducts = products.filter((product) => product.productId === productId);

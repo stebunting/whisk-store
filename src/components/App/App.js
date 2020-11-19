@@ -5,6 +5,7 @@ import configureStore from '../../redux/configureStore';
 import ProductList from '../ProductList/ProductList';
 import Product from '../Product/Product';
 import Basket from '../Basket/Basket';
+import Title from '../Title/Title';
 import OrderConfirmation from '../OrderConfirmation/OrderConfirmation';
 
 function App() {
@@ -13,12 +14,15 @@ function App() {
   return (
     <ReduxProvider store={store}>
       <Router>
-        <Switch>
-          <Route exact path="/" component={ProductList} />
-          <Route path="/product/:productId" component={Product} />
-          <Route path="/basket" component={Basket} />
-          <Route path="/orderconfirmation" component={OrderConfirmation} />
-        </Switch>
+        <div className="container-fluid">
+          <Title />
+          <Switch>
+            <Route exact path="/" component={ProductList} />
+            <Route path="/product/:productId" component={Product} />
+            <Route path="/basket" component={Basket} />
+            <Route path="/orderconfirmation" component={OrderConfirmation} />
+          </Switch>
+        </div>
       </Router>
     </ReduxProvider>
   );
