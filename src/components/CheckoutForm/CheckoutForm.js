@@ -67,18 +67,27 @@ function CheckoutForm({
 
   const fetchSwishStatus = async (swishId, timerId) => {
     const swish = await checkSwishStatus(swishId);
-    console.log(swish);
     setOrderStatus(swish.status);
     switch (swish.status) {
-      case 'DECLINED':
       case 'ERROR':
       case 'CANCELLED':
         clearInterval(timerId);
-        setErrors([...errors, {
-          code: swish.errorCode,
-          message: swish.errorMessage
-        }]);
-        console.log(swish);
+        setErrors((prevState) => ([
+          ...prevState, {
+            code: swish.errorCode,
+            message: swish.errorMessage
+          }
+        ]));
+        break;
+
+      case 'DECLINED':
+        clearInterval(timerId);
+        setErrors((prevState) => ([
+          ...prevState, {
+            code: 'BE18',
+            message: 'Transaction Declined by Purchaser'
+          }
+        ]));
         break;
 
       case 'PAID':
@@ -88,6 +97,7 @@ function CheckoutForm({
       default:
         break;
     }
+    return false;
   };
 
   // Submit payment form
@@ -110,15 +120,19 @@ function CheckoutForm({
       const SWISH_UPDATE_INTERVAL = 2000;
       if (data.status === 'CREATED') {
         const { id: swishId } = data;
-        const timerId = setInterval(() => (
-          fetchSwishStatus(swishId, timerId)
+        setTimeout(() => (
+          fetchSwishStatus(swishId)
         ), SWISH_UPDATE_INTERVAL);
       } else {
-        setErrors([{
-          code: data.errorCode,
-          message: data.errorMessage
-        }]);
+        setErrors((prevState) => ([
+          ...prevState, {
+            code: data.errorCode,
+            message: data.errorMessage
+          }
+        ]));
       }
+    } else {
+      return false;
     }
   };
 

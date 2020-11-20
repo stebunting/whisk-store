@@ -68,6 +68,9 @@ module.exports = {
         { from: 'public', to: '.' }
       ]
     }),
-    new BundleAnalyzerPlugin()
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: true
+    })
   ]
 };

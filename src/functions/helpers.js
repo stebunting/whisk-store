@@ -1,4 +1,12 @@
-import { DateTime } from 'luxon';
+// import { DateTime } from 'luxon';
+const dayjs = require('dayjs');
+const objectSupport = require('dayjs/plugin/objectSupport');
+const weekOfYear = require('dayjs/plugin/weekOfYear');
+const weekday = require('dayjs/plugin/weekday');
+
+dayjs.extend(objectSupport);
+dayjs.extend(weekOfYear);
+dayjs.extend(weekday);
 
 // Format price from stored öre to krona
 export function priceFormat(num, userOptions = {}) {
@@ -16,21 +24,11 @@ export function priceFormat(num, userOptions = {}) {
 
 // Format date/time range
 export function rangeFormat(range) {
-  const date = DateTime
-    .fromObject({
-      weekNumber: range.week,
-      weekday: range.day
-    }).setZone('Europe/Stockholm')
-    .toLocaleString(DateTime.DATE_HUGE);
+  const date = dayjs({})
+    .year(range.year)
+    .week(range.week)
+    .day(range.day)
+    .format('dddd D MMMM');
 
-  const startTime = DateTime
-    .fromISO(range.time.start)
-    .setZone('Europe/Stockholm')
-    .toLocaleString(DateTime.TIME_24_SIMPLE);
-
-  const endTime = DateTime
-    .fromISO(range.time.end)
-    .setZone('Europe/Stockholm')
-    .toLocaleString(DateTime.TIME_24_SIMPLE);
-  return `${date} (${startTime} - ${endTime})`;
+  return `${date} (${range.time.start} - ${range.time.end})`;
 }
