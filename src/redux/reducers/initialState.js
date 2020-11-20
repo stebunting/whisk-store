@@ -23,5 +23,12 @@ export default {
     email: '',
     telephone: ''
   },
+  validity: {
+    date: null,
+    address: null,
+    name: null,
+    email: null,
+    telephone: null
+  },
   apiCallsInProgress: 0
 };

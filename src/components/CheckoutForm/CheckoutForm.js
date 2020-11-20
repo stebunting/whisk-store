@@ -13,32 +13,17 @@ import DeliveryEntry from './DeliverySelector/DeliveryEntry';
 import DetailsEntry from './DetailsEntry/DetailsEntry';
 import PaymentEntry from './PaymentEntry/PaymentEntry';
 import * as basketActions from '../../redux/actions/basketActions';
-import { basketType } from '../../functions/types';
+import * as userActions from '../../redux/actions/userActions';
+import * as checkoutFormActions from '../../redux/actions/checkoutFormActions';
+import { userType, basketType, validityType } from '../../functions/types';
 
-function CheckoutForm({ basket, actions }) {
+function CheckoutForm({
+  user,
+  validity,
+  basket,
+  actions
+}) {
   const history = useHistory();
-
-  // Initialise form state
-  const [formDetails, setFormDetails] = useState({
-    deliveryType: 'collection',
-    paymentMethod: 'swish',
-    date: 'undefined',
-    address: '',
-    verifiedAddress: null,
-    zone: -1,
-    deliverable: false,
-    deliveryNotes: '',
-    name: '',
-    email: '',
-    telephone: ''
-  });
-  const [validity, setValidity] = useState({
-    date: null,
-    address: null,
-    name: null,
-    email: null,
-    telephone: null
-  });
   const [orderStatus, setOrderStatus] = useState('');
   const [errors, setErrors] = useState([]);
 
@@ -50,44 +35,34 @@ function CheckoutForm({ basket, actions }) {
       ? autoCompleteResult.geometry.location
       : null;
     const zone = getZone(latlon);
-    actions.updateBasketZone({ zone, address: formattedAddress });
+    actions.updateBasketZoneAction({ zone, address: formattedAddress });
 
-    setFormDetails((prevState) => ({
-      ...prevState,
-      address: formattedAddress,
-      verifiedAddress: formattedAddress,
-      zone
-    }));
-    setValidity((prevState) => ({
-      ...prevState,
-      ...validate({
+    actions.updateUserAddressAction(formattedAddress, zone);
+    actions.updateValidityAction(
+      'address',
+      validate({
+        deliverable: basket.delivery.deliverable,
         address: formattedAddress,
         verifiedAddress: formattedAddress,
         zone
-      }, 'address', prevState.address)[1]
-    }));
-  }, [autoCompleteResult, actions]);
+      }, 'address', validity.address)
+    );
+  }, [autoCompleteResult, actions, validity.address, basket.delivery.deliverable]);
 
   useEffect(() => {
-    const deliverable = basket.delivery && basket.delivery.deliverable;
-    setFormDetails((prevState) => ({ ...prevState, deliverable }));
-  }, [basket]);
+    actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
+  }, [actions, basket]);
 
   // Set state on form input
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormDetails({
-      ...formDetails,
-      [name]: value
-    });
+    actions.updateUserAction(name, value);
   };
 
   // Validate input field when moving away
   const handleBlur = (event) => {
     const { name } = event.target;
-    setValidity(Object.prototype.hasOwnProperty.call(validity, [name])
-      ? { ...validity, ...validate(formDetails, name)[1] }
-      : validity);
+    actions.updateValidityAction(name, validate(user, name));
   };
 
   const fetchSwishStatus = async (swishId, timerId) => {
@@ -119,13 +94,13 @@ function CheckoutForm({ basket, actions }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors([]);
-    const [allValid, validated] = validateAll(formDetails, validity);
-    setValidity(validated);
+    const [allValid, validated] = validateAll(user, validity);
+    actions.updateValidityAllAction(validated);
 
     if (allValid) {
       // Send Order to Server
       setOrderStatus('CALLING API');
-      const data = await sendOrder(formDetails);
+      const data = await sendOrder(user);
       setOrderStatus(data.status);
       if (data.status === 'PAID') {
         return history.push('/orderconfirmation', { ...data });
@@ -152,20 +127,20 @@ function CheckoutForm({ basket, actions }) {
       <fieldset className="form-group" id="delivery-details">
         <legend>Delivery</legend>
         <DeliverySelector
-          deliveryType={formDetails.deliveryType}
+          deliveryType={user.deliveryType}
           handleChange={handleChange}
         />
         <DeliveryDate
-          deliveryType={formDetails.deliveryType}
+          deliveryType={user.deliveryType}
           validDate={validity.date}
           handleChange={handleChange}
         />
-        {formDetails.deliveryType === 'delivery' && window.googleMapsLoaded && (
+        {user.deliveryType === 'delivery' && window.googleMapsLoaded && (
           <DeliveryEntry
-            address={formDetails.address}
+            address={user.address}
             validAddress={validity.address}
-            zone={formDetails.zone}
-            deliveryNotes={formDetails.deliveryNotes}
+            zone={user.zone}
+            deliveryNotes={user.deliveryNotes}
             autoCompleteRef={autoCompleteRef}
             handleChange={handleChange}
             handleBlur={handleBlur}
@@ -173,17 +148,17 @@ function CheckoutForm({ basket, actions }) {
         )}
       </fieldset>
       <DetailsEntry
-        name={formDetails.name}
+        name={user.name}
         validName={validity.name}
-        email={formDetails.email}
+        email={user.email}
         validEmail={validity.email}
-        telephone={formDetails.telephone}
+        telephone={user.telephone}
         validTelephone={validity.telephone}
         handleChange={handleChange}
         handleBlur={handleBlur}
       />
       <PaymentEntry
-        paymentMethod={formDetails.paymentMethod}
+        paymentMethod={user.paymentMethod}
         orderStatus={orderStatus}
         errors={errors}
         handleChange={handleChange}
@@ -193,22 +168,30 @@ function CheckoutForm({ basket, actions }) {
   );
 }
 CheckoutForm.propTypes = {
+  user: userType.isRequired,
   basket: basketType.isRequired,
+  validity: validityType.isRequired,
   actions: PropTypes.shape({
-    updateBasketZone: PropTypes.func.isRequired
+    updateBasketZoneAction: PropTypes.func.isRequired,
+    updateUserAction: PropTypes.func.isRequired,
+    updateUserAddressAction: PropTypes.func.isRequired,
+    updateValidityAction: PropTypes.func.isRequired,
+    updateValidityAllAction: PropTypes.func.isRequired
   }).isRequired
 };
 
-function mapStateToProps({ basket }) {
-  return {
-    basket
-  };
+function mapStateToProps({ basket, user, validity }) {
+  return { basket, user, validity };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      updateBasketZone: bindActionCreators(basketActions.updateBasketZoneApi, dispatch)
+      updateBasketZoneAction: bindActionCreators(basketActions.updateBasketZoneApi, dispatch),
+      updateUserAction: bindActionCreators(userActions.updateUser, dispatch),
+      updateUserAddressAction: bindActionCreators(userActions.updateUserAddress, dispatch),
+      updateValidityAction: bindActionCreators(checkoutFormActions.updateValidity, dispatch),
+      updateValidityAllAction: bindActionCreators(checkoutFormActions.updateValidityAll, dispatch)
     }
   };
 }

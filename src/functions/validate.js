@@ -30,14 +30,12 @@ export function validate(values, validationType, prevState) {
       if (values.deliveryType === 'collection' || (prevState === null && values.address === '')) {
         valid = null;
       } else {
-        // First check whether it is set to collection
-        valid = values.deliveryType === 'collection'
-            // Check that verified address has been set
-            || (values.verifiedAddress !== ''
-            // And check that the address is equal to the verified address
-            && values.verifiedAddress === values.address
-            // And check that the deliverable flag is set
-            && values.deliverable);
+        // Check that verified address has been set
+        valid = values.verifiedAddress !== ''
+             // And check that the address is equal to the verified address
+             && values.verifiedAddress === values.address
+             // And check that the deliverable flag is set
+             && values.deliverable;
       }
       break;
     }
@@ -51,7 +49,7 @@ export function validate(values, validationType, prevState) {
       valid = false;
   }
 
-  return [valid, { [validationType]: valid }];
+  return valid;
 }
 
 export function validateAll(values, valid) {
