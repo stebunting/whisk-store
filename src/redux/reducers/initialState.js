@@ -22,5 +22,6 @@ export default {
     name: '',
     email: '',
     telephone: ''
-  }
+  },
+  apiCallsInProgress: 0
 };

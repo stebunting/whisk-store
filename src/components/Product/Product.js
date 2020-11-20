@@ -9,6 +9,7 @@ import { loadBasket, updateBasket } from '../../redux/actions/basketActions';
 import { priceFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import QuantityDropdown from '../Basket/QuantityDropdown';
+import Loading from '../Loading/Loading';
 import css from './product.module.less';
 
 function Product({
@@ -20,11 +21,17 @@ function Product({
   updateBasketAction
 }) {
   // Set Page Details
-  const metadata = useHeaders({
-    header: product.name,
-    title: `Whisk Store | ${product.name}`,
-    description: `${product.name} // ${product.description}`
-  });
+  const headerPayload = products.length > 0
+    ? {
+      header: product.name,
+      title: `Whisk Store | ${product.name}`,
+      description: `${product.name} // ${product.description}`
+    } : {
+      header: 'Product',
+      title: 'Whisk Store',
+      description: 'Whisk Store'
+    }
+  const metadata = useHeaders(headerPayload);
 
   const history = useHistory();
   useEffect(() => {
@@ -47,7 +54,7 @@ function Product({
     history.push('/basket');
   }
 
-  return (
+  return products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
       <ul className={css.productImages}>

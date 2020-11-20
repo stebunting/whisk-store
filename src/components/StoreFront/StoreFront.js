@@ -7,6 +7,7 @@ import useHeaders from '../../hooks/useHeaders';
 import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket } from '../../redux/actions/basketActions';
 import { productType } from '../../functions/types';
+import Loading from '../Loading/Loading';
 import css from './storeFront.module.less';
 
 function StoreFront({
@@ -27,7 +28,7 @@ function StoreFront({
   }, [loadProductsAction, products.length]);
   useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
-  return (
+  return products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
       <ul className={css.productList}>

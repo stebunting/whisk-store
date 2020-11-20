@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import * as actions from '../../functions/apiCalls';
+import { beginApiCall } from './apiStatusActions';
 
 export function loadBasketSuccess(basket) {
   return {
@@ -38,12 +39,14 @@ export function resetBasketSuccess(basket) {
 
 export function loadBasket() {
   return function thunkLoadBasket(dispatch) {
+    dispatch(beginApiCall());
     return actions.getBasket().then((data) => dispatch(loadBasketSuccess(data)));
   };
 }
 
 export function updateBasket(productId, quantity) {
   return function thunkUpdateBasket(dispatch) {
+    dispatch(beginApiCall());
     return actions.updateBasketApi(productId, quantity).then((data) => (
       dispatch(updateBasketSuccess(data))
     ));
@@ -52,6 +55,7 @@ export function updateBasket(productId, quantity) {
 
 export function updateBasketZoneApi(productId, zone) {
   return function thunkUpdateBasketZone(dispatch) {
+    dispatch(beginApiCall());
     return actions.updateBasketZoneApi(productId, zone).then((data) => (
       dispatch(updateBasketZoneSuccess(data))
     ));
@@ -60,6 +64,7 @@ export function updateBasketZoneApi(productId, zone) {
 
 export function removeItemFromBasket(productId) {
   return function thunkRemoveItemFromBasket(dispatch) {
+    dispatch(beginApiCall());
     return actions.removeItemFromBasketApi(productId).then((data) => (
       dispatch(removeItemFromBasketSuccess(data))
     ));
@@ -68,6 +73,7 @@ export function removeItemFromBasket(productId) {
 
 export function resetBasket() {
   return function thunkResetBasket(dispatch) {
+    dispatch(beginApiCall());
     return actions.resetBasket().then((data) => dispatch(resetBasketSuccess(data)));
   };
 }

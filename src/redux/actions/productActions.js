@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import { getProducts } from '../../functions/apiCalls';
+import { beginApiCall } from './apiStatusActions';
 
 export function loadProductsSuccess(products) {
   return {
@@ -10,6 +11,7 @@ export function loadProductsSuccess(products) {
 
 export function loadProducts() {
   return function thunkLoadProducts(dispatch) {
+    dispatch(beginApiCall());
     return getProducts().then((data) => dispatch(loadProductsSuccess(data)));
   };
 }

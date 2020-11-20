@@ -9,6 +9,7 @@ import { basketType } from '../../functions/types';
 import { priceFormat } from '../../functions/helpers';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import QuantityDropdown from './QuantityDropdown';
+import Loading from '../Loading/Loading';
 import css from './basket.module.less';
 
 function Basket({ basket, actions }) {
@@ -24,7 +25,6 @@ function Basket({ basket, actions }) {
   const basketContent = basket.items.length > 0
     ? (
       <>
-        {metadata}
         {basket.items.map((item) => (
           <tr key={item.productId}>
             <td className={css.tableCell}>
@@ -92,8 +92,9 @@ function Basket({ basket, actions }) {
       </tr>
     );
 
-  return (
+  return !basket.basketId ? <Loading>{metadata}</Loading> : (
     <>
+      {metadata}
       <table className="table table-striped">
         <thead>
           <tr>
