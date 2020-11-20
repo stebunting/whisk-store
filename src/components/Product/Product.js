@@ -17,8 +17,8 @@ function Product({
   basket,
   actions
 }) {
-  useTitle(product.name);
   const history = useHistory();
+  useTitle(product.name);
   useEffect(() => {
     if (products.length === 0) {
       actions.loadProducts();
@@ -26,10 +26,7 @@ function Product({
       history.push('/');
     }
   }, [actions, products.length, product.productId, history]);
-
-  useEffect(() => {
-    if (!basket.basketId) actions.loadBasket();
-  }, [actions, basket]);
+  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
 
   const [quantity, setQuantity] = useState(1);
 

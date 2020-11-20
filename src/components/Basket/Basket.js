@@ -12,10 +12,8 @@ import { basketType } from '../../functions/types';
 import css from './basket.module.less';
 
 function Basket({ basket, actions }) {
-  useTitle('Basket');
-  useEffect(() => {
-    if (!basket.basketId) actions.loadBasket();
-  }, [actions, basket]);
+  useTitle(`Basket ${basket.basketId}`);
+  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
 
   const basketContent = basket.items.length > 0
     ? (
@@ -110,7 +108,6 @@ Basket.propTypes = {
   basket: basketType.isRequired,
   actions: PropTypes.shape({
     loadBasket: PropTypes.func.isRequired,
-    resetBasket: PropTypes.func.isRequired,
     updateBasket: PropTypes.func.isRequired,
     removeItemFromBasket: PropTypes.func.isRequired
   }).isRequired
@@ -126,7 +123,6 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: {
       loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
-      resetBasket: bindActionCreators(basketActions.resetBasket, dispatch),
       updateBasket: bindActionCreators(basketActions.updateBasket, dispatch),
       removeItemFromBasket: bindActionCreators(basketActions.removeItemFromBasket, dispatch)
     }

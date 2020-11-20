@@ -57,6 +57,7 @@ export function resetBasket() {
 // Update basket in backend, returns new basket
 export function updateBasketApi(productId, quantity) {
   const basketId = cookies.get(cookieName);
+  console.log(basketId);
   return new Promise((resolve, reject) => {
     fetch(`${process.env.API_URL}/api/basket/update/quantity/${basketId}`, {
       method: 'put',
@@ -64,7 +65,10 @@ export function updateBasketApi(productId, quantity) {
       body: JSON.stringify({ productId, quantity })
     }).then((response) => response.json())
       .then((data) => {
-        if (data.status === 'ok') resolve(data.basket);
+        if (data.status === 'ok') {
+          cookies.set(cookieName, data.basket.basketId, { path: '/' });
+          resolve(data.basket);
+        }
         reject(new Error());
       }).catch((error) => reject(error));
   });

@@ -4,8 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import useAutoComplete from '../../hooks/useAutoComplete';
-import useScript from '../../hooks/useScript';
-import { initialiseBoundaries, getZone } from '../../functions/boundaries';
+import { getZone } from '../../functions/boundaries';
 import { validate, validateAll } from '../../functions/validate';
 import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import DeliverySelector from './DeliverySelector/DeliverySelector';
@@ -18,12 +17,6 @@ import { basketType } from '../../functions/types';
 
 function CheckoutForm({ basket, actions }) {
   const history = useHistory();
-
-  // Load google maps script, initialise boundaries onLoad
-  window.googleMapsLoaded = useScript(
-    `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
-    initialiseBoundaries
-  );
 
   // Initialise form state
   const [formDetails, setFormDetails] = useState({

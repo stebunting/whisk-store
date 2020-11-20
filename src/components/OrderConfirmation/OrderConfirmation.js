@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import useTitle from '../../hooks/useTitle';
+import { resetBasket } from '../../redux/actions/basketActions';
 
-function OrderConfirmation() {
+function OrderConfirmation({ actions }) {
+  useTitle('ORDER CONFIRMATION');
   const history = useHistory();
   const { location } = history;
   const paymentMethod = location.state != null
     ? location.state.paymentMethod
     : '';
+
+  useEffect(() => actions.resetBasket());
 
   let message;
   switch (paymentMethod) {
@@ -27,5 +35,18 @@ function OrderConfirmation() {
     <div>{message}</div>
   );
 }
+OrderConfirmation.propTypes = {
+  actions: PropTypes.shape({
+    resetBasket: PropTypes.func.isRequired
+  }).isRequired
+};
 
-export default OrderConfirmation;
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: {
+      resetBasket: bindActionCreators(resetBasket, dispatch)
+    }
+  };
+}
+
+export default connect(null, mapDispatchToProps)(OrderConfirmation);

@@ -9,5 +9,18 @@ export default {
       }
     }
   },
-  products: []
+  products: [],
+  user: {
+    deliveryType: 'collection',
+    paymentMethod: 'swish',
+    date: 'undefined',
+    address: '',
+    verifiedAddress: null,
+    zone: -1,
+    deliverable: false,
+    deliveryNotes: '',
+    name: '',
+    email: '',
+    telephone: ''
+  }
 };

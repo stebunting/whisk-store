@@ -7,14 +7,14 @@ import useTitle from '../../hooks/useTitle';
 import * as productActions from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
 import { productType } from '../../functions/types';
-import css from './productList.module.less';
+import css from './storeFront.module.less';
 
-function ProductList({ products, basket, actions }) {
+function StoreFront({ products, basket, actions }) {
   useTitle('Store');
   useEffect(() => {
     if (products.length === 0) actions.loadProducts();
-    if (!basket.basketId) actions.loadBasket();
-  }, [actions, products.length, basket]);
+  }, [actions, products.length]);
+  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
 
   return (
     <ul className={css.productList}>
@@ -38,7 +38,7 @@ function ProductList({ products, basket, actions }) {
     </ul>
   );
 }
-ProductList.propTypes = {
+StoreFront.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   basket: PropTypes.shape({
     basketId: PropTypes.string
@@ -65,4 +65,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductList);
+export default connect(mapStateToProps, mapDispatchToProps)(StoreFront);
