@@ -1,23 +1,30 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import useTitle from '../../hooks/useTitle';
-import { priceFormat } from '../../functions/helpers';
+import useHeaders from '../../hooks/useHeaders';
 import * as basketActions from '../../redux/actions/basketActions';
+import { basketType } from '../../functions/types';
+import { priceFormat } from '../../functions/helpers';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import QuantityDropdown from './QuantityDropdown';
-import { basketType } from '../../functions/types';
 import css from './basket.module.less';
 
 function Basket({ basket, actions }) {
-  useTitle(`Basket ${basket.basketId}`);
+  // Set Page Details
+  const metadata = useHeaders({
+    header: 'Basket',
+    title: 'Whisk Store | Basket',
+    description: 'Whisk Basket'
+  });
+
   useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
 
   const basketContent = basket.items.length > 0
     ? (
       <>
+        {metadata}
         {basket.items.map((item) => (
           <tr key={item.productId}>
             <td className={css.tableCell}>

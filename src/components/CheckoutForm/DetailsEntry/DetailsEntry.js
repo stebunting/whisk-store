@@ -18,8 +18,8 @@ function DetailsEntry({
 
       <TextInput
         id="name"
-        label="Name"
-        placeholder="Name"
+        label="Full Name"
+        placeholder="Full Name"
         value={name}
         valid={validName}
         handleChange={handleChange}

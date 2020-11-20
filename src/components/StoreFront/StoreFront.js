@@ -1,41 +1,55 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import useTitle from '../../hooks/useTitle';
-import * as productActions from '../../redux/actions/productActions';
-import * as basketActions from '../../redux/actions/basketActions';
+import { connect } from 'react-redux';
+import useHeaders from '../../hooks/useHeaders';
+import { loadProducts } from '../../redux/actions/productActions';
+import { loadBasket } from '../../redux/actions/basketActions';
 import { productType } from '../../functions/types';
 import css from './storeFront.module.less';
 
-function StoreFront({ products, basket, actions }) {
-  useTitle('Store');
+function StoreFront({
+  products,
+  basket,
+  loadProductsAction,
+  loadBasketAction
+}) {
+  // Set Page Details
+  const metadata = useHeaders({
+    header: 'Store',
+    title: 'Whisk Store',
+    description: 'Whisk Store Front'
+  });
+
   useEffect(() => {
-    if (products.length === 0) actions.loadProducts();
-  }, [actions, products.length]);
-  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
+    if (products.length === 0) loadProductsAction();
+  }, [loadProductsAction, products.length]);
+  useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
   return (
-    <ul className={css.productList}>
-      {products.map((product) => (
-        <li
-          className={css.productItem}
-          key={product.productId}
-        >
-          <Link to={`/product/${product.productId}`}>
-            <img
-              className={css.productImage}
-              src={`/store/images/${product.images[0].url}`}
-              alt={product.name}
-            />
-          </Link>
-          <Link to={`/product/${product.productId}`}>
-            {product.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <>
+      {metadata}
+      <ul className={css.productList}>
+        {products.map((product) => (
+          <li
+            className={css.productItem}
+            key={product.productId}
+          >
+            <Link to={`/product/${product.productId}`}>
+              <img
+                className={css.productImage}
+                src={`/store/images/${product.images[0].url}`}
+                alt={product.name}
+              />
+            </Link>
+            <Link to={`/product/${product.productId}`}>
+              {product.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 StoreFront.propTypes = {
@@ -43,25 +57,18 @@ StoreFront.propTypes = {
   basket: PropTypes.shape({
     basketId: PropTypes.string
   }).isRequired,
-  actions: PropTypes.shape({
-    loadProducts: PropTypes.func.isRequired,
-    loadBasket: PropTypes.func.isRequired
-  }).isRequired
+  loadProductsAction: PropTypes.func.isRequired,
+  loadBasketAction: PropTypes.func.isRequired
 };
 
 function mapStateToProps({ products, basket }) {
-  return {
-    products,
-    basket
-  };
+  return { products, basket };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: {
-      loadProducts: bindActionCreators(productActions.loadProducts, dispatch),
-      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch)
-    }
+    loadProductsAction: bindActionCreators(loadProducts, dispatch),
+    loadBasketAction: bindActionCreators(loadBasket, dispatch)
   };
 }
 

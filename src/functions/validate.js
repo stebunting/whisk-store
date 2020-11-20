@@ -61,7 +61,7 @@ export function validateAll(values, valid) {
   Object.keys(valid).forEach((element) => {
     const [validity, validObject] = validate(values, element, true);
     allValidated = { ...allValidated, ...validObject };
-    allValid = allValid && validity;
+    allValid = allValid && (validity === true || validity === null);
   });
 
   return [allValid, allValidated];

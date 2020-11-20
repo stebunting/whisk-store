@@ -1,20 +1,26 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import useTitle from '../../hooks/useTitle';
+import { bindActionCreators } from 'redux';
+import useHeaders from '../../hooks/useHeaders';
 import { resetBasket } from '../../redux/actions/basketActions';
 
-function OrderConfirmation({ actions }) {
-  useTitle('ORDER CONFIRMATION');
+function OrderConfirmation({ resetBasketAction }) {
+  // Set Page Details
+  const metadata = useHeaders({
+    header: 'Order Confirmation',
+    title: 'Whisk Store | Order Confirmation',
+    description: 'Order Confirmation from Whisk Store'
+  });
+
   const history = useHistory();
   const { location } = history;
   const paymentMethod = location.state != null
     ? location.state.paymentMethod
     : '';
 
-  useEffect(() => actions.resetBasket());
+  useEffect(() => resetBasketAction());
 
   let message;
   switch (paymentMethod) {
@@ -32,20 +38,19 @@ function OrderConfirmation({ actions }) {
   }
 
   return (
-    <div>{message}</div>
+    <>
+      {metadata}
+      <div>{message}</div>
+    </>
   );
 }
 OrderConfirmation.propTypes = {
-  actions: PropTypes.shape({
-    resetBasket: PropTypes.func.isRequired
-  }).isRequired
+  resetBasketAction: PropTypes.func.isRequired
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: {
-      resetBasket: bindActionCreators(resetBasket, dispatch)
-    }
+    resetBasketAction: bindActionCreators(resetBasket, dispatch)
   };
 }
 

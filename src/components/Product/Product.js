@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import useTitle from '../../hooks/useTitle';
-import * as productActions from '../../redux/actions/productActions';
-import * as basketActions from '../../redux/actions/basketActions';
+import useHeaders from '../../hooks/useHeaders';
+import { loadProducts } from '../../redux/actions/productActions';
+import { loadBasket, updateBasket } from '../../redux/actions/basketActions';
 import { priceFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import QuantityDropdown from '../Basket/QuantityDropdown';
@@ -15,18 +15,23 @@ function Product({
   products,
   product,
   basket,
-  actions
+  loadProductsAction,
+  loadBasketAction,
+  updateBasketAction
 }) {
+  // Set Page Details
+  const metadata = useHeaders({
+    header: product.name,
+    title: `Whisk Store | ${product.name}`,
+    description: `${product.name} // ${product.description}`
+  });
+
   const history = useHistory();
-  useTitle(product.name);
   useEffect(() => {
-    if (products.length === 0) {
-      actions.loadProducts();
-    } else if (product.productId === '') {
-      history.push('/');
-    }
-  }, [actions, products.length, product.productId, history]);
-  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
+    if (products.length === 0) loadProductsAction();
+    else if (product.productId === '') history.push('/');
+  }, [loadProductsAction, products.length, product.productId, history]);
+  useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -37,13 +42,14 @@ function Product({
     : 0;
 
   function handleClick() {
-    actions.updateBasket(product.productId, quantityInBasket + quantity);
+    updateBasketAction(product.productId, quantityInBasket + quantity);
     setQuantity(1);
     history.push('/basket');
   }
 
   return (
     <>
+      {metadata}
       <ul className={css.productImages}>
         {product.images.map((image) => (
           <li key={image.url}>
@@ -89,11 +95,9 @@ Product.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   product: productType.isRequired,
   basket: basketType.isRequired,
-  actions: PropTypes.shape({
-    loadProducts: PropTypes.func.isRequired,
-    loadBasket: PropTypes.func.isRequired,
-    updateBasket: PropTypes.func.isRequired
-  }).isRequired
+  loadProductsAction: PropTypes.func.isRequired,
+  loadBasketAction: PropTypes.func.isRequired,
+  updateBasketAction: PropTypes.func.isRequired
 };
 
 function mapStateToProps({ products, basket }, ownProps) {
@@ -109,20 +113,14 @@ function mapStateToProps({ products, basket }, ownProps) {
   const filteredProducts = products.filter((product) => product.productId === productId);
   const product = filteredProducts.length < 1 ? defaultProduct : filteredProducts[0];
 
-  return {
-    products,
-    product,
-    basket
-  };
+  return { products, product, basket };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: {
-      loadProducts: bindActionCreators(productActions.loadProducts, dispatch),
-      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
-      updateBasket: bindActionCreators(basketActions.updateBasket, dispatch)
-    }
+    loadProductsAction: bindActionCreators(loadProducts, dispatch),
+    loadBasketAction: bindActionCreators(loadBasket, dispatch),
+    updateBasketAction: bindActionCreators(updateBasket, dispatch)
   };
 }
 
