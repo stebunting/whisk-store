@@ -28,7 +28,11 @@ export function rangeFormat(range) {
     .year(range.year)
     .week(range.week)
     .day(range.day)
+<<<<<<< HEAD
     .format('gdddd D MMMM');
+=======
+    .format('dddd D MMMM');
+>>>>>>> ee2dffc27f86affd117e638032b127d89b6bfd58
 
   return `${date} (${range.time.start} - ${range.time.end})`;
 }
