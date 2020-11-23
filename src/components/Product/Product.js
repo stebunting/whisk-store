@@ -8,7 +8,7 @@ import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket, updateBasket } from '../../redux/actions/basketActions';
 import { priceFormat, rangeFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
-import QuantityDropdown from '../Basket/QuantityDropdown';
+import QuantityDropdown from '../Inputs/QuantityDropdown';
 import Loading from '../Loading/Loading';
 import RadioInline from '../Inputs/RadioInline';
 import Select from '../Inputs/Select';
@@ -48,12 +48,21 @@ function Product({
     deliveryDate: ''
   });
 
+  const basketItem = basket.items.filter((item) => (
+    item.productId === product.productId
+    && item.deliveryType === basketPayload.deliveryType
+    && item.deliveryDate === basketPayload.deliveryDate
+  ));
+  const quantityInBasket = basketItem.length > 0
+    ? basketItem[0].quantity
+    : 0;
+
   function handleClick() {
     if (basketPayload.deliveryDate === '') return;
     updateBasketAction({
       ...basketPayload,
       productId: product.productId,
-      quantity: parseInt(basketPayload.quantity, 10)
+      quantity: parseInt(basketPayload.quantity, 10) + quantityInBasket
     });
     setBasketPayload({ ...basketPayload, quantity: '1' });
     history.push('/basket');

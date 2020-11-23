@@ -17,10 +17,6 @@ function AddressEntry({
   basket,
   actions
 }) {
-  // const history = useHistory();
-  // const [orderStatus, setOrderStatus] = useState('');
-  // const [errors, setErrors] = useState([]);
-
   // Set up Google Autocomplete
   const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
   useEffect(() => {
@@ -35,17 +31,13 @@ function AddressEntry({
     actions.updateValidityAction(
       'address',
       validate({
-        deliverable: true,
+        deliverable: basket.delivery.deliverable,
         address: formattedAddress,
         verifiedAddress: formattedAddress,
         zone
       }, 'address', validAddress)
     );
   }, [autoCompleteResult, actions, validAddress, basket.delivery.deliverable]);
-
-  // useEffect(() => {
-  //   actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
-  // }, [actions, basket]);
 
   // Set state on form input
   const handleChange = (event) => {

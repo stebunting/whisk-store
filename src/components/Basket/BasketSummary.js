@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import useHeaders from '../../hooks/useHeaders';
 import { priceFormat, rangeFormat, capitaliseFirst } from '../../functions/helpers';
 import { basketType } from '../../functions/types';
-import QuantityDropdown from './QuantityDropdown';
+import QuantityDropdown from '../Inputs/QuantityDropdown';
 import Loading from '../Loading/Loading';
 import css from './basket.module.less';
 
-function BasketSummary({ basket }) {
+function BasketSummary({ basket, handleChange }) {
   // Set Page Details
   const metadata = useHeaders({
     header: 'Basket',
@@ -29,17 +30,15 @@ function BasketSummary({ basket }) {
               </div>
             </td>
             <td className={css.tableCell}>
-              {item.quantity}
-              {/* <div className="form-row">
+              <div className="form-row">
                 <div className="col-xs">
                   <QuantityDropdown
                     strValue={`${item.quantity}`}
-                    name={`update-${item.productId}`}
-                    handleChange={(event) => actions
-                      .updateBasket(item.productId, event.target.value)}
+                    name={`update|${item.productId}|${item.deliveryType}|${item.deliveryDate}`}
+                    handleChange={handleChange}
                   />
                 </div>
-                <div className="col-sm-auto">
+                {/* <div className="col-sm-auto">
                   <button
                     className="btn btn-link form-control"
                     type="button"
@@ -47,8 +46,8 @@ function BasketSummary({ basket }) {
                   >
                     <img src="/icons/delete.svg" alt="Remove item from basket" />
                   </button>
-                </div>
-              </div> */}
+                </div> */}
+              </div>
             </td>
             <td className={css.tableCellAmount}>{priceFormat(item.details.grossPrice)}</td>
             <td className={css.tableCellAmount}>{priceFormat(item.linePrice)}</td>
@@ -124,7 +123,8 @@ function BasketSummary({ basket }) {
   );
 }
 BasketSummary.propTypes = {
-  basket: basketType.isRequired
+  basket: basketType.isRequired,
+  handleChange: PropTypes.func.isRequired
 };
 
 export default BasketSummary;

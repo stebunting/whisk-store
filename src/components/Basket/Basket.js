@@ -23,14 +23,26 @@ function Basket({
   useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
 
   // Add reference to product details to basket item
+  // eslint-disable-next-line no-param-reassign
   basket.items = basket.items.map((item) => ({
     ...item,
     details: products.filter((product) => product.productId === item.productId)[0]
   }));
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    const [, productId, deliveryType, deliveryDate] = name.split('|');
+    actions.updateBasket({
+      productId,
+      quantity: parseInt(value, 10),
+      deliveryType,
+      deliveryDate
+    });
+  };
+
   return (
     <>
-      <BasketSummary basket={basket} />
+      <BasketSummary basket={basket} handleChange={handleChange} />
       {basket.items.length > 0 && <AddressEntry />}
       {validity.address && <DetailsEntry />}
       {validity.address && validity.name && validity.email && validity.telephone && (
