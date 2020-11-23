@@ -8,7 +8,6 @@ function AddressDropdown({
   placeholder,
   value,
   valid,
-  delivery,
   autoCompleteRef,
   handleChange,
   handleBlur
@@ -45,12 +44,6 @@ AddressDropdown.propTypes = {
   placeholder: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   valid: PropTypes.bool,
-  delivery: PropTypes.shape({
-    zone: PropTypes.number.isRequired,
-    price: PropTypes.number,
-    momsRate: PropTypes.number,
-    deliverable: PropTypes.bool
-  }).isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
     PropTypes.func

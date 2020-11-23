@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function QuantityDropdown({ defaultValue, name, handleChange }) {
-  const NUM_ITEMS = defaultValue > 20 ? defaultValue : 20;
+function QuantityDropdown({ strValue, name, handleChange }) {
+  const value = parseInt(strValue, 10);
+  const NUM_ITEMS = value > 20 ? value : 20;
   return (
     <select
       className="form-control"
       name={name}
       id={name}
-      value={defaultValue}
+      value={value}
       onChange={handleChange}
     >
       {new Array(NUM_ITEMS).fill().map((item, index) => (
@@ -23,7 +24,7 @@ function QuantityDropdown({ defaultValue, name, handleChange }) {
   );
 }
 QuantityDropdown.propTypes = {
-  defaultValue: PropTypes.number.isRequired,
+  strValue: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   handleChange: PropTypes.func.isRequired
 };

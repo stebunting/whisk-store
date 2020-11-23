@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextInput from '../Inputs/TextInput';
 
-function DetailsEntry({
+function RenderDetailsEntry({
   name,
   validName,
   email,
@@ -46,7 +46,7 @@ function DetailsEntry({
     </fieldset>
   );
 }
-DetailsEntry.propTypes = {
+RenderDetailsEntry.propTypes = {
   name: PropTypes.string.isRequired,
   validName: PropTypes.bool,
   email: PropTypes.string.isRequired,
@@ -56,10 +56,10 @@ DetailsEntry.propTypes = {
   handleChange: PropTypes.func.isRequired,
   handleBlur: PropTypes.func.isRequired
 };
-DetailsEntry.defaultProps = {
+RenderDetailsEntry.defaultProps = {
   validName: null,
   validEmail: null,
   validTelephone: null
 };
 
-export default DetailsEntry;
+export default RenderDetailsEntry;

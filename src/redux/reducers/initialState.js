@@ -11,9 +11,6 @@ export default {
   },
   products: [],
   user: {
-    deliveryType: 'collection',
-    paymentMethod: 'swish',
-    date: 'undefined',
     address: '',
     verifiedAddress: null,
     zone: -1,
@@ -21,10 +18,10 @@ export default {
     deliveryNotes: '',
     name: '',
     email: '',
-    telephone: ''
+    telephone: '',
+    paymentMethod: 'swish'
   },
   validity: {
-    date: null,
     address: null,
     name: null,
     email: null,

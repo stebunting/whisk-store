@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TextInput from '../Inputs/TextInput';
 import AddressDropdown from '../Inputs/AddressDropdown';
 
-function DeliveryEntry({
+function RenderAddressEntry({
   address,
   validAddress,
   deliveryNotes,
@@ -36,7 +36,7 @@ function DeliveryEntry({
     </div>
   );
 }
-DeliveryEntry.propTypes = {
+RenderAddressEntry.propTypes = {
   address: PropTypes.string.isRequired,
   validAddress: PropTypes.bool,
   deliveryNotes: PropTypes.string.isRequired,
@@ -47,8 +47,8 @@ DeliveryEntry.propTypes = {
   handleChange: PropTypes.func.isRequired,
   handleBlur: PropTypes.func.isRequired
 };
-DeliveryEntry.defaultProps = {
+RenderAddressEntry.defaultProps = {
   validAddress: null
 };
 
-export default DeliveryEntry;
+export default RenderAddressEntry;

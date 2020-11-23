@@ -44,10 +44,10 @@ export function loadBasket() {
   };
 }
 
-export function updateBasket(productId, quantity) {
+export function updateBasket(payload) {
   return function thunkUpdateBasket(dispatch) {
     dispatch(beginApiCall());
-    return actions.updateBasketApi(productId, quantity).then((data) => (
+    return actions.updateBasketApi(payload).then((data) => (
       dispatch(updateBasketSuccess(data))
     ));
   };

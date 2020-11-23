@@ -22,17 +22,32 @@ export function priceFormat(num, userOptions = {}) {
   return str;
 }
 
+function parseDateCode(code) {
+  const [year, week, day, start, end] = code.split('-');
+  return {
+    year,
+    week,
+    day,
+    time: { start, end }
+  };
+}
+
 // Format date/time range
-export function rangeFormat(range) {
+export function rangeFormat(data, options = {}) {
+  const range = options.code === true
+    ? parseDateCode(data)
+    : data;
   const date = dayjs({})
     .year(range.year)
     .week(range.week)
     .day(range.day)
-<<<<<<< HEAD
-    .format('gdddd D MMMM');
-=======
     .format('dddd D MMMM');
->>>>>>> ee2dffc27f86affd117e638032b127d89b6bfd58
 
-  return `${date} (${range.time.start} - ${range.time.end})`;
+  return options.times === false
+    ? date
+    : `${date} (${range.time.start} - ${range.time.end})`;
+}
+
+export function capitaliseFirst(word) {
+  return `${word.charAt(0).toUpperCase()}${word.substring(1).toLowerCase()}`;
 }

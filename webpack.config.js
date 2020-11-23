@@ -70,7 +70,7 @@ module.exports = {
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
-      openAnalyzer: true
+      openAnalyzer: false
     })
   ]
 };

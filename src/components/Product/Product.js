@@ -6,10 +6,12 @@ import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket, updateBasket } from '../../redux/actions/basketActions';
-import { priceFormat } from '../../functions/helpers';
+import { priceFormat, rangeFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import QuantityDropdown from '../Basket/QuantityDropdown';
 import Loading from '../Loading/Loading';
+import RadioInline from '../Inputs/RadioInline';
+import Select from '../Inputs/Select';
 import css from './product.module.less';
 
 function Product({
@@ -30,7 +32,7 @@ function Product({
       header: 'Product',
       title: 'Whisk Store',
       description: 'Whisk Store'
-    }
+    };
   const metadata = useHeaders(headerPayload);
 
   const history = useHistory();
@@ -40,18 +42,33 @@ function Product({
   }, [loadProductsAction, products.length, product.productId, history]);
   useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
-  const [quantity, setQuantity] = useState(1);
-
-  const basketItem = basket.items
-    .filter((item) => item.productId === product.productId);
-  const quantityInBasket = basketItem.length > 0
-    ? basketItem[0].quantity
-    : 0;
+  const [basketPayload, setBasketPayload] = useState({
+    quantity: '1',
+    deliveryType: 'collection',
+    deliveryDate: ''
+  });
 
   function handleClick() {
-    updateBasketAction(product.productId, quantityInBasket + quantity);
-    setQuantity(1);
+    if (basketPayload.deliveryDate === '') return;
+    updateBasketAction({
+      ...basketPayload,
+      productId: product.productId,
+      quantity: parseInt(basketPayload.quantity, 10)
+    });
+    setBasketPayload({ ...basketPayload, quantity: '1' });
     history.push('/basket');
+  }
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setBasketPayload((prevState) => {
+      const retValue = {
+        ...prevState,
+        [name]: value
+      };
+      if (name === 'deliveryType') retValue.deliveryDate = '';
+      return retValue;
+    });
   }
 
   return products.length === 0 ? <Loading>{metadata}</Loading> : (
@@ -73,15 +90,38 @@ function Product({
         {product.description}
       </div>
 
-      <p>{priceFormat(product.grossPrice)}</p>
-
       <form id="update-basket">
+        <RadioInline
+          name="deliveryType"
+          label="Collection"
+          value="collection"
+          checked={basketPayload.deliveryType === 'collection'}
+          handleClick={handleChange}
+        />
+        <RadioInline
+          name="deliveryType"
+          label="Delivery"
+          value="delivery"
+          checked={basketPayload.deliveryType === 'delivery'}
+          handleClick={handleChange}
+        />
+        <Select
+          name="deliveryDate"
+          defaultText={`Select a ${basketPayload.deliveryType} option...`}
+          options={product[basketPayload.deliveryType].dates.map((range) => ({
+            value: `${range.year}-${range.week}-${range.day}-${range.time.start}-${range.time.end}`,
+            text: rangeFormat(range)
+          }))}
+          value={basketPayload.deliveryDate}
+          handleChange={handleChange}
+        />
+        <div>{priceFormat(product.grossPrice)}</div>
         <div className="form-row">
           <div className="col-sm-2">
             <QuantityDropdown
-              defaultValue={quantity}
-              name="updateQuantity"
-              handleChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+              strValue={basketPayload.quantity}
+              name="quantity"
+              handleChange={handleChange}
             />
           </div>
           <div className="col-sm-auto">
@@ -115,6 +155,12 @@ function mapStateToProps({ products, basket }, ownProps) {
     name: '',
     description: '',
     images: [],
+    delivery: {
+      dates: []
+    },
+    collection: {
+      dates: []
+    },
     grossPrice: 0
   };
   const filteredProducts = products.filter((product) => product.productId === productId);
