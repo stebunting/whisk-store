@@ -37,6 +37,13 @@ export function resetBasketSuccess(basket) {
   };
 }
 
+export function appendProductsToBasket(basketItems) {
+  return {
+    type: types.APPEND_PRODUCTS_TO_BASKET,
+    basketItems
+  };
+}
+
 export function loadBasket() {
   return function thunkLoadBasket(dispatch) {
     dispatch(beginApiCall());

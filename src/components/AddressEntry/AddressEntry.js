@@ -41,6 +41,7 @@ function AddressEntry({
 
   useEffect(() => {
     actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
+    actions.updateUserAction('allCollections', basket.delivery && basket.delivery.allCollections);
   }, [actions, basket.delivery]);
 
   // Set state on form input
@@ -55,17 +56,21 @@ function AddressEntry({
     actions.updateValidityAction(name, validate(user, name));
   };
 
-  return (
-    <RenderAddressEntry
-      address={user.address}
-      validAddress={validAddress}
-      zone={user.zone}
-      deliveryNotes={user.deliveryNotes}
-      autoCompleteRef={autoCompleteRef}
-      handleChange={handleChange}
-      handleBlur={handleBlur}
-    />
-  );
+  return (basket.delivery
+    && basket.delivery.details
+    && Object.keys(basket.delivery.details).length > 0
+    && window.googleMapsLoaded
+    && (
+      <RenderAddressEntry
+        address={user.address}
+        validAddress={validAddress}
+        deliverable={user.deliverable}
+        deliveryNotes={user.deliveryNotes}
+        autoCompleteRef={autoCompleteRef}
+        handleChange={handleChange}
+        handleBlur={handleBlur}
+      />
+    )) || null;
 }
 AddressEntry.propTypes = {
   user: userType.isRequired,

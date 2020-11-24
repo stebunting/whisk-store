@@ -8,6 +8,7 @@ import DeliveryZonesButton from './DeliveryZonesButton';
 function RenderAddressEntry({
   address,
   validAddress,
+  deliverable,
   deliveryNotes,
   autoCompleteRef,
   handleChange,
@@ -25,6 +26,7 @@ function RenderAddressEntry({
           placeholder="Address"
           value={address}
           valid={validAddress}
+          deliverable={deliverable}
           autoCompleteRef={autoCompleteRef}
           handleChange={handleChange}
           handleBlur={handleBlur}
@@ -50,6 +52,7 @@ function RenderAddressEntry({
 RenderAddressEntry.propTypes = {
   address: PropTypes.string.isRequired,
   validAddress: PropTypes.bool,
+  deliverable: PropTypes.bool.isRequired,
   deliveryNotes: PropTypes.string.isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),

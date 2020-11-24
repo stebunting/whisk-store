@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 import { loadProducts } from '../../redux/actions/productActions';
-import { loadBasket, updateBasket } from '../../redux/actions/basketActions';
+import { loadBasket, updateBasket, appendProductsToBasket } from '../../redux/actions/basketActions';
 import { priceFormat, rangeFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import QuantityDropdown from '../Inputs/QuantityDropdown';
@@ -182,7 +182,8 @@ function mapDispatchToProps(dispatch) {
   return {
     loadProductsAction: bindActionCreators(loadProducts, dispatch),
     loadBasketAction: bindActionCreators(loadBasket, dispatch),
-    updateBasketAction: bindActionCreators(updateBasket, dispatch)
+    updateBasketAction: bindActionCreators(updateBasket, dispatch),
+    appendProductToBasketAction: bindActionCreators(appendProductsToBasket, dispatch)
   };
 }
 

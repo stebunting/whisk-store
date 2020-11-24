@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -13,26 +13,51 @@ import {
   userType
 } from '../../functions/types';
 import { validateAll } from '../../functions/validate';
+import useHeaders from '../../hooks/useHeaders';
 import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import BasketSummary from './BasketSummary';
 import AddressEntry from '../AddressEntry/AddressEntry';
 import DetailsEntry from '../DetailsEntry/DetailsEntry';
 import PaymentEntry from '../PaymentEntry/PaymentEntry';
+import Loading from '../Loading/Loading';
 
 function Basket({
   user,
   products,
   basket,
   validity,
-  actions
+  loadProductsAction,
+  appendProductToBasketAction,
+  loadBasketAction,
+  updateBasketAction,
+  removeItemFromBasketAction,
+  updateValidityAllAction
 }) {
   const history = useHistory();
 
-  // Fetch products and basket if not already loaded
+  // Set Page Details
+  const metadata = useHeaders({
+    header: 'Basket',
+    title: 'Whisk Store | Basket',
+    description: 'Whisk Basket'
+  });
+
+  useEffect(() => (
+    products.length === 0 && loadProductsAction()
+  ), [loadProductsAction, products.length]);
   useEffect(() => {
-    if (products.length === 0) actions.loadProductsAction();
-  }, [actions, products.length]);
-  useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
+    if (!basket.basketId) loadBasketAction();
+  }, [loadBasketAction, basket.basketId]);
+
+  // useEffect(() => {
+  //   if (basket.basketId && products.length > 0) {
+  //     // eslint-disable-next-line no-param-reassign
+  //     appendProductToBasketAction(basket.items.map((item) => ({
+  //       ...item,
+  //       details: products.filter((product) => product.productId === item.productId)[0]
+  //     })));
+  //   }
+  // }, [appendProductToBasketAction, basket.basketId, basket.items.length, products]);
 
   // Set checkout stage, only adds stages, does not remove
   const [checkoutStage, setCheckoutStage] = useState(0);
@@ -46,13 +71,6 @@ function Basket({
     setCheckoutStage((prevState) => Math.max(prevState, stage));
   }, [basket.items.length, basket.delivery.details, validity]);
 
-  // Add reference to product details to basket item
-  // eslint-disable-next-line no-param-reassign
-  basket.items = basket.items.map((item) => ({
-    ...item,
-    details: products.filter((product) => product.productId === item.productId)[0]
-  }));
-
   // Handle update/delete items from summary
   const handleChange = (event, action, data) => {
     const { value } = event.target;
@@ -63,14 +81,14 @@ function Basket({
     };
     switch (action) {
       case 'update':
-        actions.updateBasket({
+        updateBasketAction({
           ...payload,
           quantity: parseInt(value, 10)
         });
         break;
 
       case 'remove':
-        actions.removeItemFromBasket(payload);
+        removeItemFromBasketAction(payload);
         break;
 
       default:
@@ -152,21 +170,19 @@ function Basket({
   const handleSubmit = (event) => {
     event.preventDefault();
     const [allValid, validated] = validateAll(user, validity);
-    actions.updateValidityAllAction(validated);
+    updateValidityAllAction(validated);
     if (allValid) return submitForm();
     return false;
   };
 
-  return (
+  return !basket.basketId || products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
+      {metadata}
       <BasketSummary
         basket={basket}
         handleChange={handleChange}
       />
-      {checkoutStage >= 0
-        && Object.keys(basket.delivery.details).length > 0
-        && window.googleMapsLoaded
-        && <AddressEntry />}
+      {checkoutStage >= 0 && <AddressEntry />}
       {checkoutStage >= 1 && <DetailsEntry />}
       {checkoutStage >= 2 && (
         <PaymentEntry
@@ -183,13 +199,12 @@ Basket.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   basket: basketType.isRequired,
   validity: validityType.isRequired,
-  actions: PropTypes.shape({
-    loadProductsAction: PropTypes.func.isRequired,
-    loadBasket: PropTypes.func.isRequired,
-    updateBasket: PropTypes.func.isRequired,
-    removeItemFromBasket: PropTypes.func.isRequired,
-    updateValidityAllAction: PropTypes.func.isRequired
-  }).isRequired
+  loadBasketAction: PropTypes.func.isRequired,
+  appendProductToBasketAction: PropTypes.func.isRequired,
+  loadProductsAction: PropTypes.func.isRequired,
+  updateBasketAction: PropTypes.func.isRequired,
+  removeItemFromBasketAction: PropTypes.func.isRequired,
+  updateValidityAllAction: PropTypes.func.isRequired
 };
 
 function mapStateToProps({
@@ -208,13 +223,12 @@ function mapStateToProps({
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: {
-      loadProductsAction: bindActionCreators(loadProducts, dispatch),
-      loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
-      updateBasket: bindActionCreators(basketActions.updateBasket, dispatch),
-      removeItemFromBasket: bindActionCreators(basketActions.removeItemFromBasket, dispatch),
-      updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
-    }
+    loadBasketAction: bindActionCreators(basketActions.loadBasket, dispatch),
+    appendProductToBasketAction: bindActionCreators(basketActions.appendProductsToBasket, dispatch),
+    loadProductsAction: bindActionCreators(loadProducts, dispatch),
+    updateBasketAction: bindActionCreators(basketActions.updateBasket, dispatch),
+    removeItemFromBasketAction: bindActionCreators(basketActions.removeItemFromBasket, dispatch),
+    updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
   };
 }
 

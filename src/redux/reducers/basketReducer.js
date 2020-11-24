@@ -10,6 +10,12 @@ export default function basketReducer(state = initialState.basket, action) {
     case types.RESET_BASKET_SUCCESS:
       return action.basket;
 
+    case types.APPEND_PRODUCTS_TO_BASKET:
+      return {
+        ...state,
+        items: action.basketItems
+      };
+
     default:
       return state;
   }

@@ -5,7 +5,6 @@ export default {
       address: '',
       deliverable: false,
       deliveryTotal: 0,
-      details: {},
       momsRate: 25,
       zone: -1
     },
@@ -24,6 +23,7 @@ export default {
     verifiedAddress: null,
     zone: -1,
     deliverable: false,
+    allCollections: false,
     deliveryNotes: '',
     name: '',
     email: '',

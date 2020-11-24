@@ -8,6 +8,7 @@ function AddressDropdown({
   placeholder,
   value,
   valid,
+  deliverable,
   autoCompleteRef,
   handleChange,
   handleBlur
@@ -34,6 +35,7 @@ function AddressDropdown({
           onBlur={handleBlur}
           ref={autoCompleteRef}
         />
+        {!deliverable && `* We cannot deliver to this Location *`}
       </div>
     </div>
   );
@@ -44,6 +46,7 @@ AddressDropdown.propTypes = {
   placeholder: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   valid: PropTypes.bool,
+  deliverable: PropTypes.bool.isRequired,
   autoCompleteRef: PropTypes.oneOfType([
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
     PropTypes.func

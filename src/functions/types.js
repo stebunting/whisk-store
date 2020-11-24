@@ -17,10 +17,10 @@ export const statementType = PropTypes.shape({
 export const basketType = PropTypes.shape({
   basketId: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
-    productId: PropTypes.string.isRequired,
-    quantity: PropTypes.number.isRequired,
-    deliveryDate: PropTypes.string.isRequired,
-    deliveryType: PropTypes.string.isRequired
+    productId: PropTypes.string,
+    quantity: PropTypes.number,
+    deliveryDate: PropTypes.string,
+    deliveryType: PropTypes.string
   })).isRequired,
   statement: statementType
 });
