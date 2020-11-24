@@ -35,18 +35,19 @@ function BasketSummary({ basket, handleChange }) {
                   <QuantityDropdown
                     strValue={`${item.quantity}`}
                     name={`update|${item.productId}|${item.deliveryType}|${item.deliveryDate}`}
-                    handleChange={handleChange}
+                    handleChange={(e) => handleChange(e, 'update', item)}
                   />
                 </div>
-                {/* <div className="col-sm-auto">
+                <div className="col-sm-auto">
                   <button
                     className="btn btn-link form-control"
                     type="button"
-                    onClick={() => actions.removeItemFromBasket(item.productId)}
+                    name={`remove|${item.productId}|${item.deliveryType}|${item.deliveryDate}`}
+                    onClick={(e) => handleChange(e, 'remove', item)}
                   >
                     <img src="/icons/delete.svg" alt="Remove item from basket" />
                   </button>
-                </div> */}
+                </div>
               </div>
             </td>
             <td className={css.tableCellAmount}>{priceFormat(item.details.grossPrice)}</td>

@@ -29,20 +29,36 @@ function Basket({
     details: products.filter((product) => product.productId === item.productId)[0]
   }));
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    const [, productId, deliveryType, deliveryDate] = name.split('|');
-    actions.updateBasket({
-      productId,
-      quantity: parseInt(value, 10),
-      deliveryType,
-      deliveryDate
-    });
+  const handleChange = (event, action, data) => {
+    const { value } = event.target;
+    const payload = {
+      productId: data.productId,
+      deliveryType: data.deliveryType,
+      deliveryDate: data.deliveryDate
+    };
+    switch (action) {
+      case 'update':
+        actions.updateBasket({
+          ...payload,
+          quantity: parseInt(value, 10)
+        });
+        break;
+
+      case 'remove':
+        actions.removeItemFromBasket(payload);
+        break;
+
+      default:
+        break;
+    }
   };
 
   return (
     <>
-      <BasketSummary basket={basket} handleChange={handleChange} />
+      <BasketSummary
+        basket={basket}
+        handleChange={handleChange}
+      />
       {basket.items.length > 0 && <AddressEntry />}
       {validity.address && <DetailsEntry />}
       {validity.address && validity.name && validity.email && validity.telephone && (

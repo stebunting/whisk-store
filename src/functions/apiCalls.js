@@ -90,13 +90,14 @@ export function updateBasketZoneApi(location) {
 }
 
 // Remove item from basket in backend, returns new basket
-export function removeItemFromBasketApi(productId) {
+export function removeItemFromBasketApi(payload) {
+  console.log('hi');
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
     fetch(`${process.env.API_URL}/api/basket/update/remove/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId })
+      body: JSON.stringify(payload)
     }).then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.basket);
