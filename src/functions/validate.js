@@ -27,7 +27,7 @@ export function validate(values, validationType, prevState) {
     }
 
     case 'address': {
-      if (values.deliveryType === 'collection' || (prevState === null && values.address === '')) {
+      if (prevState === null && values.address === '') {
         valid = null;
       } else {
         // Check that verified address has been set

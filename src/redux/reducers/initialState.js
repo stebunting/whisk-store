@@ -1,9 +1,18 @@
 export default {
   basket: {
     basketId: '',
+    delivery: {
+      address: '',
+      deliverable: false,
+      deliveryTotal: 0,
+      details: {},
+      momsRate: 25,
+      zone: -1
+    },
     items: [],
     statement: {
       bottomLine: {
+        totalDelivery: 0,
         totalMoms: 0,
         totalPrice: 0
       }

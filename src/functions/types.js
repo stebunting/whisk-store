@@ -30,7 +30,6 @@ export const userType = PropTypes.shape({
   address: PropTypes.string.isRequired,
   verifiedAddress: PropTypes.string,
   zone: PropTypes.number.isRequired,
-  deliverable: PropTypes.bool.isRequired,
   deliveryNotes: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,

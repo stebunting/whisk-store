@@ -10,9 +10,9 @@ import Basket from '../Basket/Basket';
 import Title from '../Title/Title';
 import OrderConfirmation from '../OrderConfirmation/OrderConfirmation';
 
-function App() {
-  const store = configureStore();
+export const store = configureStore();
 
+function App() {
   // Load google maps script, initialise boundaries onLoad
   window.googleMapsLoaded = useScript(
     `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 function RadioInline({
+  id,
   name,
-  value,
   label,
   checked,
   handleClick
@@ -17,9 +17,9 @@ function RadioInline({
         <input
           className="form-check-input"
           type="radio"
-          name={name}
-          id={name}
-          value={value}
+          id={id}
+          name={id}
+          value={name}
           checked={checked}
           onChange={handleClick}
         />
@@ -29,8 +29,8 @@ function RadioInline({
   );
 }
 RadioInline.propTypes = {
+  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   checked: PropTypes.bool.isRequired,
   handleClick: PropTypes.func.isRequired

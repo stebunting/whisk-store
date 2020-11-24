@@ -39,6 +39,10 @@ function AddressEntry({
     );
   }, [autoCompleteResult, actions, validAddress, basket.delivery.deliverable]);
 
+  useEffect(() => {
+    actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
+  }, [actions, basket.delivery]);
+
   // Set state on form input
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -51,90 +55,16 @@ function AddressEntry({
     actions.updateValidityAction(name, validate(user, name));
   };
 
-  // const fetchSwishStatus = async (swishId, timerId) => {
-  //   const swish = await checkSwishStatus(swishId);
-  //   setOrderStatus(swish.status);
-  //   switch (swish.status) {
-  //     case 'ERROR':
-  //     case 'CANCELLED':
-  //       clearInterval(timerId);
-  //       setErrors((prevState) => ([
-  //         ...prevState, {
-  //           code: swish.errorCode,
-  //           message: swish.errorMessage
-  //         }
-  //       ]));
-  //       break;
-
-  //     case 'DECLINED':
-  //       clearInterval(timerId);
-  //       setErrors((prevState) => ([
-  //         ...prevState, {
-  //           code: 'BE18',
-  //           message: 'Transaction Declined by Purchaser'
-  //         }
-  //       ]));
-  //       break;
-
-  //     case 'PAID':
-  //       clearInterval(timerId);
-  //       return history.push('/orderconfirmation', { ...swish });
-
-  //     default:
-  //       break;
-  //   }
-  //   return false;
-  // };
-
-  // // Submit payment form
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   setErrors([]);
-  //   const [allValid, validated] = validateAll(user, validity);
-  //   actions.updateValidityAllAction(validated);
-
-  //   if (allValid) {
-  //     // Send Order to Server
-  //     setOrderStatus('CALLING API');
-  //     const data = await sendOrder(user);
-  //     setOrderStatus(data.status);
-  //     if (data.status === 'PAID') {
-  //       return history.push('/orderconfirmation', { ...data });
-  //     }
-
-  //     // If Swish Payment Created
-  //     const SWISH_UPDATE_INTERVAL = 2000;
-  //     if (data.status === 'CREATED') {
-  //       const { id: swishId } = data;
-  //       setTimeout(() => (
-  //         fetchSwishStatus(swishId)
-  //       ), SWISH_UPDATE_INTERVAL);
-  //     } else {
-  //       setErrors((prevState) => ([
-  //         ...prevState, {
-  //           code: data.errorCode,
-  //           message: data.errorMessage
-  //         }
-  //       ]));
-  //     }
-  //   } else {
-  //     return false;
-  //   }
-  // };
-
-  return Object.keys(basket.delivery.details).length > 0 && window.googleMapsLoaded && (
-    <fieldset className="form-group" id="delivery-details">
-      <legend>Delivery</legend>
-      <RenderAddressEntry
-        address={user.address}
-        validAddress={validAddress}
-        zone={user.zone}
-        deliveryNotes={user.deliveryNotes}
-        autoCompleteRef={autoCompleteRef}
-        handleChange={handleChange}
-        handleBlur={handleBlur}
-      />
-    </fieldset>
+  return (
+    <RenderAddressEntry
+      address={user.address}
+      validAddress={validAddress}
+      zone={user.zone}
+      deliveryNotes={user.deliveryNotes}
+      autoCompleteRef={autoCompleteRef}
+      handleChange={handleChange}
+      handleBlur={handleBlur}
+    />
   );
 }
 AddressEntry.propTypes = {

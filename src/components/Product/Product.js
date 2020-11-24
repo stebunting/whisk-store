@@ -101,16 +101,16 @@ function Product({
 
       <form id="update-basket">
         <RadioInline
-          name="deliveryType"
+          id="deliveryType"
           label="Collection"
-          value="collection"
+          name="collection"
           checked={basketPayload.deliveryType === 'collection'}
           handleClick={handleChange}
         />
         <RadioInline
-          name="deliveryType"
+          id="deliveryType"
           label="Delivery"
-          value="delivery"
+          name="delivery"
           checked={basketPayload.deliveryType === 'delivery'}
           handleClick={handleChange}
         />

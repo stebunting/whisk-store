@@ -1,26 +1,50 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { loadProducts } from '../../redux/actions/productActions';
 import * as basketActions from '../../redux/actions/basketActions';
-import { productType, basketType, validityType } from '../../functions/types';
+import { updateValidityAll } from '../../redux/actions/checkoutFormActions';
+import {
+  productType,
+  basketType,
+  validityType,
+  userType
+} from '../../functions/types';
+import { validateAll } from '../../functions/validate';
+import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import BasketSummary from './BasketSummary';
 import AddressEntry from '../AddressEntry/AddressEntry';
 import DetailsEntry from '../DetailsEntry/DetailsEntry';
 import PaymentEntry from '../PaymentEntry/PaymentEntry';
 
 function Basket({
+  user,
   products,
   basket,
   validity,
   actions
 }) {
+  const history = useHistory();
+
   // Fetch products and basket if not already loaded
   useEffect(() => {
     if (products.length === 0) actions.loadProductsAction();
   }, [actions, products.length]);
   useEffect(() => !basket.basketId && actions.loadBasket(), [actions, basket]);
+
+  // Set checkout stage, only adds stages, does not remove
+  const [checkoutStage, setCheckoutStage] = useState(0);
+  useEffect(() => {
+    let stage = 0;
+    if (basket.items.length > 0
+      && (Object.keys(basket.delivery.details).length === 0 || validity.address)) {
+      stage += 1;
+      if (validity.name && validity.email && validity.telephone) stage += 1;
+    }
+    setCheckoutStage((prevState) => Math.max(prevState, stage));
+  }, [basket.items.length, basket.delivery.details, validity]);
 
   // Add reference to product details to basket item
   // eslint-disable-next-line no-param-reassign
@@ -29,6 +53,7 @@ function Basket({
     details: products.filter((product) => product.productId === item.productId)[0]
   }));
 
+  // Handle update/delete items from summary
   const handleChange = (event, action, data) => {
     const { value } = event.target;
     const payload = {
@@ -53,21 +78,108 @@ function Basket({
     }
   };
 
+  // Check Swish Payment Status
+  const [orderStatus, setOrderStatus] = useState('');
+  const [errors, setErrors] = useState([]);
+  const fetchSwishStatus = async (swishId) => {
+    const SWISH_UPDATE_INTERVAL = 2000;
+    const swish = await checkSwishStatus(swishId);
+    setOrderStatus(swish.status);
+    switch (swish.status) {
+      case 'ERROR':
+      case 'CANCELLED':
+        setErrors((prevState) => ([
+          ...prevState, {
+            code: swish.errorCode,
+            message: swish.errorMessage
+          }
+        ]));
+        break;
+
+      case 'DECLINED':
+        setErrors((prevState) => ([
+          ...prevState, {
+            code: 'BE18',
+            message: 'Transaction Declined by Purchaser'
+          }
+        ]));
+        break;
+
+      case 'PAID':
+        return history.push('/orderconfirmation', { ...swish });
+
+      default:
+        return setTimeout(() => fetchSwishStatus(swishId),
+          SWISH_UPDATE_INTERVAL);
+    }
+  };
+
+  // Submit payment form
+  const submitForm = async () => {
+    // Send Order to Server
+    setErrors([]);
+    setOrderStatus('CALLING API');
+
+    // Receive data from Server
+    const data = await sendOrder(user);
+    setOrderStatus(data.status);
+    switch (data.status) {
+      // Payment Link
+      case 'PAID':
+        return history.push('/orderconfirmation', { ...data });
+
+      // Swish
+      case 'CREATED': {
+        const { id: swishId } = data;
+        return fetchSwishStatus(swishId);
+      }
+
+      // Swish Error
+      case 'ERROR': {
+        return setErrors((prevState) => ([
+          ...prevState, {
+            code: data.errorCode,
+            message: data.errorMessage
+          }
+        ]));
+      }
+
+      default:
+        return false;
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const [allValid, validated] = validateAll(user, validity);
+    actions.updateValidityAllAction(validated);
+    if (allValid) return submitForm();
+    return false;
+  };
+
   return (
     <>
       <BasketSummary
         basket={basket}
         handleChange={handleChange}
       />
-      {basket.items.length > 0 && <AddressEntry />}
-      {validity.address && <DetailsEntry />}
-      {validity.address && validity.name && validity.email && validity.telephone && (
-        <PaymentEntry />
+      {checkoutStage >= 0
+        && Object.keys(basket.delivery.details).length > 0
+        && window.googleMapsLoaded
+        && <AddressEntry />}
+      {checkoutStage >= 1 && <DetailsEntry />}
+      {checkoutStage >= 2 && (
+        <PaymentEntry
+          orderStatus={orderStatus}
+          errors={errors}
+          handleSubmit={handleSubmit}
+        />
       )}
     </>
   );
 }
 Basket.propTypes = {
+  user: userType.isRequired,
   products: PropTypes.arrayOf(productType).isRequired,
   basket: basketType.isRequired,
   validity: validityType.isRequired,
@@ -75,12 +187,23 @@ Basket.propTypes = {
     loadProductsAction: PropTypes.func.isRequired,
     loadBasket: PropTypes.func.isRequired,
     updateBasket: PropTypes.func.isRequired,
-    removeItemFromBasket: PropTypes.func.isRequired
+    removeItemFromBasket: PropTypes.func.isRequired,
+    updateValidityAllAction: PropTypes.func.isRequired
   }).isRequired
 };
 
-function mapStateToProps({ products, basket, validity }) {
-  return { products, basket, validity };
+function mapStateToProps({
+  user,
+  products,
+  basket,
+  validity
+}) {
+  return {
+    user,
+    products,
+    basket,
+    validity
+  };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -89,8 +212,10 @@ function mapDispatchToProps(dispatch) {
       loadProductsAction: bindActionCreators(loadProducts, dispatch),
       loadBasket: bindActionCreators(basketActions.loadBasket, dispatch),
       updateBasket: bindActionCreators(basketActions.updateBasket, dispatch),
-      removeItemFromBasket: bindActionCreators(basketActions.removeItemFromBasket, dispatch)
+      removeItemFromBasket: bindActionCreators(basketActions.removeItemFromBasket, dispatch),
+      updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
     }
   };
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(Basket);

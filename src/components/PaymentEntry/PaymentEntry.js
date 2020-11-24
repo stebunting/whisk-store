@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,19 +7,15 @@ import RenderPaymentEntry from './RenderPaymentEntry';
 
 function PaymentEntry({
   paymentMethod,
+  orderStatus,
+  errors,
   updateUserAction,
+  handleSubmit,
 }) {
-  const [orderStatus, setOrderStatus] = useState('');
-  const [errors, setErrors] = useState([]);
-
   // Set state on form input
   const handleChange = (event) => {
     const { name, value } = event.target;
     updateUserAction(name, value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
   };
 
   return (
@@ -34,7 +30,13 @@ function PaymentEntry({
 }
 PaymentEntry.propTypes = {
   paymentMethod: PropTypes.string.isRequired,
+  orderStatus: PropTypes.string.isRequired,
+  errors: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired
+  })).isRequired,
   updateUserAction: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 };
 
 function mapStateToProps({ user }) {
