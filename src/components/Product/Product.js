@@ -1,3 +1,4 @@
+/* global dataLayer */
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -42,6 +43,32 @@ function Product({
   }, [loadProductsAction, products.length, product.productId, history]);
   useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
+  // Google Analytics Impression Data
+  useEffect(() => {
+    if (product.productId !== '') {
+      dataLayer.push({
+        event: 'detail',
+        ecommerce: {
+          currencyCode: 'SEK',
+          detail: {
+            products: [
+              {
+                name: product.name,
+                id: product.productId,
+                price: priceFormat(product.grossPrice, {
+                  includeSymbol: false,
+                  includeOre: true
+                }),
+                brand: product.brand,
+                category: product.category
+              }
+            ]
+          }
+        }
+      });
+    }
+  }, [product]);
+
   const [basketPayload, setBasketPayload] = useState({
     quantity: '1',
     deliveryType: product.deliveryMethods.length > 0 ? product.deliveryMethods[0] : 'delivery',
@@ -67,6 +94,25 @@ function Product({
       quantity: parseInt(basketPayload.quantity, 10) + quantityInBasket
     });
     setBasketPayload({ ...basketPayload, quantity: '1' });
+    dataLayer.push({
+      event: 'addToCart',
+      ecommerce: {
+        currencyCode: 'SEK',
+        add: {
+          products: [{
+            name: product.name,
+            id: product.productId,
+            price: priceFormat(product.grossPrice, {
+              includeSymbol: false,
+              includeOre: true
+            }),
+            brand: product.brand,
+            category: product.category,
+            quantity: parseInt(basketPayload.quantity, 10)
+          }]
+        }
+      }
+    });
     history.push('/basket');
   }
 
@@ -218,7 +264,7 @@ function mapStateToProps({ products, basket }, ownProps) {
     description: [],
     details: [],
     links: [],
-    deliveryMethods: ['email'],
+    deliveryMethods: [],
     images: [],
     delivery: {
       dates: []

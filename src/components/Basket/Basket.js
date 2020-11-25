@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+/* global dataLayer */
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -14,6 +15,7 @@ import {
 } from '../../functions/types';
 import { validateAll } from '../../functions/validate';
 import useHeaders from '../../hooks/useHeaders';
+import { priceFormat } from '../../functions/helpers';
 import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import BasketSummary from './BasketSummary';
 import AddressEntry from '../AddressEntry/AddressEntry';
@@ -41,6 +43,44 @@ function Basket({
     title: 'Whisk Store | Basket',
     description: 'Whisk Basket'
   });
+
+  const sendGaMessage = (orderId) => {
+    dataLayer.push({
+      event: 'purchase',
+      ecommerce: {
+        currencyCode: 'SEK',
+        purchase: {
+          actionField: {
+            id: orderId,
+            affiliation: 'Whisk Online Store',
+            revenue: priceFormat(basket.statement.bottomLine.totalPrice, {
+              includeOre: true,
+              includeSymbol: false
+            }),
+            tax: priceFormat(basket.statement.bottomLine.totalMoms, {
+              includeOre: true,
+              includeSymbol: false
+            }),
+            shipping: priceFormat(basket.statement.bottomLine.totalDelivery, {
+              includeOre: true,
+              includeSymbol: false
+            })
+          },
+          products: basket.items.map((item) => ({
+            name: item.details.name,
+            id: item.productId,
+            price: priceFormat(item.details.grossPrice, {
+              includeSymbol: false,
+              includeOre: true
+            }),
+            brand: item.details.brand,
+            category: item.details.category,
+            quantity: item.quantity
+          }))
+        }
+      }
+    });
+  };
 
   useEffect(() => (
     products.length === 0 && loadProductsAction()
@@ -72,12 +112,25 @@ function Basket({
   }, [basket.items.length, basket.delivery.details, validity]);
 
   // Handle update/delete items from summary
-  const handleChange = (event, action, data) => {
+  const handleChange = (event, action, item) => {
     const { value } = event.target;
     const payload = {
-      productId: data.productId,
-      deliveryType: data.deliveryType,
-      deliveryDate: data.deliveryDate
+      productId: item.productId,
+      deliveryType: item.deliveryType,
+      deliveryDate: item.deliveryDate
+    };
+    const newQuantity = parseInt(value, 10) || 0;
+    const quantityChange = newQuantity - item.quantity;
+    const productPayload = {
+      name: item.details.name,
+      id: item.productId,
+      price: priceFormat(item.details.grossPrice, {
+        includeSymbol: false,
+        includeOre: true
+      }),
+      brand: item.details.brand,
+      category: item.details.category,
+      quantity: Math.abs(quantityChange)
     };
     switch (action) {
       case 'update':
@@ -85,10 +138,34 @@ function Basket({
           ...payload,
           quantity: parseInt(value, 10)
         });
+        if (quantityChange > 0) {
+          dataLayer.push({
+            event: 'addToCart',
+            ecommerce: {
+              currencyCode: 'SEK',
+              add: { products: [productPayload] }
+            }
+          });
+        } else if (quantityChange < 0) {
+          dataLayer.push({
+            event: 'removeFromCart',
+            ecommerce: {
+              currencyCode: 'SEK',
+              remove: { products: [productPayload] }
+            }
+          });
+        }
         break;
 
       case 'remove':
         removeItemFromBasketAction(payload);
+        dataLayer.push({
+          event: 'removeFromCart',
+          ecommerce: {
+            currencyCode: 'SEK',
+            remove: { products: [productPayload] }
+          }
+        });
         break;
 
       default:
@@ -124,6 +201,7 @@ function Basket({
         break;
 
       case 'PAID':
+        sendGaMessage(swish.payeePaymentReference);
         return history.push('/orderconfirmation', { ...swish });
 
       default:
@@ -144,6 +222,7 @@ function Basket({
     switch (data.status) {
       // Payment Link
       case 'PAID':
+        sendGaMessage(data.orderId);
         return history.push('/orderconfirmation', { ...data });
 
       // Swish
