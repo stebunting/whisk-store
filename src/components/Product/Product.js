@@ -134,10 +134,10 @@ function Product({
       <ul className={css.productImages}>
         {product.images.map((image) => (
           <li key={image.url}>
-            <a href={`/store/images/${image.url}`}>
+            <a href={`${process.env.ASSETS_LOCATION}/images/${image.url}`}>
               <img
                 className={css.productImage}
-                src={`/store/images/${image.thumb}`}
+                src={`${process.env.ASSETS_LOCATION}/images/${image.thumb}`}
                 alt={image.description}
               />
             </a>
@@ -148,7 +148,7 @@ function Product({
       <div className={css.productText}>
         {product.contents && (
           <ul className={css.contentsList}>
-            {product.contents.map((item, index) => (
+            {product.contents.map((item) => (
               <li key={item}>
                 {item}
               </li>
@@ -185,7 +185,7 @@ function Product({
               {link.text}
               &nbsp;
               (
-              <a href={`/store/${link.url}`}>
+              <a href={link.url}>
                 Click Link Here
               </a>
               )

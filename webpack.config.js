@@ -59,7 +59,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/templates/index.ejs',
       GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
-      API_URL: process.env.API_URL
+      API_URL: process.env.API_URL,
+      ASSETS_LOCATION: process.env.ASSETS_LOCATION
     }),
     new DotenvWebpackPlugin(),
     new MiniCssExtractPlugin(),
