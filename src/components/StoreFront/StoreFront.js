@@ -31,6 +31,20 @@ function StoreFront({
   return products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
+
+      <div className={css.welcomeText}>
+        <p>
+          Welcome to our Christmas Store where you&apos;ll find a wonderful selection of local
+          products.
+        </p>
+
+        <p>
+          With these items we want to highlight circular systems (how cool is the bag
+          from Reuse Remade?), bio-dynamic vegetables and baking with a conscience. If you have
+          any questions, feel free to e-mail us.
+        </p>
+      </div>
+
       <ul className={css.productList}>
         {products.map((product) => (
           <li

@@ -144,8 +144,7 @@ function Basket({
     switch (data.status) {
       // Payment Link
       case 'PAID':
-        return true;
-        // return history.push('/orderconfirmation', { ...data });
+        return history.push('/orderconfirmation', { ...data });
 
       // Swish
       case 'CREATED': {
