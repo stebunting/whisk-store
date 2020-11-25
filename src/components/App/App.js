@@ -22,8 +22,8 @@ function App() {
   return (
     <ReduxProvider store={store}>
       <Router>
+        <Title />
         <div className="container-fluid">
-          <Title />
           <Switch>
             <Route exact path="/" component={StoreFront} />
             <Route path="/product/:productId" component={Product} />

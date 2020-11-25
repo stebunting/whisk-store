@@ -28,6 +28,7 @@ export default {
     name: '',
     email: '',
     telephone: '',
+    notes: '',
     paymentMethod: 'swish'
   },
   validity: {

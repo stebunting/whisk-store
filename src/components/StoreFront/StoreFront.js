@@ -40,7 +40,7 @@ function StoreFront({
             <Link to={`/product/${product.productId}`}>
               <img
                 className={css.productImage}
-                src={`/store/images/${product.images[0].url}`}
+                src={`/store/images/${product.images[0].thumb}`}
                 alt={product.name}
               />
             </Link>

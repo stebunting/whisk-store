@@ -27,8 +27,9 @@ function BasketSummary({ basket, handleChange }) {
                     <Link to={`/product/${item.productId}`}>
                       {item.details.name}
                     </Link>
-                    <div>
-                      {`${capitaliseFirst(item.deliveryType)} // ${rangeFormat(item.deliveryDate, { code: true })}`}
+                    <div className={css.furtherItemDetails}>
+                      {`${capitaliseFirst(item.deliveryType)}`}
+                      {item.deliveryDate !== '' && ` // ${rangeFormat(item.deliveryDate, { code: true })}`}
                     </div>
                   </td>
                   <td className={css.tableCell}>

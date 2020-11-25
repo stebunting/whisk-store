@@ -44,7 +44,7 @@ function Product({
 
   const [basketPayload, setBasketPayload] = useState({
     quantity: '1',
-    deliveryType: 'collection',
+    deliveryType: product.deliveryMethods.length > 0 ? product.deliveryMethods[0] : 'delivery',
     deliveryDate: ''
   });
 
@@ -58,7 +58,9 @@ function Product({
     : 0;
 
   function handleClick() {
-    if (basketPayload.deliveryDate === '') return;
+    if ((basketPayload.deliveryType === 'collection'
+      || basketPayload.deliveryType === 'delivery')
+      && basketPayload.deliveryDate === '') return;
     updateBasketAction({
       ...basketPayload,
       productId: product.productId,
@@ -86,45 +88,81 @@ function Product({
       <ul className={css.productImages}>
         {product.images.map((image) => (
           <li key={image.url}>
-            <img
-              className={css.productImage}
-              src={`/store/images/${image.url}`}
-              alt={image.description}
-            />
+            <a href={`/store/images/${image.url}`}>
+              <img
+                className={css.productImage}
+                src={`/store/images/${image.thumb}`}
+                alt={image.description}
+              />
+            </a>
           </li>
         ))}
       </ul>
 
-      <div className={css.description}>
-        {product.description}
+      <div className={css.productText}>
+        {product.contents && (
+          <ul className={css.contentsList}>
+            {product.contents.map((item, index) => (
+              <li key={item}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className={css.price}>
+          {priceFormat(product.grossPrice)}
+        </div>
+
+        <div className={css.description}>
+          {product.description.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+
+        {product.ingredients && (
+          <>
+            <h3 className={css.productHeader}>Ingredients</h3>
+            <ul className={css.ingredientsList}>
+              {product.ingredients.map((ingredient) => (
+                <li key={ingredient.item}>
+                  <strong>{ingredient.item}</strong>
+                  {ingredient.item !== '' && ' '}
+                  {ingredient.details}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       <form id="update-basket">
-        <RadioInline
-          id="deliveryType"
-          label="Collection"
-          name="collection"
-          checked={basketPayload.deliveryType === 'collection'}
-          handleClick={handleChange}
-        />
-        <RadioInline
-          id="deliveryType"
-          label="Delivery"
-          name="delivery"
-          checked={basketPayload.deliveryType === 'delivery'}
-          handleClick={handleChange}
-        />
-        <Select
-          name="deliveryDate"
-          defaultText={`Select a ${basketPayload.deliveryType} option...`}
-          options={product[basketPayload.deliveryType].dates.map((range) => ({
-            value: `${range.year}-${range.week}-${range.day}-${range.time.start}-${range.time.end}`,
-            text: rangeFormat(range)
-          }))}
-          value={basketPayload.deliveryDate}
-          handleChange={handleChange}
-        />
-        <div>{priceFormat(product.grossPrice)}</div>
+        {(product.deliveryMethods.includes('collection') || product.deliveryMethods.includes('delivery')) && (
+          <>
+            <RadioInline
+              id="deliveryType"
+              label="Collection"
+              name="collection"
+              checked={basketPayload.deliveryType === 'collection'}
+              handleClick={handleChange}
+            />
+            <RadioInline
+              id="deliveryType"
+              label="Delivery"
+              name="delivery"
+              checked={basketPayload.deliveryType === 'delivery'}
+              handleClick={handleChange}
+            />
+            <Select
+              name="deliveryDate"
+              defaultText={`Select a ${basketPayload.deliveryType} option...`}
+              options={product[basketPayload.deliveryType].dates.map((range) => ({
+                value: `${range.year}-${range.month}-${range.date}-${range.time.start}-${range.time.end}`,
+                text: rangeFormat(range)
+              }))}
+              value={basketPayload.deliveryDate}
+              handleChange={handleChange}
+            />
+          </>
+        )}
         <div className="form-row">
           <div className="col-sm-2">
             <QuantityDropdown
@@ -162,7 +200,10 @@ function mapStateToProps({ products, basket }, ownProps) {
   const defaultProduct = {
     productId: '',
     name: '',
-    description: '',
+    contents: [],
+    description: [],
+    details: [],
+    deliveryMethods: ['email'],
     images: [],
     delivery: {
       dates: []

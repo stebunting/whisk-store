@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextInput from '../Inputs/TextInput';
+import TextArea from '../Inputs/TextArea';
 
 function RenderDetailsEntry({
   name,
@@ -9,6 +10,7 @@ function RenderDetailsEntry({
   validEmail,
   telephone,
   validTelephone,
+  notes,
   handleChange,
   handleBlur
 }) {
@@ -43,6 +45,13 @@ function RenderDetailsEntry({
         handleChange={handleChange}
         handleBlur={handleBlur}
       />
+      <TextArea
+        id="notes"
+        label="Notes"
+        placeholder="Notes"
+        value={notes}
+        handleChange={handleChange}
+      />
     </fieldset>
   );
 }
@@ -53,6 +62,7 @@ RenderDetailsEntry.propTypes = {
   validEmail: PropTypes.bool,
   telephone: PropTypes.string.isRequired,
   validTelephone: PropTypes.bool,
+  notes: PropTypes.string.isRequired,
   handleChange: PropTypes.func.isRequired,
   handleBlur: PropTypes.func.isRequired
 };

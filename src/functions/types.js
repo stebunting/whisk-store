@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 
 export const productType = PropTypes.shape({
-  productId: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  grossPrice: PropTypes.number.isRequired
+  productId: PropTypes.string,
+  name: PropTypes.string,
+  description: PropTypes.arrayOf(PropTypes.string),
+  details: PropTypes.arrayOf(PropTypes.shape({
+    item: PropTypes.string,
+    description: PropTypes.string
+  })),
+  grossPrice: PropTypes.number
 });
 
 export const statementType = PropTypes.shape({
@@ -15,25 +19,26 @@ export const statementType = PropTypes.shape({
 });
 
 export const basketType = PropTypes.shape({
-  basketId: PropTypes.string.isRequired,
+  basketId: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.shape({
     productId: PropTypes.string,
     quantity: PropTypes.number,
     deliveryDate: PropTypes.string,
     deliveryType: PropTypes.string
-  })).isRequired,
+  })),
   statement: statementType
 });
 
 export const userType = PropTypes.shape({
-  paymentMethod: PropTypes.string.isRequired,
-  address: PropTypes.string.isRequired,
+  paymentMethod: PropTypes.string,
+  address: PropTypes.string,
   verifiedAddress: PropTypes.string,
-  zone: PropTypes.number.isRequired,
-  deliveryNotes: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  email: PropTypes.string.isRequired,
-  telephone: PropTypes.string.isRequired,
+  zone: PropTypes.number,
+  deliveryNotes: PropTypes.string,
+  name: PropTypes.string,
+  email: PropTypes.string,
+  telephone: PropTypes.string,
+  notes: PropTypes.string
 });
 
 export const validityType = PropTypes.shape({

@@ -23,7 +23,6 @@ function DetailsEntry({
   // Validate input field when moving away
   const handleBlur = (event) => {
     const { name } = event.target;
-    console.log('here');
     updateValidityAction(name, validate(user, name));
   };
 
@@ -34,6 +33,7 @@ function DetailsEntry({
       email={user.email}
       validEmail={validity.email}
       telephone={user.telephone}
+      notes={user.notes}
       validTelephone={validity.telephone}
       handleChange={handleChange}
       handleBlur={handleBlur}

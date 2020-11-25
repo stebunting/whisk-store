@@ -1,12 +1,8 @@
 // import { DateTime } from 'luxon';
 const dayjs = require('dayjs');
 const objectSupport = require('dayjs/plugin/objectSupport');
-const weekOfYear = require('dayjs/plugin/weekOfYear');
-const weekday = require('dayjs/plugin/weekday');
 
 dayjs.extend(objectSupport);
-dayjs.extend(weekOfYear);
-dayjs.extend(weekday);
 
 // Format price from stored öre to krona
 export function priceFormat(num, userOptions = {}) {
@@ -37,11 +33,11 @@ export function rangeFormat(data, options = {}) {
   const range = options.code === true
     ? parseDateCode(data)
     : data;
-  const date = dayjs({})
-    .year(range.year)
-    .week(range.week)
-    .day(range.day)
-    .format('dddd D MMMM');
+  const date = dayjs({
+    year: range.year,
+    month: range.month,
+    day: range.date
+  }).format('dddd D MMMM');
 
   return options.times === false
     ? date
