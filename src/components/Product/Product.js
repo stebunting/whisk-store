@@ -132,6 +132,20 @@ function Product({
             </ul>
           </>
         )}
+
+        {product.links && (
+          product.links.map((link) => (
+            <p key={link.url}>
+              {link.text}
+              &nbsp;
+              (
+              <a href={`/store/${link.url}`}>
+                Click Link Here
+              </a>
+              )
+            </p>
+          ))
+        )}
       </div>
 
       <form id="update-basket">
@@ -203,6 +217,7 @@ function mapStateToProps({ products, basket }, ownProps) {
     contents: [],
     description: [],
     details: [],
+    links: [],
     deliveryMethods: ['email'],
     images: [],
     delivery: {
