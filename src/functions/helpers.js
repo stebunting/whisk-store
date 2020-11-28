@@ -19,11 +19,11 @@ export function priceFormat(num, userOptions = {}) {
 }
 
 function parseDateCode(code) {
-  const [year, week, day, start, end] = code.split('-');
+  const [year, month, date, start, end] = code.split('-');
   return {
     year,
-    week,
-    day,
+    month,
+    date,
     time: { start, end }
   };
 }
@@ -35,7 +35,7 @@ export function rangeFormat(data, options = {}) {
     : data;
   const date = dayjs({
     year: range.year,
-    month: range.month,
+    month: range.month - 1,
     day: range.date
   }).format('dddd D MMMM');
 
