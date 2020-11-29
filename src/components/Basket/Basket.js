@@ -48,33 +48,31 @@ function Basket({
     dataLayer.push({
       event: 'purchase',
       ecommerce: {
-        currencyCode: 'SEK',
         purchase: {
-          actionField: {
-            id: orderId,
-            affiliation: 'Whisk Online Store',
-            revenue: priceFormat(basket.statement.bottomLine.totalPrice, {
-              includeOre: true,
-              includeSymbol: false
-            }),
-            tax: priceFormat(basket.statement.bottomLine.totalMoms, {
-              includeOre: true,
-              includeSymbol: false
-            }),
-            shipping: priceFormat(basket.statement.bottomLine.totalDelivery, {
-              includeOre: true,
-              includeSymbol: false
-            })
-          },
-          products: basket.items.map((item) => ({
-            name: item.details.name,
-            id: item.productId,
-            price: priceFormat(item.details.grossPrice, {
+          transaction_id: orderId,
+          affiliation: 'Whisk Online Store',
+          value: priceFormat(basket.statement.bottomLine.totalPrice, {
+            includeOre: true,
+            includeSymbol: false
+          }),
+          tax: priceFormat(basket.statement.bottomLine.totalMoms, {
+            includeOre: true,
+            includeSymbol: false
+          }),
+          shipping: priceFormat(basket.statement.bottomLine.totalDelivery, {
+            includeOre: true,
+            includeSymbol: false
+          }),
+          currency: 'SEK',
+          items: basket.items.map((item) => ({
+            item_name: item.details.name,
+            item_id: item.productId,
+            item_price: priceFormat(item.details.grossPrice, {
               includeSymbol: false,
               includeOre: true
             }),
-            brand: item.details.brand,
-            category: item.details.category,
+            item_brand: item.details.brand,
+            item_category: item.details.category,
             quantity: item.quantity
           }))
         }
@@ -122,15 +120,17 @@ function Basket({
     const newQuantity = parseInt(value, 10) || 0;
     const quantityChange = newQuantity - item.quantity;
     const productPayload = {
-      name: item.details.name,
-      id: item.productId,
-      price: priceFormat(item.details.grossPrice, {
-        includeSymbol: false,
-        includeOre: true
-      }),
-      brand: item.details.brand,
-      category: item.details.category,
-      quantity: Math.abs(quantityChange)
+      items: [{
+        item_name: item.details.name,
+        item_id: item.productId,
+        price: priceFormat(item.details.grossPrice, {
+          includeSymbol: false,
+          includeOre: true
+        }),
+        item_brand: item.details.brand,
+        item_category: item.details.category,
+        quantity: Math.abs(quantityChange)
+      }]
     };
     switch (action) {
       case 'update':
@@ -140,19 +140,13 @@ function Basket({
         });
         if (quantityChange > 0) {
           dataLayer.push({
-            event: 'addToCart',
-            ecommerce: {
-              currencyCode: 'SEK',
-              add: { products: [productPayload] }
-            }
+            event: 'add_to_cart',
+            ecommerce: productPayload
           });
         } else if (quantityChange < 0) {
           dataLayer.push({
-            event: 'removeFromCart',
-            ecommerce: {
-              currencyCode: 'SEK',
-              remove: { products: [productPayload] }
-            }
+            event: 'remove_from_cart',
+            ecommerce: productPayload
           });
         }
         break;
@@ -160,11 +154,8 @@ function Basket({
       case 'remove':
         removeItemFromBasketAction(payload);
         dataLayer.push({
-          event: 'removeFromCart',
-          ecommerce: {
-            currencyCode: 'SEK',
-            remove: { products: [productPayload] }
-          }
+          event: 'remove_from_cart',
+          ecommerce: productPayload
         });
         break;
 

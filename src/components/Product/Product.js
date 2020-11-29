@@ -47,23 +47,20 @@ function Product({
   useEffect(() => {
     if (product.productId !== '') {
       dataLayer.push({
-        event: 'detail',
+        event: 'view_item',
         ecommerce: {
-          currencyCode: 'SEK',
-          detail: {
-            products: [
-              {
-                name: product.name,
-                id: product.productId,
-                price: priceFormat(product.grossPrice, {
-                  includeSymbol: false,
-                  includeOre: true
-                }),
-                brand: product.brand,
-                category: product.category
-              }
-            ]
-          }
+          items: [
+            {
+              item_name: product.name,
+              item_id: product.productId,
+              price: priceFormat(product.grossPrice, {
+                includeSymbol: false,
+                includeOre: true
+              }),
+              item_brand: product.brand,
+              item_category: product.category
+            }
+          ]
         }
       });
     }
@@ -95,22 +92,19 @@ function Product({
     });
     setBasketPayload({ ...basketPayload, quantity: '1' });
     dataLayer.push({
-      event: 'addToCart',
+      event: 'add_to_cart',
       ecommerce: {
-        currencyCode: 'SEK',
-        add: {
-          products: [{
-            name: product.name,
-            id: product.productId,
-            price: priceFormat(product.grossPrice, {
-              includeSymbol: false,
-              includeOre: true
-            }),
-            brand: product.brand,
-            category: product.category,
-            quantity: parseInt(basketPayload.quantity, 10)
-          }]
-        }
+        items: [{
+          item_name: product.name,
+          item_id: product.productId,
+          price: priceFormat(product.grossPrice, {
+            includeSymbol: false,
+            includeOre: true
+          }),
+          item_brand: product.brand,
+          item_category: product.category,
+          quantity: parseInt(basketPayload.quantity, 10)
+        }]
       }
     });
     history.push('/basket');
