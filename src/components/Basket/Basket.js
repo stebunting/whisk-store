@@ -28,7 +28,6 @@ function Basket({
   basket,
   validity,
   loadProductsAction,
-  appendProductToBasketAction,
   loadBasketAction,
   updateBasketAction,
   removeItemFromBasketAction,
@@ -42,10 +41,6 @@ function Basket({
     title: 'Whisk Store | Basket',
     description: 'Whisk Basket'
   });
-
-  const sendGaMessage = (orderId) => {
-    purchaseGaEvent(basket.items, basket.statement.bottomLine, orderId);
-  };
 
   useEffect(() => (
     products.length === 0 && loadProductsAction()
@@ -137,7 +132,7 @@ function Basket({
         break;
 
       case 'PAID':
-        sendGaMessage(swish.payeePaymentReference);
+        purchaseGaEvent(basket.items, basket.statement.bottomLine, swish.payeePaymentReference);
         return history.push('/orderconfirmation', { ...swish });
 
       default:
@@ -158,7 +153,7 @@ function Basket({
     switch (data.status) {
       // Payment Link
       case 'PAID':
-        sendGaMessage(data.orderId);
+        purchaseGaEvent(basket.items, basket.statement.bottomLine, data.orderId);
         return history.push('/orderconfirmation', { ...data });
 
       // Swish
@@ -215,7 +210,6 @@ Basket.propTypes = {
   basket: basketType.isRequired,
   validity: validityType.isRequired,
   loadBasketAction: PropTypes.func.isRequired,
-  appendProductToBasketAction: PropTypes.func.isRequired,
   loadProductsAction: PropTypes.func.isRequired,
   updateBasketAction: PropTypes.func.isRequired,
   removeItemFromBasketAction: PropTypes.func.isRequired,
@@ -239,7 +233,6 @@ function mapStateToProps({
 function mapDispatchToProps(dispatch) {
   return {
     loadBasketAction: bindActionCreators(basketActions.loadBasket, dispatch),
-    appendProductToBasketAction: bindActionCreators(basketActions.appendProductsToBasket, dispatch),
     loadProductsAction: bindActionCreators(loadProducts, dispatch),
     updateBasketAction: bindActionCreators(basketActions.updateBasket, dispatch),
     removeItemFromBasketAction: bindActionCreators(basketActions.removeItemFromBasket, dispatch),

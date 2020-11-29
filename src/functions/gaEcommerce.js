@@ -79,6 +79,22 @@ export function removeItemFromBasketGaEvent(item, quantity) {
   });
 }
 
+export function beginCheckoutGaEvent(items, bottomLine) {
+  dataLayer.push({
+    event: 'purchase',
+    ecommerce: {
+      purchase: {
+        value: priceFormat(bottomLine.totalPrice, {
+          includeOre: true,
+          includeSymbol: false
+        }),
+        currency: 'SEK',
+        items: getItemsFromItems(items)
+      }
+    }
+  });
+}
+
 export function purchaseGaEvent(items, bottomLine, orderId) {
   dataLayer.push({
     event: 'purchase',
@@ -99,17 +115,7 @@ export function purchaseGaEvent(items, bottomLine, orderId) {
           includeSymbol: false
         }),
         currency: 'SEK',
-        items: items.map((item) => ({
-          item_name: item.details.name,
-          item_id: item.productId,
-          item_price: priceFormat(item.details.grossPrice, {
-            includeSymbol: false,
-            includeOre: true
-          }),
-          item_brand: item.details.brand,
-          item_category: item.details.category,
-          quantity: item.quantity.toString()
-        }))
+        items: getItemsFromItems(items)
       }
     }
   });
