@@ -1,4 +1,3 @@
-/* global dataLayer */
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -13,9 +12,9 @@ import {
   validityType,
   userType
 } from '../../functions/types';
+import { addItemToBasketGaEvent, removeItemFromBasketGaEvent, purchaseGaEvent } from '../../functions/gaEcommerce';
 import { validateAll } from '../../functions/validate';
 import useHeaders from '../../hooks/useHeaders';
-import { priceFormat } from '../../functions/helpers';
 import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import BasketSummary from './BasketSummary';
 import AddressEntry from '../AddressEntry/AddressEntry';
@@ -45,39 +44,7 @@ function Basket({
   });
 
   const sendGaMessage = (orderId) => {
-    dataLayer.push({
-      event: 'purchase',
-      ecommerce: {
-        purchase: {
-          transaction_id: orderId,
-          affiliation: 'Whisk Online Store',
-          value: priceFormat(basket.statement.bottomLine.totalPrice, {
-            includeOre: true,
-            includeSymbol: false
-          }),
-          tax: priceFormat(basket.statement.bottomLine.totalMoms, {
-            includeOre: true,
-            includeSymbol: false
-          }),
-          shipping: priceFormat(basket.statement.bottomLine.totalDelivery, {
-            includeOre: true,
-            includeSymbol: false
-          }),
-          currency: 'SEK',
-          items: basket.items.map((item) => ({
-            item_name: item.details.name,
-            item_id: item.productId,
-            item_price: priceFormat(item.details.grossPrice, {
-              includeSymbol: false,
-              includeOre: true
-            }),
-            item_brand: item.details.brand,
-            item_category: item.details.category,
-            quantity: item.quantity
-          }))
-        }
-      }
-    });
+    purchaseGaEvent(basket.items, basket.statement.bottomLine, orderId);
   };
 
   useEffect(() => (
@@ -119,19 +86,6 @@ function Basket({
     };
     const newQuantity = parseInt(value, 10) || 0;
     const quantityChange = newQuantity - item.quantity;
-    const productPayload = {
-      items: [{
-        item_name: item.details.name,
-        item_id: item.productId,
-        price: priceFormat(item.details.grossPrice, {
-          includeSymbol: false,
-          includeOre: true
-        }),
-        item_brand: item.details.brand,
-        item_category: item.details.category,
-        quantity: Math.abs(quantityChange)
-      }]
-    };
     switch (action) {
       case 'update':
         updateBasketAction({
@@ -139,24 +93,15 @@ function Basket({
           quantity: parseInt(value, 10)
         });
         if (quantityChange > 0) {
-          dataLayer.push({
-            event: 'add_to_cart',
-            ecommerce: productPayload
-          });
+          addItemToBasketGaEvent(item, Math.abs(quantityChange));
         } else if (quantityChange < 0) {
-          dataLayer.push({
-            event: 'remove_from_cart',
-            ecommerce: productPayload
-          });
+          removeItemFromBasketGaEvent(item, Math.abs(quantityChange));
         }
         break;
 
       case 'remove':
         removeItemFromBasketAction(payload);
-        dataLayer.push({
-          event: 'remove_from_cart',
-          ecommerce: productPayload
-        });
+        removeItemFromBasketGaEvent(item, Math.abs(quantityChange));
         break;
 
       default:

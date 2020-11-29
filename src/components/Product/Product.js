@@ -1,4 +1,3 @@
-/* global dataLayer */
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -9,6 +8,7 @@ import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket, updateBasket, appendProductsToBasket } from '../../redux/actions/basketActions';
 import { priceFormat, rangeFormat } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
+import { viewItemGaEvent, addToBasketGaEvent } from '../../functions/gaEcommerce';
 import QuantityDropdown from '../Inputs/QuantityDropdown';
 import Loading from '../Loading/Loading';
 import RadioInline from '../Inputs/RadioInline';
@@ -43,28 +43,8 @@ function Product({
   }, [loadProductsAction, products.length, product.productId, history]);
   useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
 
-  // Google Analytics Impression Data
-  useEffect(() => {
-    if (product.productId !== '') {
-      dataLayer.push({
-        event: 'view_item',
-        ecommerce: {
-          items: [
-            {
-              item_name: product.name,
-              item_id: product.productId,
-              price: priceFormat(product.grossPrice, {
-                includeSymbol: false,
-                includeOre: true
-              }),
-              item_brand: product.brand,
-              item_category: product.category
-            }
-          ]
-        }
-      });
-    }
-  }, [product]);
+  // Send Google Analytics Impression Data
+  useEffect(() => product.productId !== '' && viewItemGaEvent(product), [product]);
 
   const [basketPayload, setBasketPayload] = useState({
     quantity: '1',
@@ -90,23 +70,8 @@ function Product({
       productId: product.productId,
       quantity: parseInt(basketPayload.quantity, 10) + quantityInBasket
     });
+    addToBasketGaEvent(product, parseInt(basketPayload.quantity, 10));
     setBasketPayload({ ...basketPayload, quantity: '1' });
-    dataLayer.push({
-      event: 'add_to_cart',
-      ecommerce: {
-        items: [{
-          item_name: product.name,
-          item_id: product.productId,
-          price: priceFormat(product.grossPrice, {
-            includeSymbol: false,
-            includeOre: true
-          }),
-          item_brand: product.brand,
-          item_category: product.category,
-          quantity: parseInt(basketPayload.quantity, 10)
-        }]
-      }
-    });
     history.push('/basket');
   }
 
