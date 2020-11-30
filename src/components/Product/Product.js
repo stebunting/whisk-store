@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket, updateBasket, appendProductsToBasket } from '../../redux/actions/basketActions';
-import { priceFormat, rangeFormat } from '../../functions/helpers';
+import { priceFormat, rangeFormat, hasDatePassed } from '../../functions/helpers';
 import { productType, basketType } from '../../functions/types';
 import { viewItemGaEvent, addToBasketGaEvent } from '../../functions/gaEcommerce';
 import QuantityDropdown from '../Inputs/QuantityDropdown';
@@ -175,7 +175,8 @@ function Product({
               defaultText={`Select a ${basketPayload.deliveryType} option...`}
               options={product[basketPayload.deliveryType].dates.map((range) => ({
                 value: `${range.year}-${range.month}-${range.date}-${range.time.start}-${range.time.end}`,
-                text: rangeFormat(range)
+                text: rangeFormat(range),
+                disabled: range.deadline && hasDatePassed(range.deadline)
               }))}
               value={basketPayload.deliveryDate}
               handleChange={handleChange}

@@ -44,6 +44,11 @@ export function rangeFormat(data, options = {}) {
     : `${date} (${range.time.start} - ${range.time.end})`;
 }
 
+export function hasDatePassed(dateObj) {
+  // DayJS uses 0-indexed month
+  return dayjs({ ...dateObj, month: dateObj.month - 1 }).isBefore(dayjs());
+}
+
 export function capitaliseFirst(word) {
   return `${word.charAt(0).toUpperCase()}${word.substring(1).toLowerCase()}`;
 }

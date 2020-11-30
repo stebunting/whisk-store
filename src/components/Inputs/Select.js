@@ -8,6 +8,8 @@ function Select({
   value,
   handleChange
 }) {
+  const allOptionsDisabled = options.reduce((acc, item) => acc && item.disabled, true);
+
   return (
     <div className="form-group">
       <select
@@ -17,11 +19,12 @@ function Select({
         value={value}
         onChange={handleChange}
       >
-        <option value="">{defaultText}</option>
+        <option value="">{allOptionsDisabled ? 'Item Currently Unavailable' : defaultText}</option>
         {options.map((option) => (
           <option
             key={option.value}
             value={option.value}
+            disabled={option.disabled}
           >
             {option.text}
           </option>
@@ -34,7 +37,8 @@ Select.propTypes = {
   defaultText: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     value: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
+    disabled: PropTypes.bool.isRequired
   })).isRequired,
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
