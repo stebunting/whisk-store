@@ -48,14 +48,14 @@ function StoreFront({
             className={css.productItem}
             key={product.productId}
           >
-            <Link to={`/product/${product.productId}`}>
+            <Link to={`/product/${product.slug}`}>
               <img
                 className={css.productImage}
                 src={`${process.env.ASSETS_LOCATION}/images/${product.images[0].thumb}`}
                 alt={product.name}
               />
             </Link>
-            <Link to={`/product/${product.productId}`}>
+            <Link to={`/product/${product.slug}`}>
               {product.name}
             </Link>
           </li>

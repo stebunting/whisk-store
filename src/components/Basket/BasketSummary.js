@@ -24,7 +24,7 @@ function BasketSummary({ basket, handleChange }) {
               {basket.items.map((item) => (!item.details ? null : (
                 <tr key={`${item.productId}-${item.deliveryDate}`}>
                   <td className={css.tableCell}>
-                    <Link to={`/product/${item.productId}`}>
+                    <Link to={`/product/${item.details.slug}`}>
                       {item.details.name}
                     </Link>
                     <div className={css.furtherItemDetails}>

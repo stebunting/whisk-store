@@ -220,11 +220,12 @@ Product.propTypes = {
 };
 
 function mapStateToProps({ products, basket }, ownProps) {
-  const { productId } = ownProps.match.params;
+  const { slug } = ownProps.match.params;
 
   const defaultProduct = {
     productId: '',
     name: '',
+    slug: '',
     contents: [],
     description: [],
     details: [],
@@ -239,7 +240,7 @@ function mapStateToProps({ products, basket }, ownProps) {
     },
     grossPrice: 0
   };
-  const filteredProducts = products.filter((product) => product.productId === productId);
+  const filteredProducts = products.filter((product) => product.slug === slug);
   const product = filteredProducts.length < 1 ? defaultProduct : filteredProducts[0];
 
   return { products, product, basket };

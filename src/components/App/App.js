@@ -44,7 +44,7 @@ function App({
       <div className="container-fluid">
         <Switch>
           <Route exact path="/" component={StoreFront} />
-          <Route path="/product/:productId" component={Product} />
+          <Route path="/product/:slug" component={Product} />
           <Route path="/basket" component={Basket} />
           <Route path="/orderconfirmation" component={OrderConfirmation} />
         </Switch>
