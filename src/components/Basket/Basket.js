@@ -1,21 +1,30 @@
+// Requirements
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { loadProducts } from '../../redux/actions/productActions';
-import * as basketActions from '../../redux/actions/basketActions';
+
+// Custom Hooks
+import useHeaders from '../../hooks/useHeaders';
+
+// Redux Actions
+import { updateBasket, removeItemFromBasket } from '../../redux/actions/basketActions';
 import { updateValidityAll } from '../../redux/actions/checkoutFormActions';
+
+// Functions
+import { validateAll } from '../../functions/validate';
+import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
+import { addItemToBasketGaEvent, removeItemFromBasketGaEvent, purchaseGaEvent } from '../../functions/gaEcommerce';
+
+// Types
 import {
   productType,
   basketType,
   validityType,
   userType
 } from '../../functions/types';
-import { addItemToBasketGaEvent, removeItemFromBasketGaEvent, purchaseGaEvent } from '../../functions/gaEcommerce';
-import { validateAll } from '../../functions/validate';
-import useHeaders from '../../hooks/useHeaders';
-import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
+
+// Components
 import BasketSummary from './BasketSummary';
 import AddressEntry from '../AddressEntry/AddressEntry';
 import DetailsEntry from '../DetailsEntry/DetailsEntry';
@@ -27,8 +36,6 @@ function Basket({
   products,
   basket,
   validity,
-  loadProductsAction,
-  loadBasketAction,
   updateBasketAction,
   removeItemFromBasketAction,
   updateValidityAllAction
@@ -41,13 +48,6 @@ function Basket({
     title: 'Whisk Store | Basket',
     description: 'Whisk Basket'
   });
-
-  useEffect(() => (
-    products.length === 0 && loadProductsAction()
-  ), [loadProductsAction, products.length]);
-  useEffect(() => {
-    if (!basket.basketId) loadBasketAction();
-  }, [loadBasketAction, basket.basketId]);
 
   // useEffect(() => {
   //   if (basket.basketId && products.length > 0) {
@@ -209,8 +209,6 @@ Basket.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   basket: basketType.isRequired,
   validity: validityType.isRequired,
-  loadBasketAction: PropTypes.func.isRequired,
-  loadProductsAction: PropTypes.func.isRequired,
   updateBasketAction: PropTypes.func.isRequired,
   removeItemFromBasketAction: PropTypes.func.isRequired,
   updateValidityAllAction: PropTypes.func.isRequired
@@ -230,14 +228,10 @@ function mapStateToProps({
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    loadBasketAction: bindActionCreators(basketActions.loadBasket, dispatch),
-    loadProductsAction: bindActionCreators(loadProducts, dispatch),
-    updateBasketAction: bindActionCreators(basketActions.updateBasket, dispatch),
-    removeItemFromBasketAction: bindActionCreators(basketActions.removeItemFromBasket, dispatch),
-    updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
-  };
-}
+const mapDispatchToProps = {
+  updateBasketAction: updateBasket,
+  removeItemFromBasketAction: removeItemFromBasket,
+  updateValidityAllAction: updateValidityAll
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Basket);

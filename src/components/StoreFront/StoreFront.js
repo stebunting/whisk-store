@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react';
+// Requirements
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+
+// Custom Hooks
 import useHeaders from '../../hooks/useHeaders';
-import { loadProducts } from '../../redux/actions/productActions';
-import { loadBasket } from '../../redux/actions/basketActions';
+
+// Types
 import { productType } from '../../functions/types';
+
+// Components
 import Loading from '../Loading/Loading';
+
+// Style
 import css from './storeFront.module.less';
 
 function StoreFront({
-  products,
-  basket,
-  loadProductsAction,
-  loadBasketAction
+  products
 }) {
   // Set Page Details
   const metadata = useHeaders({
@@ -22,12 +25,6 @@ function StoreFront({
     title: 'Whisk Store',
     description: 'Whisk Store Front'
   });
-
-  useEffect(() => {
-    if (products.length === 0) loadProductsAction();
-  }, [loadProductsAction, products.length]);
-  useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
-
   return products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
@@ -68,23 +65,11 @@ function StoreFront({
   );
 }
 StoreFront.propTypes = {
-  products: PropTypes.arrayOf(productType).isRequired,
-  basket: PropTypes.shape({
-    basketId: PropTypes.string
-  }).isRequired,
-  loadProductsAction: PropTypes.func.isRequired,
-  loadBasketAction: PropTypes.func.isRequired
+  products: PropTypes.arrayOf(productType).isRequired
 };
 
-function mapStateToProps({ products, basket }) {
-  return { products, basket };
+function mapStateToProps({ products }) {
+  return { products };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    loadProductsAction: bindActionCreators(loadProducts, dispatch),
-    loadBasketAction: bindActionCreators(loadBasket, dispatch)
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(StoreFront);
+export default connect(mapStateToProps)(StoreFront);

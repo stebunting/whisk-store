@@ -1,26 +1,35 @@
+// Requirements
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+
+// Custom Hooks
 import useHeaders from '../../hooks/useHeaders';
-import { loadProducts } from '../../redux/actions/productActions';
-import { loadBasket, updateBasket, appendProductsToBasket } from '../../redux/actions/basketActions';
+
+// Redux Actions
+import { updateBasket } from '../../redux/actions/basketActions';
+
+// Functions
 import { priceFormat, rangeFormat, hasDatePassed } from '../../functions/helpers';
-import { productType, basketType } from '../../functions/types';
 import { viewItemGaEvent, addToBasketGaEvent } from '../../functions/gaEcommerce';
+
+// Types
+import { productType, basketType } from '../../functions/types';
+
+// Components
 import QuantityDropdown from '../Inputs/QuantityDropdown';
 import Loading from '../Loading/Loading';
 import RadioInline from '../Inputs/RadioInline';
 import Select from '../Inputs/Select';
+
+// Style
 import css from './product.module.less';
 
 function Product({
   products,
   product,
   basket,
-  loadProductsAction,
-  loadBasketAction,
   updateBasketAction
 }) {
   // Set Page Details
@@ -38,10 +47,8 @@ function Product({
 
   const history = useHistory();
   useEffect(() => {
-    if (products.length === 0) loadProductsAction();
-    else if (product.productId === '') history.push('/');
-  }, [loadProductsAction, products.length, product.productId, history]);
-  useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
+    if (products.length > 0 && product.productId === '') history.push('/');
+  }, [products.length, product.productId, history]);
 
   // Send Google Analytics Impression Data
   useEffect(() => product.productId !== '' && viewItemGaEvent(product), [product]);
@@ -128,7 +135,7 @@ function Product({
             <h3 className={css.productHeader}>Ingredients</h3>
             <ul className={css.ingredientsList}>
               {product.ingredients.map((ingredient) => (
-                <li key={ingredient.item}>
+                <li key={`${ingredient.item}${ingredient.details}`}>
                   <strong>{ingredient.item}</strong>
                   {ingredient.item !== '' && ' '}
                   {ingredient.details}
@@ -209,8 +216,6 @@ Product.propTypes = {
   products: PropTypes.arrayOf(productType).isRequired,
   product: productType.isRequired,
   basket: basketType.isRequired,
-  loadProductsAction: PropTypes.func.isRequired,
-  loadBasketAction: PropTypes.func.isRequired,
   updateBasketAction: PropTypes.func.isRequired
 };
 
@@ -240,13 +245,8 @@ function mapStateToProps({ products, basket }, ownProps) {
   return { products, product, basket };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    loadProductsAction: bindActionCreators(loadProducts, dispatch),
-    loadBasketAction: bindActionCreators(loadBasket, dispatch),
-    updateBasketAction: bindActionCreators(updateBasket, dispatch),
-    appendProductToBasketAction: bindActionCreators(appendProductsToBasket, dispatch)
-  };
-}
+const mapDispatchToProps = {
+  updateBasketAction: updateBasket
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product);
