@@ -1,6 +1,5 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, FormEvent } from 'react';
 
 // Components
 import Radio from '../Inputs/Radio';
@@ -8,18 +7,23 @@ import Radio from '../Inputs/Radio';
 // Style
 import css from './paymentEntry.module.less';
 
-function PaymentEntry({
-  paymentMethod,
-  orderStatus,
-  errors,
-  handleChange,
-  handleSubmit
-}) {
-  const message = orderStatus === 'CREATED'
+interface Props {
+  paymentMethod: string,
+  orderStatus: string,
+  errors: Array<{
+    code: string,
+    message: string
+  }>,
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  handleSubmit: (event: FormEvent<HTMLFormElement>) => void
+};
+
+function PaymentEntry(props: Props) {
+  const message = props.orderStatus === 'CREATED'
     ? 'Please open Swish on your mobile phone to complete payment'
     : '';
 
-  const buttonStatus = orderStatus === 'CALLING API' || orderStatus === 'CREATED'
+  const buttonStatus = props.orderStatus === 'CALLING API' || props.orderStatus === 'CREATED'
     ? { disabled: true, text: 'Ordering...' }
     : { disabled: false, text: 'Order and Pay' };
 
@@ -29,20 +33,20 @@ function PaymentEntry({
 
       <div className="row">
         <div className="col-sm-6 offset-md-4" id="deliveryType">
-          <form method="post" onSubmit={handleSubmit}>
+          <form method="post" onSubmit={props.handleSubmit}>
             <Radio
               name="paymentMethod"
               id="swish"
               label="Swish"
-              checked={paymentMethod === 'swish'}
-              handleChange={handleChange}
+              checked={props.paymentMethod === 'swish'}
+              handleChange={props.handleChange}
             />
             <Radio
               name="paymentMethod"
               id="paymentLink"
               label="Payment Link (SMS after order)"
-              checked={paymentMethod === 'paymentLink'}
-              handleChange={handleChange}
+              checked={props.paymentMethod === 'paymentLink'}
+              handleChange={props.handleChange}
             />
             <button
               className="btn btn-success"
@@ -57,9 +61,9 @@ function PaymentEntry({
         </div>
       </div>
       {message && <div className={css.message}>{message}</div>}
-      {errors.length > 0 && (
+      {props.errors.length > 0 && (
       <ul className={css.errors}>
-        {errors.map((error) => (
+        {props.errors.map((error) => (
           <li key={error.code}>{error.message}</li>
         ))}
       </ul>
@@ -67,15 +71,5 @@ function PaymentEntry({
     </fieldset>
   );
 }
-PaymentEntry.propTypes = {
-  paymentMethod: PropTypes.string.isRequired,
-  orderStatus: PropTypes.string.isRequired,
-  errors: PropTypes.arrayOf(PropTypes.shape({
-    code: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired
-  })).isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
-};
 
 export default PaymentEntry;

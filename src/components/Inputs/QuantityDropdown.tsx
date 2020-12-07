@@ -1,19 +1,25 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, ReactElement } from 'react';
 
-function QuantityDropdown({ strValue, name, handleChange }) {
-  const value = parseInt(strValue, 10);
+interface Props {
+  strValue: string,
+  name: string,
+  handleChange: (event: ChangeEvent<HTMLSelectElement>) => void
+};
+
+function QuantityDropdown(props: Props): ReactElement {
+  const value = parseInt(props.strValue, 10);
   const NUM_ITEMS = value > 20 ? value : 20;
+
   return (
     <select
       className="form-control"
-      name={name}
-      id={name}
+      name={props.name}
+      id={props.name}
       value={value}
-      onChange={handleChange}
+      onChange={props.handleChange}
     >
-      {new Array(NUM_ITEMS).fill().map((item, index) => (
+      {new Array(NUM_ITEMS).fill(null).map((_item, index) => (
         <option
           key={index + 1}
           value={index + 1}
@@ -24,10 +30,5 @@ function QuantityDropdown({ strValue, name, handleChange }) {
     </select>
   );
 }
-QuantityDropdown.propTypes = {
-  strValue: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired
-};
 
 export default QuantityDropdown;

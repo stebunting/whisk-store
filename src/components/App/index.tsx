@@ -11,21 +11,35 @@ import { initialiseBoundaries } from '../../functions/boundaries';
 // Redux Actions
 import { loadProducts } from '../../redux/actions/productActions';
 import { loadBasket } from '../../redux/actions/basketActions';
-import { productType } from '../../functions/types';
+
+// Types
+import { Product } from '../../types/Product';
+import { Basket } from '../../types/Basket';
+import { ReduxState } from '../../types/ReduxState';
 
 // Components
 import StoreFront from '../StoreFront';
-import Product from '../Product';
-import Basket from '../Basket';
 import Title from '../Title';
+import ProductPage from '../Product';
+import BasketPage from '../Basket';
 import OrderConfirmation from '../OrderConfirmation';
 
-function App({
-  products,
-  basket,
-  loadProductsAction,
-  loadBasketAction
-}) {
+declare global {
+  interface Window {
+    googleMapsLoaded: boolean
+  }
+}
+
+interface Props {
+  products: Array<Product>,
+  basket: Basket,
+  loadProductsAction: () => void,
+  loadBasketAction: () => void
+};
+
+function App(props: Props) {
+  const { products, basket, loadProductsAction, loadBasketAction } = props;
+
   // Load google maps script, initialise boundaries onLoad
   window.googleMapsLoaded = useScript(
     `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places,geometry&callback=initMap`,
@@ -44,25 +58,20 @@ function App({
       <div className="container-fluid">
         <Switch>
           <Route exact path="/" component={StoreFront} />
-          <Route path="/product/:slug" component={Product} />
-          <Route path="/basket" component={Basket} />
+          <Route path="/product/:slug" component={ProductPage} />
+          <Route path="/basket" component={BasketPage} />
           <Route path="/orderconfirmation" component={OrderConfirmation} />
         </Switch>
       </div>
     </Router>
   );
 }
-App.propTypes = {
-  products: PropTypes.arrayOf(productType).isRequired,
-  basket: PropTypes.shape({
-    basketId: PropTypes.string
-  }).isRequired,
-  loadProductsAction: PropTypes.func.isRequired,
-  loadBasketAction: PropTypes.func.isRequired
-};
 
-function mapStateToProps({ products, basket }) {
-  return { products, basket };
+function mapStateToProps(state: ReduxState) {
+  return {
+    products: state.products,
+    basket: state.basket
+  };
 }
 
 const mapDispatchToProps = {

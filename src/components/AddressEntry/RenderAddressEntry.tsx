@@ -1,44 +1,47 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// Requirements
+import React, { ChangeEvent, FocusEvent, ReactElement, RefObject } from 'react';
+
+// Components
 import TextInput from '../Inputs/TextInput';
 import AddressDropdown from '../Inputs/AddressDropdown';
 import DeliveryZonesModal from './DeliveryZonesModal';
 import DeliveryZonesButton from './DeliveryZonesButton';
 
-function RenderAddressEntry({
-  address,
-  validAddress,
-  deliverable,
-  deliveryNotes,
-  autoCompleteRef,
-  handleChange,
-  handleBlur,
-}) {
+interface Props {
+  address: string,
+  validAddress: boolean | null,
+  deliverable: boolean,
+  deliveryNotes: string,
+  autoCompleteRef: RefObject<HTMLInputElement>,
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  handleBlur: (event: FocusEvent<HTMLInputElement>) => void
+};
+
+function RenderAddressEntry(props: Props): ReactElement {
   return (
     <fieldset className="form-group" id="delivery-details">
       <legend>Delivery</legend>
       <DeliveryZonesModal />
       <div id="user-delivery">
         <AddressDropdown
-          name="deliveryType"
           id="address"
           label="Address"
           placeholder="Address"
-          value={address}
-          valid={validAddress}
-          deliverable={deliverable}
-          autoCompleteRef={autoCompleteRef}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
+          value={props.address}
+          valid={props.validAddress}
+          deliverable={props.deliverable}
+          autoCompleteRef={props.autoCompleteRef}
+          handleChange={props.handleChange}
+          handleBlur={props.handleBlur}
         />
         <TextInput
-          name="deliveryType"
           id="deliveryNotes"
           label="Delivery Notes (please include doorcode and floor)"
           placeholder="Delivery Notes"
-          value={deliveryNotes}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
+          value={props.deliveryNotes}
+          valid={null}
+          handleChange={props.handleChange}
+          handleBlur={props.handleBlur}
         />
         <div className="row">
           <div className="offset-sm-4 col-sm-6">
@@ -49,20 +52,5 @@ function RenderAddressEntry({
     </fieldset>
   );
 }
-RenderAddressEntry.propTypes = {
-  address: PropTypes.string.isRequired,
-  validAddress: PropTypes.bool,
-  deliverable: PropTypes.bool.isRequired,
-  deliveryNotes: PropTypes.string.isRequired,
-  autoCompleteRef: PropTypes.oneOfType([
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-    PropTypes.func
-  ]).isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleBlur: PropTypes.func.isRequired
-};
-RenderAddressEntry.defaultProps = {
-  validAddress: null
-};
 
 export default RenderAddressEntry;

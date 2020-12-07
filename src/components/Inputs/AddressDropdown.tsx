@@ -1,68 +1,48 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { ChangeEvent, FocusEvent, ReactElement, RefObject } from 'react';
 
-function AddressDropdown({
-  id,
-  label,
-  placeholder,
-  value,
-  valid,
-  deliverable,
-  autoCompleteRef,
-  handleChange,
-  handleBlur
-}) {
+interface Props {
+  id: string,
+  label: string,
+  placeholder: string,
+  value: string,
+  valid: boolean | null,
+  deliverable: boolean,
+  autoCompleteRef: RefObject<HTMLInputElement>
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  handleBlur: (event: FocusEvent<HTMLInputElement>) => void
+};
+
+function AddressDropdown(props: Props): ReactElement {
   const classes = ['form-control'];
-  if (valid != null) {
-    classes.push(valid ? 'is-valid' : 'is-invalid');
+  if (props.valid != null) {
+    classes.push(props.valid ? 'is-valid' : 'is-invalid');
   }
 
   return (
     <div className="form-group row">
-      <label htmlFor={id} className="col-sm-4 col-form-label">
-        {label}
+      <label
+        htmlFor={props.id}
+        className="col-sm-4 col-form-label"
+      >
+        {props.label}
       </label>
       <div className="col-sm-6">
         <input
           type="text"
           className={classes.join(' ')}
-          id={id}
-          name={id}
-          placeholder={placeholder}
-          value={value}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          ref={autoCompleteRef}
+          id={props.id}
+          name={props.id}
+          placeholder={props.placeholder}
+          value={props.value}
+          onChange={props.handleChange}
+          onBlur={props.handleBlur}
+          ref={props.autoCompleteRef}
         />
-        {!deliverable && `* We cannot deliver to this Location *`}
+        {!props.deliverable && `* We cannot deliver to this Location *`}
       </div>
     </div>
   );
 }
-AddressDropdown.propTypes = {
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  valid: PropTypes.bool,
-  deliverable: PropTypes.bool.isRequired,
-  autoCompleteRef: PropTypes.oneOfType([
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-    PropTypes.func
-  ]).isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleBlur: PropTypes.func.isRequired
-};
-AddressDropdown.defaultProps = {
-  valid: null
-};
 
-function mapStateToProps({ basket }) {
-  return {
-    delivery: basket.delivery
-  };
-}
-
-export default connect(mapStateToProps)(AddressDropdown);
+export default AddressDropdown;

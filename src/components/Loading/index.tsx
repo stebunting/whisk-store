@@ -1,20 +1,17 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactNode } from 'react';
 
-function Loading({ children }) {
+interface Props {
+  children: Array<ReactNode> | ReactNode
+}
+
+function Loading(props: Props) {
   return (
     <div>
-      {children}
+      {props.children}
       Loading Store...
     </div>
   );
 }
-Loading.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ]).isRequired
-};
 
 export default Loading;

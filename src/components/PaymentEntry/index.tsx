@@ -1,50 +1,45 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { FormEvent, ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 // Functions
 import { updateUser } from '../../redux/actions/userActions';
+import { ReduxState } from '../../types/ReduxState';
 
 // Components
 import RenderPaymentEntry from './RenderPaymentEntry';
 
-function PaymentEntry({
-  paymentMethod,
-  orderStatus,
-  errors,
-  updateUserAction,
-  handleSubmit,
-}) {
+interface Props {
+  paymentMethod: string,
+  orderStatus: string,
+  errors: Array<{
+    code: string,
+    message: string
+  }>,
+  updateUserAction: (name: string, value: string) => void,
+  handleSubmit: (event: FormEvent<HTMLFormElement>) => void
+};
+
+function PaymentEntry(props: Props) {
   // Set state on form input
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
-    updateUserAction(name, value);
+    props.updateUserAction(name, value);
   };
 
   return (
     <RenderPaymentEntry
-      paymentMethod={paymentMethod}
-      orderStatus={orderStatus}
-      errors={errors}
+      paymentMethod={props.paymentMethod}
+      orderStatus={props.orderStatus}
+      errors={props.errors}
       handleChange={handleChange}
-      handleSubmit={handleSubmit}
+      handleSubmit={props.handleSubmit}
     />
   );
 }
-PaymentEntry.propTypes = {
-  paymentMethod: PropTypes.string.isRequired,
-  orderStatus: PropTypes.string.isRequired,
-  errors: PropTypes.arrayOf(PropTypes.shape({
-    code: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired
-  })).isRequired,
-  updateUserAction: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
-};
 
-function mapStateToProps({ user }) {
+function mapStateToProps({ user }: ReduxState) {
   return {
     paymentMethod: user.paymentMethod
   };

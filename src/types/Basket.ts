@@ -1,19 +1,21 @@
 import { Product } from './Product';
 import { Statement } from './Statement';
 
+export interface BasketItem {
+  deliveryDate: string,
+  deliveryType: string,
+  name: string,
+  productSlug: string,
+  grossPrice: number,
+  linePrice: number,
+  momsRate: number,
+  quantity: number,
+  details: Product
+}
+
 export interface Basket {
   basketId: string,
-  items: Array<{
-    deliveryDate: string,
-    deliveryType: string,
-    name: string,
-    productSlug: string,
-    grossPrice: number,
-    linePrice: number,
-    momsRate: number,
-    quantity: number,
-    details: Product
-  }>,
+  items: Array<BasketItem>,
   delivery: {
     address: string,
     allCollections: boolean,

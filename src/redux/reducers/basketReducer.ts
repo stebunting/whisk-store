@@ -2,7 +2,16 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-function basketReducer(state = initialState.basket, action) {
+// Types
+import { Basket, BasketItem } from '../../types/Basket';
+
+interface BasketAction {
+  type: string,
+  basket?: Basket
+  basketItems?: Array<BasketItem>
+}
+
+function basketReducer(state = initialState.basket, action: BasketAction) {
   switch (action.type) {
     case types.LOAD_BASKET_SUCCESS:
     case types.UPDATE_BASKET_SUCCESS:

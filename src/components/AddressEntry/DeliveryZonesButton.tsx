@@ -1,6 +1,7 @@
-import React from 'react';
+// Requirements
+import React, { ReactElement } from 'react';
 
-function DeliveryZonesButton() {
+function DeliveryZonesButton(): ReactElement {
   return (
     <button
       type="button"

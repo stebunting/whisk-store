@@ -1,8 +1,22 @@
-/* global dataLayer */
+// Functions
 import { priceFormat } from './helpers';
 
+// Types
+import { GaEcommerceItem } from '../types/GaEcommerceItem';
+import { GaEcommerceEvent } from '../types/GaEcommerceEvent';
+import { BasketItem } from '../types/Basket';
+import { Product } from '../types/Product';
+import { Statement } from '../types/Statement';
+
+// Declare gTM dataLayer array.
+declare global {
+  interface Window {
+    dataLayer: Array<GaEcommerceEvent>
+  }
+}
+
 // Return Analytics items array from products
-function getItemsFromProducts(products) {
+function getItemsFromProducts(products: Array<Product>, quantity: number): Array<GaEcommerceItem> {
   return products.map((product) => ({
     item_id: product.slug,
     item_name: product.name,
@@ -13,13 +27,13 @@ function getItemsFromProducts(products) {
     }),
     item_brand: product.brand,
     item_category: product.category,
-    quantity: product.quantity.toString(),
+    quantity: quantity.toString(),
     currency: 'SEK'
   }));
 }
 
 // Return Analytics items array from items
-function getItemsFromItems(items) {
+function getItemsFromItems(items: Array<BasketItem>): Array<GaEcommerceItem> {
   return items.map((item) => ({
     item_id: item.details.slug,
     item_name: item.details.name,
@@ -36,30 +50,30 @@ function getItemsFromItems(items) {
 }
 
 // Record view of product details
-export function viewItemGaEvent(product) {
-  dataLayer.push({
+export function viewItemGaEvent(product: Product): void {
+  window.dataLayer.push({
     event: 'view_item',
     ecommerce: {
       currency: 'SEK',
-      items: getItemsFromProducts([{ ...product, quantity: 1 }])
+      items: getItemsFromProducts([product], 1)
     }
   });
 }
 
 // Record add product to basket
-export function addToBasketGaEvent(product, quantity) {
-  dataLayer.push({
+export function addToBasketGaEvent(product: Product, quantity: number): void {
+  window.dataLayer.push({
     event: 'add_to_cart',
     ecommerce: {
       currency: 'SEK',
-      items: getItemsFromProducts([{ ...product, quantity }])
+      items: getItemsFromProducts([product], quantity)
     }
   });
 }
 
 // Record add product to basket
-export function addItemToBasketGaEvent(item, quantity) {
-  dataLayer.push({
+export function addItemToBasketGaEvent(item: BasketItem, quantity: number): void {
+  window.dataLayer.push({
     event: 'add_to_cart',
     ecommerce: {
       currency: 'SEK',
@@ -69,8 +83,8 @@ export function addItemToBasketGaEvent(item, quantity) {
 }
 
 // Record remove product from basket
-export function removeItemFromBasketGaEvent(item, quantity) {
-  dataLayer.push({
+export function removeItemFromBasketGaEvent(item: BasketItem, quantity: number): void {
+  window.dataLayer.push({
     event: 'remove_from_cart',
     ecommerce: {
       currency: 'SEK',
@@ -79,12 +93,12 @@ export function removeItemFromBasketGaEvent(item, quantity) {
   });
 }
 
-export function beginCheckoutGaEvent(items, bottomLine) {
-  dataLayer.push({
+export function beginCheckoutGaEvent(items: Array<BasketItem>, statement: Statement): void {
+  window.dataLayer.push({
     event: 'purchase',
     ecommerce: {
       purchase: {
-        value: priceFormat(bottomLine.totalPrice, {
+        value: priceFormat(statement.bottomLine.totalPrice, {
           includeOre: true,
           includeSymbol: false
         }),
@@ -95,22 +109,22 @@ export function beginCheckoutGaEvent(items, bottomLine) {
   });
 }
 
-export function purchaseGaEvent(items, bottomLine, orderId) {
-  dataLayer.push({
+export function purchaseGaEvent(items: Array<BasketItem>, statement: Statement, orderId: string) {
+  window.dataLayer.push({
     event: 'purchase',
     ecommerce: {
       purchase: {
         transaction_id: orderId,
         affiliation: 'Whisk Online Store',
-        value: priceFormat(bottomLine.totalPrice, {
+        value: priceFormat(statement.bottomLine.totalPrice, {
           includeOre: true,
           includeSymbol: false
         }),
-        tax: priceFormat(bottomLine.totalMoms, {
+        tax: priceFormat(statement.bottomLine.totalMoms, {
           includeOre: true,
           includeSymbol: false
         }),
-        shipping: priceFormat(bottomLine.totalDelivery, {
+        shipping: priceFormat(statement.bottomLine.totalDelivery, {
           includeOre: true,
           includeSymbol: false
         }),

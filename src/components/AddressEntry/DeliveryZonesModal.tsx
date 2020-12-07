@@ -1,6 +1,7 @@
-import React from 'react';
+// Requirements
+import React, { ReactElement } from 'react';
 
-function DeliveryZonesModal() {
+function DeliveryZonesModal(): ReactElement {
   return (
     <div className="modal fade" id="deliveryZoneModal" tabIndex={-1} role="dialog" aria-hidden="true">
       <div className="modal-dialog">

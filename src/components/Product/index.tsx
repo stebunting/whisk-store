@@ -1,6 +1,6 @@
 // Requirements
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 // Custom Hooks
@@ -56,7 +56,11 @@ function Product(props: Props): ReactElement {
   }, [products.length, product.slug, history]);
 
   // Send Google Analytics Impression Data
-  useEffect(() => product.slug !== '' && viewItemGaEvent(product), [product]);
+  useEffect(() => {
+    if (product.slug !== '') {
+      viewItemGaEvent(product);
+    }
+  }, [product]);
 
   const [basketPayload, setBasketPayload] = useState({
     quantity: '1',
@@ -218,7 +222,12 @@ function Product(props: Props): ReactElement {
   );
 }
 
-function mapStateToProps({ products, basket }: ReduxState, ownProps) {
+interface MatchParams {
+  slug: string;
+}
+interface OwnProps extends RouteComponentProps<MatchParams> {}
+
+function mapStateToProps({ products, basket }: ReduxState, ownProps: OwnProps) {
   const { slug } = ownProps.match.params;
 
   const defaultProduct = {

@@ -1,14 +1,15 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, ReactElement } from 'react';
 
-function RadioInline({
-  id,
-  name,
-  label,
-  checked,
-  handleChange
-}) {
+interface Props {
+  id: string,
+  name: string,
+  label: string,
+  checked: boolean,
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+};
+
+function RadioInline(props: Props): ReactElement {
   return (
     <div className="form-check form-check-inline">
       <label
@@ -18,23 +19,16 @@ function RadioInline({
         <input
           className="form-check-input"
           type="radio"
-          id={id}
-          name={id}
-          value={name}
-          checked={checked}
-          onChange={handleChange}
+          id={props.id}
+          name={props.id}
+          value={props.name}
+          checked={props.checked}
+          onChange={props.handleChange}
         />
-        {label}
+        {props.label}
       </label>
     </div>
   );
 }
-RadioInline.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  handleChange: PropTypes.func.isRequired
-};
 
 export default RadioInline;

@@ -2,7 +2,14 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-function userReducer(state = initialState.user, action) {
+interface UserAction {
+  type: string
+  payload: {
+    [key: string]: { value: string }
+  }
+}
+
+function userReducer(state = initialState.user, action: UserAction) {
   switch (action.type) {
     case types.UPDATE_USER_FIELD:
       return {

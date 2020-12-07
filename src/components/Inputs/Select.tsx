@@ -1,27 +1,38 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, ReactElement } from 'react';
 
-function Select({
-  defaultText,
-  options,
-  name,
-  value,
-  handleChange
-}) {
-  const allOptionsDisabled = options.reduce((acc, item) => acc && item.disabled, true);
+interface Props {
+  defaultText: string,
+  options: Array<{
+    value: string,
+    text: string,
+    disabled: boolean
+  }>,
+  name: string,
+  value: string,
+  handleChange: (event: ChangeEvent<HTMLSelectElement>) => void
+};
+
+function Select(props: Props): ReactElement {
+  const allOptionsDisabled = props.options.reduce((acc, item) => (
+    acc && item.disabled
+  ), true);
 
   return (
     <div className="form-group">
       <select
         className="form-control"
-        id={name}
-        name={name}
-        value={value}
-        onChange={handleChange}
+        id={props.name}
+        name={props.name}
+        value={props.value}
+        onChange={props.handleChange}
       >
-        <option value="">{allOptionsDisabled ? 'Item Currently Unavailable' : defaultText}</option>
-        {options.map((option) => (
+        <option value="">
+          {allOptionsDisabled
+            ? 'Item Currently Unavailable'
+            : props.defaultText}
+        </option>
+        {props.options.map((option) => (
           <option
             key={option.value}
             value={option.value}
@@ -34,16 +45,5 @@ function Select({
     </div>
   );
 }
-Select.propTypes = {
-  defaultText: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.shape({
-    value: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-    disabled: PropTypes.bool.isRequired
-  })).isRequired,
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired,
-};
 
 export default Select;

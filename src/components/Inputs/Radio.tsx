@@ -1,40 +1,34 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, ReactElement } from 'react';
 
-function Radio({
-  name,
-  id,
-  label,
-  checked,
-  handleChange
-}) {
+interface Props {
+  name: string,
+  id: string,
+  label: string,
+  checked: boolean,
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+};
+
+function Radio(props: Props): ReactElement {
   return (
     <div className="form-check">
       <input
         className="form-check-input"
         type="radio"
-        id={id}
-        name={name}
-        value={id}
-        checked={checked}
-        onChange={handleChange}
+        id={props.id}
+        name={props.name}
+        value={props.id}
+        checked={props.checked}
+        onChange={props.handleChange}
       />
       <label
         className="form-check-label"
-        htmlFor={id}
+        htmlFor={props.id}
       >
-        {label}
+        {props.label}
       </label>
     </div>
   );
 }
-Radio.propTypes = {
-  name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  handleChange: PropTypes.func.isRequired,
-};
 
 export default Radio;

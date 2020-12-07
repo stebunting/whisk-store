@@ -1,14 +1,13 @@
 // Requirements
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, MouseEvent, FormEvent } from 'react';
 import { useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Custom Hooks
 import useHeaders from '../../hooks/useHeaders';
 
 // Redux Actions
-import { updateBasket, removeItemFromBasket } from '../../redux/actions/basketActions';
+import { updateBasket, UpdateBasketPayload, removeItemFromBasket } from '../../redux/actions/basketActions';
 import { updateValidityAll } from '../../redux/actions/checkoutFormActions';
 
 // Functions
@@ -17,12 +16,11 @@ import { sendOrder, checkSwishStatus } from '../../functions/apiCalls';
 import { addItemToBasketGaEvent, removeItemFromBasketGaEvent, purchaseGaEvent } from '../../functions/gaEcommerce';
 
 // Types
-import {
-  productType,
-  basketType,
-  validityType,
-  userType
-} from '../../functions/types';
+import { Basket, BasketItem } from '../../types/Basket';
+import { Product } from '../../types/Product';
+import { User } from '../../types/User';
+import { FormValidity } from '../../types/FormValidity';
+import { ReduxState } from '../../types/ReduxState';
 
 // Components
 import BasketSummary from './BasketSummary';
@@ -31,17 +29,24 @@ import DetailsEntry from '../DetailsEntry';
 import PaymentEntry from '../PaymentEntry';
 import Loading from '../Loading';
 
-function Basket({
-  user,
-  products,
-  basket,
-  validity,
-  updateBasketAction,
-  removeItemFromBasketAction,
-  updateValidityAllAction
-}) {
+interface Props {
+  user: User,
+  products: Array<Product>,
+  basket: Basket,
+  validity: FormValidity,
+  updateBasketAction: (payload: UpdateBasketPayload) => void,
+  removeItemFromBasketAction: (payload: UpdateBasketPayload) => void,
+  updateValidityAllAction: (validity: FormValidity) => void
+};
+
+interface Error {
+  code: string,
+  message: string
+}
+
+function Basket(props: Props) {
+  const { user, products, basket, validity } = props;
   const history = useHistory();
-  console.log(basket);
 
   // Set Page Details
   const metadata = useHeaders({
@@ -54,7 +59,7 @@ function Basket({
   const [checkoutStage, setCheckoutStage] = useState(0);
   useEffect(() => {
     let stage = 0;
-    if (basket.items.length > 0
+    if (props.basket.items.length > 0
       && (Object.keys(basket.delivery.details).length === 0 || validity.address)) {
       stage += 1;
       if (validity.name && validity.email && validity.telephone) stage += 1;
@@ -63,7 +68,7 @@ function Basket({
   }, [basket.items.length, basket.delivery.details, validity]);
 
   // Handle update/delete items from summary
-  const handleChange = (event, action, item) => {
+  const handleChange = (event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>, action: string, item: BasketItem) => {
     const { value } = event.target;
     const payload = {
       productSlug: item.productSlug,
@@ -74,7 +79,7 @@ function Basket({
     const quantityChange = newQuantity - item.quantity;
     switch (action) {
       case 'update':
-        updateBasketAction({
+        props.updateBasketAction({
           ...payload,
           quantity: parseInt(value, 10)
         });
@@ -86,7 +91,7 @@ function Basket({
         break;
 
       case 'remove':
-        removeItemFromBasketAction(payload);
+        props.removeItemFromBasketAction(payload);
         removeItemFromBasketGaEvent(item, Math.abs(quantityChange));
         break;
 
@@ -97,7 +102,7 @@ function Basket({
 
   // Check Swish Payment Status
   const [orderStatus, setOrderStatus] = useState('');
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState([] as Array<Error>);
   const fetchSwishStatus = async (swishId) => {
     const SWISH_UPDATE_INTERVAL = 2000;
     const swish = await checkSwishStatus(swishId);
@@ -123,7 +128,7 @@ function Basket({
         break;
 
       case 'PAID':
-        purchaseGaEvent(basket.items, basket.statement.bottomLine, swish.payeePaymentReference);
+        purchaseGaEvent(basket.items, basket.statement, swish.payeePaymentReference);
         return history.push('/orderconfirmation', { ...swish });
 
       default:
@@ -144,7 +149,7 @@ function Basket({
     switch (data.status) {
       // Payment Link
       case 'PAID':
-        purchaseGaEvent(basket.items, basket.statement.bottomLine, data.orderId);
+        purchaseGaEvent(basket.items, basket.statement, data.orderId);
         return history.push('/orderconfirmation', { ...data });
 
       // Swish
@@ -168,10 +173,10 @@ function Basket({
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): Promise<any> | boolean => {
     event.preventDefault();
     const [allValid, validated] = validateAll(user, validity);
-    updateValidityAllAction(validated);
+    props.updateValidityAllAction(validated);
     if (allValid) return submitForm();
     return false;
   };
@@ -195,27 +200,13 @@ function Basket({
     </>
   );
 }
-Basket.propTypes = {
-  user: userType.isRequired,
-  products: PropTypes.arrayOf(productType).isRequired,
-  basket: basketType.isRequired,
-  validity: validityType.isRequired,
-  updateBasketAction: PropTypes.func.isRequired,
-  removeItemFromBasketAction: PropTypes.func.isRequired,
-  updateValidityAllAction: PropTypes.func.isRequired
-};
 
-function mapStateToProps({
-  user,
-  products,
-  basket,
-  validity
-}) {
+function mapStateToProps(state: ReduxState) {
   return {
-    user,
-    products,
-    basket,
-    validity
+    user: state.user,
+    products: state.products,
+    basket: state.basket,
+    validity: state.validity
   };
 }
 

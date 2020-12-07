@@ -1,36 +1,35 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, ReactElement } from 'react';
 
-function TextArea({
-  id,
-  label,
-  placeholder,
-  value,
-  handleChange
-}) {
+interface Props {
+  id: string,
+  label: string,
+  placeholder: string,
+  value: string,
+  handleChange: (event: ChangeEvent<HTMLTextAreaElement>) => void
+}
+
+function TextArea(props: Props): ReactElement {
   return (
     <div className="form-group row">
-      <label htmlFor={id} className="col-sm-4 col-form-label">{label}</label>
+      <label
+        htmlFor={props.id}
+        className="col-sm-4 col-form-label"
+      >
+        {props.label}
+      </label>
       <div className="col-sm-6">
         <textarea
           className="form-control"
-          id={id}
-          name={id}
-          placeholder={placeholder}
-          value={value}
-          onChange={handleChange}
+          id={props.id}
+          name={props.id}
+          placeholder={props.placeholder}
+          value={props.value}
+          onChange={props.handleChange}
         />
       </div>
     </div>
   );
 }
-TextArea.propTypes = {
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired
-};
 
 export default TextArea;

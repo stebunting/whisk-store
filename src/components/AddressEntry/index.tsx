@@ -1,22 +1,46 @@
-import React, { useEffect } from 'react';
+// Requirements
+import React, { ChangeEvent, FocusEvent, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
+// Custom Hooks
 import useAutoComplete from '../../hooks/useAutoComplete';
-import { getZone } from '../../functions/boundaries';
-import { validate } from '../../functions/validate';
-import RenderAddressEntry from './RenderAddressEntry';
+
+// Redux Actions
 import * as basketActions from '../../redux/actions/basketActions';
 import * as userActions from '../../redux/actions/userActions';
 import * as checkoutFormActions from '../../redux/actions/checkoutFormActions';
-import { userType, basketType } from '../../functions/types';
 
-function AddressEntry({
-  user,
-  validAddress,
-  basket,
-  actions
-}) {
+// Functions
+import { getZone } from '../../functions/boundaries';
+import { validate } from '../../functions/validate';
+
+// Types
+import { User } from '../../types/User';
+import { Basket } from '../../types/Basket';
+import { FormValidity } from '../../types/FormValidity';
+
+// Components
+import RenderAddressEntry from './RenderAddressEntry';
+import { ReduxState } from '../../types/ReduxState';
+
+interface Props {
+  user: User,
+  basket: Basket,
+  validAddress: boolean | null,
+  actions: {
+    updateBasketZoneAction: (location: basketActions.BasketLocation) => void,
+    updateUserAction: (name: string, value: string | boolean) => void,
+    updateUserAddressAction: (formattedAddress: string, zone: number) => void,
+    updateValidityAction: (name: string, value: boolean) => void,
+    updateValidityAllAction: (validity: FormValidity) => void
+  }
+};
+
+function AddressEntry(props: Props) {
+  const { user, validAddress, basket, actions } = props;
+
   // Set up Google Autocomplete
   const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
   useEffect(() => {
@@ -45,13 +69,13 @@ function AddressEntry({
   }, [actions, basket.delivery]);
 
   // Set state on form input
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     actions.updateUserAction(name, value);
   };
 
   // Validate input field when moving away
-  const handleBlur = (event) => {
+  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
     actions.updateValidityAction(name, validate(user, name));
   };
@@ -72,27 +96,15 @@ function AddressEntry({
       />
     )) || null;
 }
-AddressEntry.propTypes = {
-  user: userType.isRequired,
-  basket: basketType.isRequired,
-  validAddress: PropTypes.bool,
-  actions: PropTypes.shape({
-    updateBasketZoneAction: PropTypes.func.isRequired,
-    updateUserAction: PropTypes.func.isRequired,
-    updateUserAddressAction: PropTypes.func.isRequired,
-    updateValidityAction: PropTypes.func.isRequired,
-    updateValidityAllAction: PropTypes.func.isRequired
-  }).isRequired
-};
 AddressEntry.defaultProps = {
   validAddress: null
 };
 
-function mapStateToProps({ basket, user, validity }) {
+function mapStateToProps(state: ReduxState) {
   return {
-    basket,
-    user,
-    validAddress: validity.address
+    basket: state.basket,
+    user: state.user,
+    validAddress: state.validity.address
   };
 }
 
