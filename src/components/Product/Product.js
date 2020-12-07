@@ -47,11 +47,11 @@ function Product({
 
   const history = useHistory();
   useEffect(() => {
-    if (products.length > 0 && product.productId === '') history.push('/');
-  }, [products.length, product.productId, history]);
+    if (products.length > 0 && product.slug === '') history.push('/');
+  }, [products.length, product.slug, history]);
 
   // Send Google Analytics Impression Data
-  useEffect(() => product.productId !== '' && viewItemGaEvent(product), [product]);
+  useEffect(() => product.slug !== '' && viewItemGaEvent(product), [product]);
 
   const [basketPayload, setBasketPayload] = useState({
     quantity: '1',
@@ -60,7 +60,7 @@ function Product({
   });
 
   const basketItem = basket.items.filter((item) => (
-    item.productId === product.productId
+    item.productSlug === product.slug
     && item.deliveryType === basketPayload.deliveryType
     && item.deliveryDate === basketPayload.deliveryDate
   ));
@@ -74,7 +74,7 @@ function Product({
       && basketPayload.deliveryDate === '') return;
     updateBasketAction({
       ...basketPayload,
-      productId: product.productId,
+      productSlug: product.slug,
       quantity: parseInt(basketPayload.quantity, 10) + quantityInBasket
     });
     addToBasketGaEvent(product, parseInt(basketPayload.quantity, 10));
@@ -223,7 +223,6 @@ function mapStateToProps({ products, basket }, ownProps) {
   const { slug } = ownProps.match.params;
 
   const defaultProduct = {
-    productId: '',
     name: '',
     slug: '',
     contents: [],

@@ -2,11 +2,12 @@ import Cookies from 'universal-cookie';
 
 const cookieName = 'basketId';
 const cookies = new Cookies();
+const apiUrl = process.env.API_URL;
 
 // Get Product List from Backend
 export function getProducts() {
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/products`)
+    fetch(`${apiUrl}/api/products`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.products);
@@ -20,8 +21,8 @@ export function getBasket() {
   // cookies.remove(cookieName, { path: '/' });
   const basketId = cookies.get(cookieName);
   const url = basketId
-    ? `${process.env.API_URL}/api/basket/${basketId}`
-    : `${process.env.API_URL}/api/basket`;
+    ? `${apiUrl}/api/basket/${basketId}`
+    : `${apiUrl}/api/basket`;
   const method = basketId != null ? 'get' : 'post';
 
   return new Promise((resolve, reject) => {
@@ -39,7 +40,7 @@ export function getBasket() {
 
 export function resetBasket() {
   const basketId = cookies.get(cookieName);
-  const url = `${process.env.API_URL}/api/basket/${basketId}`;
+  const url = `${apiUrl}/api/basket/${basketId}`;
 
   return new Promise((resolve, reject) => {
     fetch(url, { method: 'delete' })
@@ -58,7 +59,7 @@ export function resetBasket() {
 export function updateBasketApi(payload) {
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/basket/update/quantity/${basketId}`, {
+    fetch(`${apiUrl}/api/basket/update/quantity/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -77,7 +78,7 @@ export function updateBasketApi(payload) {
 export function updateBasketZoneApi(location) {
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/basket/update/zone/${basketId}`, {
+    fetch(`${apiUrl}/api/basket/update/zone/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ location })
@@ -93,7 +94,7 @@ export function updateBasketZoneApi(location) {
 export function removeItemFromBasketApi(payload) {
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/basket/update/remove/${basketId}`, {
+    fetch(`${apiUrl}/api/basket/update/remove/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -109,7 +110,7 @@ export function removeItemFromBasketApi(payload) {
 export function sendOrder(payload) {
   const basketId = cookies.get(cookieName);
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/order/${basketId}`, {
+    fetch(`${apiUrl}/api/order/${basketId}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -124,7 +125,7 @@ export function sendOrder(payload) {
 // Send completed order to backend
 export function checkSwishStatus(swishId) {
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_URL}/api/order/swish/${swishId}`)
+    fetch(`${apiUrl}/api/order/swish/${swishId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.order);

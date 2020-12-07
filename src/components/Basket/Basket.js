@@ -49,16 +49,6 @@ function Basket({
     description: 'Whisk Basket'
   });
 
-  // useEffect(() => {
-  //   if (basket.basketId && products.length > 0) {
-  //     // eslint-disable-next-line no-param-reassign
-  //     appendProductToBasketAction(basket.items.map((item) => ({
-  //       ...item,
-  //       details: products.filter((product) => product.productId === item.productId)[0]
-  //     })));
-  //   }
-  // }, [appendProductToBasketAction, basket.basketId, basket.items.length, products]);
-
   // Set checkout stage, only adds stages, does not remove
   const [checkoutStage, setCheckoutStage] = useState(0);
   useEffect(() => {
@@ -75,7 +65,7 @@ function Basket({
   const handleChange = (event, action, item) => {
     const { value } = event.target;
     const payload = {
-      productId: item.productId,
+      productSlug: item.productSlug,
       deliveryType: item.deliveryType,
       deliveryDate: item.deliveryDate
     };

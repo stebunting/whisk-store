@@ -46,7 +46,7 @@ function StoreFront({
         {products.map((product) => (
           <li
             className={css.productItem}
-            key={product.productId}
+            key={product.slug}
           >
             <Link to={`/product/${product.slug}`}>
               <img

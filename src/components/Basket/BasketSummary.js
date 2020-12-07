@@ -22,7 +22,7 @@ function BasketSummary({ basket, handleChange }) {
           {basket.items.length > 0 ? (
             <>
               {basket.items.map((item) => (!item.details ? null : (
-                <tr key={`${item.productId}-${item.deliveryDate}`}>
+                <tr key={`${item.productSlug}-${item.deliveryDate}`}>
                   <td className={css.tableCell}>
                     <Link to={`/product/${item.details.slug}`}>
                       {item.details.name}
@@ -37,7 +37,7 @@ function BasketSummary({ basket, handleChange }) {
                       <div className="col-xs">
                         <QuantityDropdown
                           strValue={`${item.quantity}`}
-                          name={`update|${item.productId}|${item.deliveryType}|${item.deliveryDate}`}
+                          name={`update|${item.productSlug}`}
                           handleChange={(e) => handleChange(e, 'update', item)}
                         />
                       </div>
@@ -45,7 +45,7 @@ function BasketSummary({ basket, handleChange }) {
                         <button
                           className="btn btn-link form-control"
                           type="button"
-                          name={`remove|${item.productId}|${item.deliveryType}|${item.deliveryDate}`}
+                          name={`remove|${item.productSlug}`}
                           onClick={(e) => handleChange(e, 'remove', item)}
                         >
                           <img src="/icons/delete.svg" alt="Remove item from basket" />

@@ -60,10 +60,10 @@ export function updateBasket(payload) {
   };
 }
 
-export function updateBasketZoneApi(productId, zone) {
+export function updateBasketZoneApi(basketId, zone) {
   return function thunkUpdateBasketZone(dispatch) {
     dispatch(beginApiCall());
-    return actions.updateBasketZoneApi(productId, zone).then((data) => (
+    return actions.updateBasketZoneApi(basketId, zone).then((data) => (
       dispatch(updateBasketZoneSuccess(data))
     ));
   };

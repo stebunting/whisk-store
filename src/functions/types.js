@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 
 export const productType = PropTypes.shape({
   productId: PropTypes.string,
+  slug: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.arrayOf(PropTypes.string),
   details: PropTypes.arrayOf(PropTypes.shape({

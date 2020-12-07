@@ -20,7 +20,10 @@ function OrderConfirmation({ resetBasketAction }) {
     ? location.state.paymentMethod
     : '';
 
-  useEffect(() => resetBasketAction());
+  useEffect(() => {
+    console.log('remove basket');
+    resetBasketAction();
+  }, [resetBasketAction]);
 
   let message;
   switch (paymentMethod) {

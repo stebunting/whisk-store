@@ -35,8 +35,8 @@ function App({
   // Load products and basket on first load
   useEffect(() => {
     if (products.length === 0) loadProductsAction();
-  }, [loadProductsAction, products.length]);
-  useEffect(() => !basket.basketId && loadBasketAction(), [loadBasketAction, basket]);
+    if (!basket.basketId) loadBasketAction();
+  }, [loadProductsAction, loadBasketAction, products.length, basket]);
 
   return (
     <Router>

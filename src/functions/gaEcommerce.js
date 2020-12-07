@@ -4,7 +4,7 @@ import { priceFormat } from './helpers';
 // Return Analytics items array from products
 function getItemsFromProducts(products) {
   return products.map((product) => ({
-    item_id: product.productId,
+    item_id: product.slug,
     item_name: product.name,
     affiliation: 'Whisk Online Store',
     price: priceFormat(product.grossPrice, {
@@ -21,7 +21,7 @@ function getItemsFromProducts(products) {
 // Return Analytics items array from items
 function getItemsFromItems(items) {
   return items.map((item) => ({
-    item_id: item.productId,
+    item_id: item.details.slug,
     item_name: item.details.name,
     affiliation: 'Whisk Online Store',
     price: priceFormat(item.details.grossPrice, {
