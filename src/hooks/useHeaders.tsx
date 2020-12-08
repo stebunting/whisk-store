@@ -12,7 +12,10 @@ function useHeaders(headers: HeaderPayload): ReactElement {
   const { header, title, description } = headers;
 
   useEffect(() => {
-    document.getElementById('pageTitle').textContent = header;
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle != null) {
+      pageTitle.textContent = header;
+    }
   });
 
   return (

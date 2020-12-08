@@ -1,16 +1,16 @@
 // Requirements
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, RefObject, KeyboardEvent } from 'react';
 
-function useAutoComplete() {
-  const ref = useRef(null);
-  const [newAddress, setNewAddress] = useState({});
+function useAutoComplete(): [google.maps.places.PlaceResult, RefObject<HTMLInputElement>] {
+  const ref = useRef<HTMLInputElement>(null);
+  const [newAddress, setNewAddress] = useState({} as google.maps.places.PlaceResult);
 
   const autocompleteRef = useCallback((node) => {
-    let autocomplete;
-    let autocompleteListener;
+    let autocomplete: google.maps.places.Autocomplete;
+    let autocompleteListener: google.maps.MapsEventListener;
 
     // Callback on keydown event
-    const keydownListener = (event) => {
+    const keydownListener = (event: KeyboardEvent<HTMLInputElement>) => {
       const pacContainers = Array.from(document.getElementsByClassName('pac-container'));
       const pacContainerVisible = pacContainers.reduce((visible, pacContainer) => (
         window.getComputedStyle(pacContainer).display !== 'none' || visible

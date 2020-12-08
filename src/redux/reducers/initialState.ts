@@ -1,12 +1,17 @@
-const initialState = {
+// Types
+import { ReduxState } from "../../types/ReduxState";
+
+const initialState: ReduxState = {
   basket: {
     basketId: '',
     delivery: {
       address: '',
+      allCollections: true,
       deliverable: false,
       deliveryTotal: 0,
       momsRate: 25,
-      zone: -1
+      zone: -1,
+      details: {}
     },
     items: [],
     statement: {

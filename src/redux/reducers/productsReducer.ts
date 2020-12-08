@@ -4,13 +4,9 @@ import initialState from './initialState';
 
 // Types
 import { Product } from '../../types/Product';
+import { ProductAction } from '../actions/productActions';
 
-interface ProductAction {
-  type: string,
-  products: Array<Product>
-}
-
-function productsReducer(state = initialState.products, action: ProductAction) {
+function productsReducer(state = initialState.products, action: ProductAction): Array<Product> {
   switch (action.type) {
     case types.LOAD_PRODUCTS_SUCCESS:
       return action.products;

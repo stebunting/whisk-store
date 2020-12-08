@@ -1,11 +1,15 @@
-// import { DateTime } from 'luxon';
+// Requirements
 const dayjs = require('dayjs');
 const objectSupport = require('dayjs/plugin/objectSupport');
-
 dayjs.extend(objectSupport);
 
 // Format price from stored öre to krona
-export function priceFormat(num, userOptions = {}) {
+interface PriceFormatOptions {
+  includeOre?: boolean,
+  includeSymbol?: boolean
+}
+
+export function priceFormat(num: number, userOptions = {} as PriceFormatOptions): string {
   const options = {
     includeOre: userOptions.includeOre || false
   };
@@ -18,21 +22,37 @@ export function priceFormat(num, userOptions = {}) {
   return str;
 }
 
-function parseDateCode(code) {
+interface DateCodeObject {
+  year: number,
+  month: number,
+  date: number,
+  time: {
+    start: string,
+    end: string
+  }
+}
+function parseDateCode(code: string): DateCodeObject {
   const [year, month, date, start, end] = code.split('-');
   return {
-    year,
-    month,
-    date,
+    year: parseInt(year, 10),
+    month: parseInt(month, 10),
+    date: parseInt(date, 10),
     time: { start, end }
   };
 }
 
 // Format date/time range
-export function rangeFormat(data, options = {}) {
-  const range = options.code === true
-    ? parseDateCode(data)
-    : data;
+interface RangeFormatOptions {
+  code: boolean,
+  times: boolean
+}
+export function rangeFormat(data: DateCodeObject | string, options = {} as RangeFormatOptions): string {
+  let range: DateCodeObject;
+  if (typeof data === 'string') {
+    range = parseDateCode(data);
+  } else {
+    range = data;
+  }
   const date = dayjs({
     year: range.year,
     month: range.month - 1,
@@ -44,11 +64,18 @@ export function rangeFormat(data, options = {}) {
     : `${date} (${range.time.start} - ${range.time.end})`;
 }
 
-export function hasDatePassed(dateObj) {
+// Function to check if passed in date has passed
+interface DateObject {
+  year: number,
+  month: number,
+  date: number
+}
+export function hasDatePassed(dateObj: DateObject): boolean {
   // DayJS uses 0-indexed month
   return dayjs({ ...dateObj, month: dateObj.month - 1 }).isBefore(dayjs());
 }
 
-export function capitaliseFirst(word) {
+// Function to capitalise first letter of word
+export function capitaliseFirst(word: string): string {
   return `${word.charAt(0).toUpperCase()}${word.substring(1).toLowerCase()}`;
 }

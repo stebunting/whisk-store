@@ -2,22 +2,13 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-// Types
+import { CheckoutFormAction } from '../actions/checkoutFormActions';
 import { FormValidity } from '../../types/FormValidity';
 
-interface CheckoutFormAction {
-  type: string,
-  payload?: {
-    name: string,
-    value: string
-  }
-  validity?: FormValidity
-}
-
-function checkoutFormReducer(state = initialState.validity, action: CheckoutFormAction) {
+function checkoutFormReducer(state = initialState.validity, action: CheckoutFormAction): FormValidity {
   switch (action.type) {
     case types.UPDATE_VALIDITY:
-      if (Object.prototype.hasOwnProperty.call(state, action.payload.name)) {
+      if (action.payload && Object.prototype.hasOwnProperty.call(state, action.payload.name)) {
         return {
           ...state,
           [action.payload.name]: action.payload.value

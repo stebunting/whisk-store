@@ -41,5 +41,5 @@ export interface Basket {
 
 
   // THIS IS THE SAME AS BASKETID, CAN BE REMOVED
-  _id: string,
+  _id?: string,
 }

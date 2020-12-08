@@ -1,27 +1,37 @@
-export function validate(values, validationType, prevState) {
+// Types
+import { User } from '../types/User';
+
+interface Values {
+  [key: string]: string | boolean | null
+}
+export function validate(values: Values, validationType: string, prevState?: string | boolean | null): boolean | null {
   const value = values[validationType];
   let valid;
 
   switch (validationType) {
     case 'name': {
       const re = /^[a-zA-ZÀ-ƶ '-]{1,}$/;
-      valid = re.test(value);
+      valid = typeof value === 'string' && re.test(value);
       break;
     }
 
     case 'email': {
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      valid = re.test(value);
+      valid = typeof value === 'string' && re.test(value);
       break;
     }
 
     case 'telephone': {
-      const phoneNumber = value.replace(/-/g, '').replace(/ /g, '').replace('(', '').replace(')', '');
-      if ((phoneNumber.charAt(0) !== '0' && phoneNumber.charAt(0) !== '+') || phoneNumber.length < 10) {
-        valid = false;
+      if (typeof value === 'string') {
+        const phoneNumber = value.replace(/-/g, '').replace(/ /g, '').replace('(', '').replace(')', '');
+        if ((phoneNumber.charAt(0) !== '0' && phoneNumber.charAt(0) !== '+') || phoneNumber.length < 10) {
+          valid = false;
+        } else {
+          const re = /[^0-9+]/;
+          valid = !re.test(phoneNumber);
+        }
       } else {
-        const re = /[^0-9+]/;
-        valid = !re.test(phoneNumber);
+        valid = false;
       }
       break;
     }
@@ -35,7 +45,7 @@ export function validate(values, validationType, prevState) {
              // And check that the address is equal to the verified address
              && values.verifiedAddress === values.address
              // And check that the deliverable flag is set
-             && values.deliverable;
+             && values.deliverable as boolean;
       }
       break;
     }
@@ -52,7 +62,7 @@ export function validate(values, validationType, prevState) {
   return valid;
 }
 
-export function validateAll(values, valid) {
+export function validateAll(values: Values, valid: boolean | null) {
   let allValidated = {};
   let allValid = true;
 

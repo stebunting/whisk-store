@@ -30,6 +30,7 @@
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-react": "^7.12.7",
     "@teamsupercell/typings-for-css-modules-loader": "^2.4.0",
+    "@types/googlemaps": "^3.40.3",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-helmet": "^6.1.0",

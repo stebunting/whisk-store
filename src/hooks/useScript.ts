@@ -1,7 +1,7 @@
 // Requirements
 import { useState, useEffect } from 'react';
 
-function useScript(src, callback) {
+function useScript(src: string, callback: () => void): boolean {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

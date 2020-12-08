@@ -1,6 +1,5 @@
 // Requirements
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ChangeEvent, FocusEvent, ReactElement } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -12,27 +11,33 @@ import { updateValidity } from '../../redux/actions/checkoutFormActions';
 import { validate } from '../../functions/validate';
 
 // Types
-import { userType, validityType } from '../../functions/types';
+import { User } from '../../types/User';
+import { FormValidity } from '../../types/FormValidity';
 
 // Components
 import RenderDetailsEntry from './RenderDetailsEntry';
+import { ReduxState } from '../../types/ReduxState';
 
-function DetailsEntry({
-  user,
-  validity,
-  updateUserAction,
-  updateValidityAction
-}) {
+interface Props {
+  user: User,
+  validity: FormValidity,
+  updateUserAction: (name: string, value: string | boolean) => void,
+  updateValidityAction: (name: string, value: boolean) => void,
+}
+
+function DetailsEntry(props: Props): ReactElement {
+  const { user, validity } = props;
+
   // Set state on form input
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = event.target;
-    updateUserAction(name, value);
+    props.updateUserAction(name, value);
   };
 
   // Validate input field when moving away
-  const handleBlur = (event) => {
+  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     const { name } = event.target;
-    updateValidityAction(name, validate(user, name));
+    props.updateValidityAction(name, validate(user, name));
   };
 
   return (
@@ -49,25 +54,17 @@ function DetailsEntry({
     />
   );
 }
-DetailsEntry.propTypes = {
-  user: userType.isRequired,
-  validity: validityType.isRequired,
-  updateUserAction: PropTypes.func.isRequired,
-  updateValidityAction: PropTypes.func.isRequired
+
+function mapStateToProps(state: ReduxState) {
+  return {
+    user: state.user,
+    validity: state.validity
+  };
+}
+
+const mapDispatchToProps = {
+  updateUserAction: updateUser,
+  updateValidityAction: updateValidity
 };
-
-function mapStateToProps({ user, validity }) {
-  return {
-    user,
-    validity
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    updateUserAction: bindActionCreators(updateUser, dispatch),
-    updateValidityAction: bindActionCreators(updateValidity, dispatch)
-  };
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailsEntry);

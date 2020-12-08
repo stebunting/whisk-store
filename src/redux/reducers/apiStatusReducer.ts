@@ -2,15 +2,14 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-interface ApiStatusType {
-  type: string
-}
+// Types
+import { ApiStatusType } from '../actions/apiStatusActions';
 
-function actionTypeEndsInSuccess(type: string) {
+function actionTypeEndsInSuccess(type: string): boolean {
   return type.substring(type.length - 8) === '_SUCCESS';
 }
 
-function apiCallStatusReducer(state = initialState.apiCallsInProgress, action: ApiStatusType) {
+function apiCallStatusReducer(state = initialState.apiCallsInProgress, action: ApiStatusType): number {
   if (action.type === types.BEGIN_API_CALL) {
     return state + 1;
   }

@@ -8,7 +8,7 @@ import { BasketItem } from '../types/Basket';
 import { Product } from '../types/Product';
 import { Statement } from '../types/Statement';
 
-// Declare gTM dataLayer array.
+// Declare GTM dataLayer array
 declare global {
   interface Window {
     dataLayer: Array<GaEcommerceEvent>

@@ -3,15 +3,10 @@ import types from '../actions/actionTypes';
 import initialState from './initialState';
 
 // Types
-import { Basket, BasketItem } from '../../types/Basket';
+import { BasketAction } from '../actions/basketActions';
+import { Basket } from '../../types/Basket';
 
-interface BasketAction {
-  type: string,
-  basket?: Basket
-  basketItems?: Array<BasketItem>
-}
-
-function basketReducer(state = initialState.basket, action: BasketAction) {
+function basketReducer(state = initialState.basket, action: BasketAction): Basket {
   switch (action.type) {
     case types.LOAD_BASKET_SUCCESS:
     case types.UPDATE_BASKET_SUCCESS:
@@ -19,12 +14,6 @@ function basketReducer(state = initialState.basket, action: BasketAction) {
     case types.REMOVE_ITEM_FROM_BASKET_SUCCESS:
     case types.RESET_BASKET_SUCCESS:
       return action.basket;
-
-    case types.APPEND_PRODUCTS_TO_BASKET:
-      return {
-        ...state,
-        items: action.basketItems
-      };
 
     default:
       return state;

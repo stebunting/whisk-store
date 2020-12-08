@@ -1,12 +1,20 @@
+// Requirements
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { RouteChildrenProps, RouteComponentProps, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+
+// Custom Hooks
 import useHeaders from '../../hooks/useHeaders';
+
+// Redux Actions
 import { resetBasket } from '../../redux/actions/basketActions';
 
-function OrderConfirmation({ resetBasketAction }) {
+interface Props {
+  resetBasketAction: () => void
+}
+
+function OrderConfirmation(props: Props) {
   // Set Page Details
   const metadata = useHeaders({
     header: 'Order Confirmation',
@@ -20,10 +28,7 @@ function OrderConfirmation({ resetBasketAction }) {
     ? location.state.paymentMethod
     : '';
 
-  useEffect(() => {
-    console.log('remove basket');
-    resetBasketAction();
-  }, [resetBasketAction]);
+  useEffect(() => props.resetBasketAction(), [props.resetBasketAction]);
 
   let message;
   switch (paymentMethod) {
@@ -51,10 +56,8 @@ OrderConfirmation.propTypes = {
   resetBasketAction: PropTypes.func.isRequired
 };
 
-function mapDispatchToProps(dispatch) {
-  return {
-    resetBasketAction: bindActionCreators(resetBasket, dispatch)
-  };
+const mapDispatchToProps = {
+  resetBasketAction: resetBasket
 }
 
 export default connect(null, mapDispatchToProps)(OrderConfirmation);

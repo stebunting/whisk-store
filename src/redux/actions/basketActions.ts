@@ -6,48 +6,46 @@ import { beginApiCall } from './apiStatusActions';
 import * as actions from '../../functions/apiCalls';
 
 // Types
-import { Basket, BasketItem } from '../../types/Basket';
+import { Basket } from '../../types/Basket';
 import { Dispatch } from 'redux';
 
-function loadBasketSuccess(basket: Basket) {
+export interface BasketAction {
+  type: string,
+  basket: Basket
+}
+
+function loadBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.LOAD_BASKET_SUCCESS,
     basket
   };
 }
 
-function updateBasketSuccess(basket: Basket) {
+function updateBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.UPDATE_BASKET_SUCCESS,
     basket
   };
 }
 
-function updateBasketZoneSuccess(basket: Basket) {
+function updateBasketZoneSuccess(basket: Basket): BasketAction {
   return {
     type: types.UPDATE_BASKET_ZONE_SUCCESS,
     basket
   };
 }
 
-function removeItemFromBasketSuccess(basket: Basket) {
+function removeItemFromBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.REMOVE_ITEM_FROM_BASKET_SUCCESS,
     basket
   };
 }
 
-function resetBasketSuccess(basket: Basket) {
+function resetBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.RESET_BASKET_SUCCESS,
     basket
-  };
-}
-
-function appendProductsToBasket(basketItems: Array<BasketItem>) {
-  return {
-    type: types.APPEND_PRODUCTS_TO_BASKET,
-    basketItems
   };
 }
 

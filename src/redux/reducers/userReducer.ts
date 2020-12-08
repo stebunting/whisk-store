@@ -2,14 +2,11 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-interface UserAction {
-  type: string
-  payload: {
-    [key: string]: { value: string }
-  }
-}
+// Types
+import { User } from '../../types/User';
+import { UserAction } from '../actions/userActions';
 
-function userReducer(state = initialState.user, action: UserAction) {
+function userReducer(state = initialState.user, action: UserAction): User {
   switch (action.type) {
     case types.UPDATE_USER_FIELD:
       return {
@@ -20,9 +17,9 @@ function userReducer(state = initialState.user, action: UserAction) {
     case types.UPDATE_USER_ADDRESS:
       return {
         ...state,
-        address: action.payload.formattedAddress,
-        verifiedAddress: action.payload.formattedAddress,
-        zone: action.payload.zone
+        address: action.payload.formattedAddress as string,
+        verifiedAddress: action.payload.formattedAddress as string,
+        zone: action.payload.zone as number
       };
 
     default:
