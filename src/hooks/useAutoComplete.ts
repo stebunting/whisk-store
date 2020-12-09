@@ -1,21 +1,28 @@
 // Requirements
-import { useState, useCallback, useRef, RefObject, KeyboardEvent } from 'react';
+import { useCallback, useRef, RefObject, KeyboardEvent } from 'react';
+import { useDispatch } from 'react-redux';
 
-function useAutoComplete(): [google.maps.places.PlaceResult, RefObject<HTMLInputElement>] {
-  const ref = useRef<HTMLInputElement>(null);
-  const [newAddress, setNewAddress] = useState({} as google.maps.places.PlaceResult);
+// Redux Actions
+import { updateDelivery } from '../redux/actions/deliveryActions';
 
-  const autocompleteRef = useCallback((node) => {
+// Functions
+import { getZone } from '../functions/boundaries';
+
+function useAutoComplete(): RefObject<HTMLInputElement> {
+  const dispatch = useDispatch();
+  const ref = useRef<HTMLInputElement | null>(null);
+
+  const autocompleteRef = useCallback((node: HTMLInputElement) => {
     let autocomplete: google.maps.places.Autocomplete;
     let autocompleteListener: google.maps.MapsEventListener;
 
     // Callback on keydown event
-    const keydownListener = (event: KeyboardEvent<HTMLInputElement>) => {
+    const keypressListener = (event: KeyboardEvent) => {
       const pacContainers = Array.from(document.getElementsByClassName('pac-container'));
       const pacContainerVisible = pacContainers.reduce((visible, pacContainer) => (
         window.getComputedStyle(pacContainer).display !== 'none' || visible
       ), false);
-      if ((event.which === 13) && pacContainerVisible) {
+      if ((event.key === 'Enter') && pacContainerVisible) {
         event.preventDefault();
         return false;
       }
@@ -39,23 +46,30 @@ function useAutoComplete(): [google.maps.places.PlaceResult, RefObject<HTMLInput
       // Add autocomplete listener when place changed
       autocompleteListener = window.google.maps.event.addListener(
         autocomplete, 'place_changed', () => {
+          // Update Redux store with autocompleted address and zone
           const googleLocation = autocomplete.getPlace();
-          setNewAddress(googleLocation);
+          const latlon = googleLocation.geometry && Object.keys(googleLocation).length > 0
+            ? googleLocation.geometry.location
+            : null;
+          const zone = getZone(latlon);
+          dispatch(updateDelivery(googleLocation.formatted_address || '', zone));
         }
       );
-      node.addEventListener('keydown', keydownListener);
+      node.addEventListener('keypress', keypressListener);
     }
 
     // Cleanup when node is null
     if (ref.current) {
-      window.google.maps.event.removeListener(autocompleteListener);
-      ref.current.removeEventListener('keydown', keydownListener);
+      if (autocompleteListener) {
+        window.google.maps.event.removeListener(autocompleteListener);
+      }
+      ref.current.removeEventListener('keypress', keypressListener);
     }
 
     ref.current = node;
   }, []);
 
-  return [newAddress, autocompleteRef];
+  return autocompleteRef;
 }
 
 export default useAutoComplete;

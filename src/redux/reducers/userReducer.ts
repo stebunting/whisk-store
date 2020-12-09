@@ -14,14 +14,6 @@ function userReducer(state = initialState.user, action: UserAction): User {
         ...action.payload
       };
 
-    case types.UPDATE_USER_ADDRESS:
-      return {
-        ...state,
-        address: action.payload.formattedAddress as string,
-        verifiedAddress: action.payload.formattedAddress as string,
-        zone: action.payload.zone as number
-      };
-
     default:
       return state;
   }

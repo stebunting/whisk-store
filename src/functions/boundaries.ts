@@ -39,7 +39,7 @@ function inZone(zone: number, location: google.maps.LatLng): boolean {
 }
 
 // Return zone that a particular co-ordinate is in
-export function getZone(location: google.maps.LatLng): number {
+export function getZone(location: google.maps.LatLng | null): number {
   if (location === null) return -1;
   for (let i = 0; i <= 2; i += 1) {
     if (inZone(i, location)) {

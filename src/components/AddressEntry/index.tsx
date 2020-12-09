@@ -1,5 +1,5 @@
 // Requirements
-import React, { ChangeEvent, FocusEvent, useEffect } from 'react';
+import React, { ChangeEvent, FocusEvent, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -7,9 +7,9 @@ import { bindActionCreators } from 'redux';
 import useAutoComplete from '../../hooks/useAutoComplete';
 
 // Redux Actions
-import * as basketActions from '../../redux/actions/basketActions';
-import * as userActions from '../../redux/actions/userActions';
-import * as checkoutFormActions from '../../redux/actions/checkoutFormActions';
+import { updateBasketZoneApi, UpdateBasketZoneAction } from '../../redux/actions/basketActions';
+import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
+import { updateValidity, UpdateValidityType, updateValidityAll, UpdateValidityAllType } from '../../redux/actions/checkoutFormActions';
 
 // Functions
 import { getZone } from '../../functions/boundaries';
@@ -22,44 +22,51 @@ import { Basket } from '../../types/Basket';
 // Components
 import RenderAddressEntry from './RenderAddressEntry';
 import { ReduxState } from '../../types/ReduxState';
+import { Delivery } from '../../types/Delivery';
 
 interface Props {
   user: User,
   basket: Basket,
+  delivery: Delivery,
   validAddress: boolean | null,
   actions: {
-    updateBasketZoneAction: basketActions.UpdateBasketZoneAction,
-    updateUserAction: userActions.UpdateUserAction,
-    updateUserAddressAction: userActions.UpdateUserAddressAction,
-    updateValidityAction: checkoutFormActions.UpdateValidityType,
-    updateValidityAllAction: checkoutFormActions.UpdateValidityAllType
+    updateBasketZoneAction: UpdateBasketZoneAction,
+    updateUserAction: UpdateUserAction,
+    updateValidityAction: UpdateValidityType,
+    updateValidityAllAction: UpdateValidityAllType
   }
 };
 
 function AddressEntry(props: Props) {
-  const { user, validAddress, basket, actions } = props;
+  const { user, delivery, validAddress, basket, actions } = props;
 
   // Set up Google Autocomplete
-  const [autoCompleteResult, autoCompleteRef] = useAutoComplete();
-  useEffect(() => {
-    const formattedAddress = autoCompleteResult.formatted_address || '';
-    const latlon = Object.keys(autoCompleteResult).length > 0
-      ? autoCompleteResult.geometry.location
-      : null;
-    const zone = getZone(latlon);
-    actions.updateBasketZoneAction({ zone, address: formattedAddress });
+  const autoCompleteRef = useAutoComplete();
+  const isInitialMount = useRef(true);
 
-    actions.updateUserAddressAction(formattedAddress, zone);
-    actions.updateValidityAction(
-      'address',
-      validate({
-        deliverable: basket.delivery.deliverable,
-        address: formattedAddress,
-        verifiedAddress: formattedAddress,
-        zone
-      }, 'address', validAddress)
-    );
-  }, [autoCompleteResult, actions, validAddress, basket.delivery.deliverable]);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      actions.updateUserAction('address', delivery.address);
+      actions.updateBasketZoneAction(delivery);
+    }
+  }, [delivery])
+
+  // This happens everytime the autocomplete finishes
+  // useEffect(() => {
+
+  //   // Update user state
+  //   actions.updateValidityAction(
+  //     'address',
+  //     validate({
+  //       deliverable: basket.delivery.deliverable,
+  //       address: formattedAddress,
+  //       verifiedAddress: formattedAddress,
+  //       zone
+  //     }, 'address', validAddress)
+  //   );
+  // }, [autoCompleteResult]);
 
   useEffect(() => {
     actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
@@ -102,6 +109,7 @@ function mapStateToProps(state: ReduxState) {
   return {
     basket: state.basket,
     user: state.user,
+    delivery: state.delivery,
     validAddress: state.validity.address
   };
 }
@@ -109,11 +117,10 @@ function mapStateToProps(state: ReduxState) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: {
-      updateBasketZoneAction: bindActionCreators(basketActions.updateBasketZoneApi, dispatch),
-      updateUserAction: bindActionCreators(userActions.updateUser, dispatch),
-      updateUserAddressAction: bindActionCreators(userActions.updateUserAddress, dispatch),
-      updateValidityAction: bindActionCreators(checkoutFormActions.updateValidity, dispatch),
-      updateValidityAllAction: bindActionCreators(checkoutFormActions.updateValidityAll, dispatch)
+      updateBasketZoneAction: bindActionCreators(updateBasketZoneApi, dispatch),
+      updateUserAction: bindActionCreators(updateUser, dispatch),
+      updateValidityAction: bindActionCreators(updateValidity, dispatch),
+      updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
     }
   };
 }

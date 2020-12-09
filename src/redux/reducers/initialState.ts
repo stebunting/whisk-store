@@ -23,10 +23,12 @@ const initialState: ReduxState = {
     }
   },
   products: [],
+  delivery: {
+    address: '',
+    zone: -1
+  },
   user: {
     address: '',
-    verifiedAddress: null,
-    zone: -1,
     deliverable: false,
     allCollections: false,
     deliveryNotes: '',

@@ -8,6 +8,7 @@ import * as actions from '../../functions/apiCalls';
 // Types
 import { Basket } from '../../types/Basket';
 import { Dispatch } from 'redux';
+import { Delivery } from '../../types/Delivery';
 
 export interface BasketAction {
   type: string,
@@ -78,18 +79,13 @@ export function updateBasket(payload: UpdateBasketPayload) {
   };
 }
 
-export interface BasketLocation {
-  zone: number,
-  address: string
-}
-
 // Update Basket Zone Action Wrapper
-export type UpdateBasketZoneAction = (location: BasketLocation) => void;
+export type UpdateBasketZoneAction = (delivery: Delivery) => Promise<BasketAction>;
 
-export function updateBasketZoneApi(location: BasketLocation) {
+export function updateBasketZoneApi(delivery: Delivery) {
   return function thunkUpdateBasketZone(dispatch: Dispatch) {
     dispatch(beginApiCall());
-    return actions.updateBasketZoneApi(location).then((data) => (
+    return actions.updateBasketZoneApi(delivery).then((data) => (
       dispatch(updateBasketZoneSuccess(data))
     ));
   };

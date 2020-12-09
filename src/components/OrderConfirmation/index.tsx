@@ -1,7 +1,6 @@
 // Requirements
 import React, { useEffect } from 'react';
-import { RouteChildrenProps, RouteComponentProps, useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 // Custom Hooks
@@ -52,9 +51,6 @@ function OrderConfirmation(props: Props) {
     </>
   );
 }
-OrderConfirmation.propTypes = {
-  resetBasketAction: PropTypes.func.isRequired
-};
 
 const mapDispatchToProps = {
   resetBasketAction: resetBasket

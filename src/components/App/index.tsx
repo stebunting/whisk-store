@@ -1,7 +1,6 @@
 // Requirements
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Custom Hooks

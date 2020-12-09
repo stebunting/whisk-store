@@ -1,10 +1,7 @@
 // Types
 import { User } from '../types/User';
 
-interface Values {
-  [key: string]: string | boolean | null
-}
-export function validate(values: Values, validationType: string, prevState?: string | boolean | null): boolean | null {
+export function validate(values: User, validationType: string, prevState?: string | boolean | null): boolean | null {
   const value = values[validationType];
   let valid;
 
@@ -62,7 +59,7 @@ export function validate(values: Values, validationType: string, prevState?: str
   return valid;
 }
 
-export function validateAll(values: Values, valid: boolean | null) {
+export function validateAll(values: User, valid: boolean | null) {
   let allValidated = {};
   let allValid = true;
 
