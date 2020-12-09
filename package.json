@@ -2,7 +2,8 @@
   "name": "whisk-store",
   "version": "1.0.0",
   "description": "Whisk Store",
-  "main": "app.js",
+  "main": "src/index.tsx",
+  "types": "src/index.d.ts",
   "scripts": {
     "dev": "webpack-dev-server --mode development",
     "prebuild": "rm -rf ./dist",

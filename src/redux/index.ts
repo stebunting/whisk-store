@@ -12,8 +12,12 @@ declare global {
 }
 
 function configureStore(initialState = {}) {
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-  return createStore(rootReducer, initialState, composeEnhancers(applyMiddleware(thunk)));
+  let enhancer = applyMiddleware(thunk);
+  if (process.env.NODE_ENV === 'development') {
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    enhancer = composeEnhancers(enhancer);
+  }
+  return createStore(rootReducer, initialState, enhancer);
 }
 
 export default configureStore;

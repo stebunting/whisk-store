@@ -80,7 +80,8 @@ module.exports = {
       template: 'src/templates/index.ejs',
       GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
       API_URL: process.env.API_URL,
-      ASSETS_LOCATION: process.env.ASSETS_LOCATION
+      ASSETS_LOCATION: process.env.ASSETS_LOCATION,
+      NODE_ENV: process.env.NODE_ENV
     }),
     new DotenvWebpackPlugin(),
     new MiniCssExtractPlugin(),
