@@ -1,8 +1,8 @@
 // Types
+import { Delivery } from '../types/Delivery';
 import { User } from '../types/User';
 
-export function validate(values: User, validationType: string, prevState?: string | boolean | null): boolean | null {
-  const value = values[validationType];
+export function validate(value: string, validationType: string): boolean {
   let valid;
 
   switch (validationType) {
@@ -33,20 +33,6 @@ export function validate(values: User, validationType: string, prevState?: strin
       break;
     }
 
-    case 'address': {
-      if (values.allCollections || (prevState === null && values.address === '')) {
-        valid = null;
-      } else {
-        // Check that verified address has been set
-        valid = values.verifiedAddress !== ''
-             // And check that the address is equal to the verified address
-             && values.verifiedAddress === values.address
-             // And check that the deliverable flag is set
-             && values.deliverable as boolean;
-      }
-      break;
-    }
-
     case 'date': {
       valid = value !== 'undefined';
       break;
@@ -59,12 +45,16 @@ export function validate(values: User, validationType: string, prevState?: strin
   return valid;
 }
 
+export function validateAddress(address: string, delivery: Delivery): boolean {
+  return address === delivery.address && delivery.deliverable;
+}
+
 export function validateAll(values: User, valid: boolean | null) {
   let allValidated = {};
   let allValid = true;
 
   Object.keys(valid).forEach((element) => {
-    const validity = validate(values, element, true);
+    const validity = validate(values[element], element);
     allValidated = { ...allValidated, [element]: validity };
     allValid = allValid && (validity === true || validity === null);
   });

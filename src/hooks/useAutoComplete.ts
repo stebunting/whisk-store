@@ -1,5 +1,6 @@
+/* eslint-disable no-undef */
 // Requirements
-import { useCallback, useRef, RefObject, KeyboardEvent } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 
 // Redux Actions
@@ -7,17 +8,18 @@ import { updateDelivery } from '../redux/actions/deliveryActions';
 
 // Functions
 import { getZone } from '../functions/boundaries';
+import { updateUser } from '../redux/actions/userActions';
 
-function useAutoComplete(): RefObject<HTMLInputElement> {
+function useAutoComplete(): React.RefObject<HTMLInputElement> {
   const dispatch = useDispatch();
-  const ref = useRef<HTMLInputElement | null>(null);
+  const ref = React.useRef<HTMLInputElement | null>(null);
 
-  const autocompleteRef = useCallback((node: HTMLInputElement) => {
+  const autocompleteRef = React.useCallback((node: HTMLInputElement) => {
     let autocomplete: google.maps.places.Autocomplete;
     let autocompleteListener: google.maps.MapsEventListener;
 
     // Callback on keydown event
-    const keypressListener = (event: KeyboardEvent) => {
+    const keypressListener = (event: React.KeyboardEvent) => {
       const pacContainers = Array.from(document.getElementsByClassName('pac-container'));
       const pacContainerVisible = pacContainers.reduce((visible, pacContainer) => (
         window.getComputedStyle(pacContainer).display !== 'none' || visible
@@ -46,13 +48,17 @@ function useAutoComplete(): RefObject<HTMLInputElement> {
       // Add autocomplete listener when place changed
       autocompleteListener = window.google.maps.event.addListener(
         autocomplete, 'place_changed', () => {
-          // Update Redux store with autocompleted address and zone
+          // Get autocomplete vars
           const googleLocation = autocomplete.getPlace();
+          const address = googleLocation.formatted_address || '';
           const latlon = googleLocation.geometry && Object.keys(googleLocation).length > 0
             ? googleLocation.geometry.location
             : null;
           const zone = getZone(latlon);
-          dispatch(updateDelivery(googleLocation.formatted_address || '', zone));
+
+          // Update Redux
+          dispatch(updateDelivery(address, zone));
+          dispatch(updateUser('address', address));
         }
       );
       node.addEventListener('keypress', keypressListener);
@@ -67,7 +73,7 @@ function useAutoComplete(): RefObject<HTMLInputElement> {
     }
 
     ref.current = node;
-  }, []);
+  }, [dispatch]);
 
   return autocompleteRef;
 }

@@ -1,5 +1,5 @@
 // Requirements
-import React, { ChangeEvent, FocusEvent, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -12,8 +12,7 @@ import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
 import { updateValidity, UpdateValidityType, updateValidityAll, UpdateValidityAllType } from '../../redux/actions/checkoutFormActions';
 
 // Functions
-import { getZone } from '../../functions/boundaries';
-import { validate } from '../../functions/validate';
+import { validate, validateAddress } from '../../functions/validate';
 
 // Types
 import { User } from '../../types/User';
@@ -29,60 +28,55 @@ interface Props {
   basket: Basket,
   delivery: Delivery,
   validAddress: boolean | null,
-  actions: {
-    updateBasketZoneAction: UpdateBasketZoneAction,
-    updateUserAction: UpdateUserAction,
-    updateValidityAction: UpdateValidityType,
-    updateValidityAllAction: UpdateValidityAllType
-  }
+  updateBasketZoneAction: UpdateBasketZoneAction,
+  updateUserAction: UpdateUserAction,
+  updateValidityAction: UpdateValidityType,
+  updateValidityAllAction: UpdateValidityAllType
 };
 
-function AddressEntry(props: Props) {
-  const { user, delivery, validAddress, basket, actions } = props;
+function AddressEntry(props: Props): React.ReactElement {
+  const {
+    user,
+    basket,
+    delivery,
+    validAddress,
+    updateBasketZoneAction,
+    updateUserAction,
+    updateValidityAction,
+    updateValidityAllAction
+  } = props;
 
   // Set up Google Autocomplete
   const autoCompleteRef = useAutoComplete();
-  const isInitialMount = useRef(true);
+
+  // When autocomplete updates
+  useEffect(() => {
+    updateBasketZoneAction(delivery.address, delivery.zone);
+  }, [delivery.address, delivery.zone, updateBasketZoneAction]);
+
+  // When autocomplete updates
+  useEffect(() => {
+    updateValidityAction('address', validateAddress(user.address, delivery));
+  }, [delivery, updateValidityAction]);
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      actions.updateUserAction('address', delivery.address);
-      actions.updateBasketZoneAction(delivery);
-    }
-  }, [delivery])
-
-  // This happens everytime the autocomplete finishes
-  // useEffect(() => {
-
-  //   // Update user state
-  //   actions.updateValidityAction(
-  //     'address',
-  //     validate({
-  //       deliverable: basket.delivery.deliverable,
-  //       address: formattedAddress,
-  //       verifiedAddress: formattedAddress,
-  //       zone
-  //     }, 'address', validAddress)
-  //   );
-  // }, [autoCompleteResult]);
-
-  useEffect(() => {
-    actions.updateUserAction('deliverable', basket.delivery && basket.delivery.deliverable);
-    actions.updateUserAction('allCollections', basket.delivery && basket.delivery.allCollections);
-  }, [actions, basket.delivery]);
+    updateUserAction('allCollections', basket.delivery && basket.delivery.allCollections);
+  }, [updateUserAction, basket.delivery]);
 
   // Set state on form input
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    actions.updateUserAction(name, value);
+    updateUserAction(name, value);
   };
 
   // Validate input field when moving away
-  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-    actions.updateValidityAction(name, validate(user, name));
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name === 'address') {
+      updateValidityAction('address', validateAddress(user.address, delivery));
+    } else {
+      updateValidityAction(name, validate(value, name));
+    }
   };
 
   return (basket.delivery
@@ -93,17 +87,14 @@ function AddressEntry(props: Props) {
       <RenderAddressEntry
         address={user.address}
         validAddress={validAddress}
-        deliverable={user.deliverable}
+        deliverable={basket.delivery.deliverable}
         deliveryNotes={user.deliveryNotes}
         autoCompleteRef={autoCompleteRef}
         handleChange={handleChange}
         handleBlur={handleBlur}
       />
-    )) || null;
+    )) || <></>;
 }
-AddressEntry.defaultProps = {
-  validAddress: null
-};
 
 function mapStateToProps(state: ReduxState) {
   return {
@@ -116,12 +107,10 @@ function mapStateToProps(state: ReduxState) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: {
-      updateBasketZoneAction: bindActionCreators(updateBasketZoneApi, dispatch),
-      updateUserAction: bindActionCreators(updateUser, dispatch),
-      updateValidityAction: bindActionCreators(updateValidity, dispatch),
-      updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
-    }
+    updateBasketZoneAction: bindActionCreators(updateBasketZoneApi, dispatch),
+    updateUserAction: bindActionCreators(updateUser, dispatch),
+    updateValidityAction: bindActionCreators(updateValidity, dispatch),
+    updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
   };
 }
 

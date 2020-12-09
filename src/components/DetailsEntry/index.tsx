@@ -36,8 +36,8 @@ function DetailsEntry(props: Props): ReactElement {
 
   // Validate input field when moving away
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-    props.updateValidityAction(name, validate(user, name));
+    const { name, value } = event.target;
+    props.updateValidityAction(name, validate(value, name));
   };
 
   return (

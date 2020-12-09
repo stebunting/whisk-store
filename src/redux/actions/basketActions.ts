@@ -1,3 +1,6 @@
+// Requirements
+import { Dispatch } from 'redux';
+
 // Redux Actions
 import types from './actionTypes';
 import { beginApiCall } from './apiStatusActions';
@@ -7,46 +10,47 @@ import * as actions from '../../functions/apiCalls';
 
 // Types
 import { Basket } from '../../types/Basket';
-import { Dispatch } from 'redux';
 import { Delivery } from '../../types/Delivery';
 
 export interface BasketAction {
   type: string,
-  basket: Basket
+  payload: {
+    basket: Basket
+  }
 }
 
 function loadBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.LOAD_BASKET_SUCCESS,
-    basket
+    payload: { basket }
   };
 }
 
 function updateBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.UPDATE_BASKET_SUCCESS,
-    basket
+    payload: { basket }
   };
 }
 
 function updateBasketZoneSuccess(basket: Basket): BasketAction {
   return {
     type: types.UPDATE_BASKET_ZONE_SUCCESS,
-    basket
+    payload: { basket }
   };
 }
 
 function removeItemFromBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.REMOVE_ITEM_FROM_BASKET_SUCCESS,
-    basket
+    payload: { basket }
   };
 }
 
 function resetBasketSuccess(basket: Basket): BasketAction {
   return {
     type: types.RESET_BASKET_SUCCESS,
-    basket
+    payload: { basket }
   };
 }
 
@@ -80,12 +84,12 @@ export function updateBasket(payload: UpdateBasketPayload) {
 }
 
 // Update Basket Zone Action Wrapper
-export type UpdateBasketZoneAction = (delivery: Delivery) => Promise<BasketAction>;
+export type UpdateBasketZoneAction = (address: string, zone: number) => Promise<BasketAction>;
 
-export function updateBasketZoneApi(delivery: Delivery) {
+export function updateBasketZoneApi(address: string, zone: number) {
   return function thunkUpdateBasketZone(dispatch: Dispatch) {
     dispatch(beginApiCall());
-    return actions.updateBasketZoneApi(delivery).then((data) => (
+    return actions.updateBasketZoneApi(address, zone).then((data) => (
       dispatch(updateBasketZoneSuccess(data))
     ));
   };

@@ -1,4 +1,5 @@
 export interface Delivery {
   address: string,
-  zone: number
+  zone: number,
+  deliverable: boolean
 }

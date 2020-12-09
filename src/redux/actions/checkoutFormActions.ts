@@ -13,7 +13,7 @@ export interface CheckoutFormAction {
   validity?: FormValidity
 }
 
-export type UpdateValidityType = (name: string, value: boolean) => void;
+export type UpdateValidityType = (name: string, value: boolean) => CheckoutFormAction;
 
 export function updateValidity(name: string, value: boolean): CheckoutFormAction {
   return {

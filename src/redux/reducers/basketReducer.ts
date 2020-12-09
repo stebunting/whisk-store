@@ -13,7 +13,7 @@ function basketReducer(state = initialState.basket, action: BasketAction): Baske
     case types.UPDATE_BASKET_ZONE_SUCCESS:
     case types.REMOVE_ITEM_FROM_BASKET_SUCCESS:
     case types.RESET_BASKET_SUCCESS:
-      return action.basket;
+      return action.payload.basket;
 
     default:
       return state;

@@ -25,11 +25,11 @@ const initialState: ReduxState = {
   products: [],
   delivery: {
     address: '',
-    zone: -1
+    zone: -1,
+    deliverable: false
   },
   user: {
     address: '',
-    deliverable: false,
     allCollections: false,
     deliveryNotes: '',
     name: '',

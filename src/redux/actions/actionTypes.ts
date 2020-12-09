@@ -15,7 +15,7 @@ const types = {
 
   // Delivery Actions
   UPDATE_DELIVERY: 'UPDATE_DELIVERY',
-  
+
   // User Actions
   UPDATE_USER_FIELD: 'UPDATE_USER_FIELD',
 

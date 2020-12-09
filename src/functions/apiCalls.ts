@@ -83,14 +83,14 @@ export function updateBasketApi(payload): Promise<Basket> {
 }
 
 // Update basket in backend, returns new basket
-export function updateBasketZoneApi(location): Promise<Basket> {
+export function updateBasketZoneApi(address: string, zone: number): Promise<Basket> {
   const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
     fetch(`${apiUrl}/api/basket/update/zone/${basketId}`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ location })
+      body: JSON.stringify({ location: { address, zone } })
     }).then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.basket);

@@ -1,7 +1,6 @@
-export interface User {  
+export interface User {
   [key: string]: string | number | boolean | null,
   address: string,
-  deliverable: boolean,
   allCollections: boolean,
   deliveryNotes: string,
   name: string,
