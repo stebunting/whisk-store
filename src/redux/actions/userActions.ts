@@ -8,6 +8,8 @@ export interface UserAction {
   }
 }
 
+export type UpdateUserAction = (name: string, value: string | boolean) => void;
+
 export function updateUser(name: string, value: string | boolean): UserAction {
   return {
     type: types.UPDATE_USER_FIELD,
@@ -16,6 +18,8 @@ export function updateUser(name: string, value: string | boolean): UserAction {
     }
   };
 }
+
+export type UpdateUserAddressAction = (formattedAddress: string, zone: number) => void;
 
 export function updateUserAddress(formattedAddress: string, zone: number): UserAction {
   return {

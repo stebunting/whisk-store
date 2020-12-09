@@ -4,6 +4,8 @@ import Cookies from 'universal-cookie';
 // Types
 import { Basket } from '../types/Basket';
 import { Product } from '../types/Product';
+import { SwishResponse } from '../types/SwishStatus';
+import { User } from '../types/User';
 
 const cookieName = 'basketId';
 const cookies = new Cookies();
@@ -114,15 +116,28 @@ export function removeItemFromBasketApi(payload): Promise<Basket> {
   });
 }
 
+
+interface PaymentLinkOrderStatus {
+  orderId: string,
+  status: 'PAID',
+  paymentMethod: 'paymentLink'
+}
+
+interface SwishOrderStatusCreated {
+  status: 'CREATED',
+  id: string,
+  paymentMethod: 'swish'
+}
+
 // Send completed order to backend
-export function sendOrder(payload) {
+export function sendOrder(user: User): Promise<PaymentLinkOrderStatus | SwishOrderStatusCreated | SwishResponse> {
   const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
     fetch(`${apiUrl}/api/order/${basketId}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(user)
     }).then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') resolve(data.order);
@@ -132,7 +147,7 @@ export function sendOrder(payload) {
 }
 
 // Send completed order to backend
-export function checkSwishStatus(swishId: string) {
+export function checkSwishStatus(swishId: string): Promise<SwishOrderStatusCreated | SwishResponse> {
   return new Promise((resolve, reject) => {
     fetch(`${apiUrl}/api/order/swish/${swishId}`)
       .then((response) => response.json())

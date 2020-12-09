@@ -43,8 +43,8 @@ function parseDateCode(code: string): DateCodeObject {
 
 // Format date/time range
 interface RangeFormatOptions {
-  code: boolean,
-  times: boolean
+  code?: boolean,
+  times?: boolean
 }
 export function rangeFormat(data: DateCodeObject | string, options = {} as RangeFormatOptions): string {
   let range: DateCodeObject;
@@ -73,9 +73,4 @@ interface DateObject {
 export function hasDatePassed(dateObj: DateObject): boolean {
   // DayJS uses 0-indexed month
   return dayjs({ ...dateObj, month: dateObj.month - 1 }).isBefore(dayjs());
-}
-
-// Function to capitalise first letter of word
-export function capitaliseFirst(word: string): string {
-  return `${word.charAt(0).toUpperCase()}${word.substring(1).toLowerCase()}`;
 }

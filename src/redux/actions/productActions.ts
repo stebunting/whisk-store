@@ -21,6 +21,9 @@ function loadProductsSuccess(products: Array<Product>): ProductAction {
   };
 }
 
+// Action wrapper to load products
+export type LoadProductsAction = () => void
+
 export function loadProducts() {
   return function thunkLoadProducts(dispatch: Dispatch) {
     dispatch(beginApiCall());

@@ -13,6 +13,7 @@
   "author": "Steve Bunting",
   "license": "ISC",
   "dependencies": {
+    "@stebunting/library": "0.0.1",
     "dayjs": "^1.9.7",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",

@@ -18,7 +18,6 @@ import { validate } from '../../functions/validate';
 // Types
 import { User } from '../../types/User';
 import { Basket } from '../../types/Basket';
-import { FormValidity } from '../../types/FormValidity';
 
 // Components
 import RenderAddressEntry from './RenderAddressEntry';
@@ -29,11 +28,11 @@ interface Props {
   basket: Basket,
   validAddress: boolean | null,
   actions: {
-    updateBasketZoneAction: (location: basketActions.BasketLocation) => void,
-    updateUserAction: (name: string, value: string | boolean) => void,
-    updateUserAddressAction: (formattedAddress: string, zone: number) => void,
-    updateValidityAction: (name: string, value: boolean) => void,
-    updateValidityAllAction: (validity: FormValidity) => void
+    updateBasketZoneAction: basketActions.UpdateBasketZoneAction,
+    updateUserAction: userActions.UpdateUserAction,
+    updateUserAddressAction: userActions.UpdateUserAddressAction,
+    updateValidityAction: checkoutFormActions.UpdateValidityType,
+    updateValidityAllAction: checkoutFormActions.UpdateValidityAllType
   }
 };
 

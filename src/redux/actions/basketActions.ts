@@ -49,6 +49,9 @@ function resetBasketSuccess(basket: Basket): BasketAction {
   };
 }
 
+// Load Basket Action Wrapper
+export type LoadBasketAction = () => void;
+
 export function loadBasket() {
   return function thunkLoadBasket(dispatch: Dispatch) {
     dispatch(beginApiCall());
@@ -62,6 +65,9 @@ export interface UpdateBasketPayload {
   deliveryType: string,
   deliveryDate: string,
 }
+
+// Update Basket Action Wrapper
+export type UpdateBasketAction = (payload: UpdateBasketPayload) => void;
 
 export function updateBasket(payload: UpdateBasketPayload) {
   return function thunkUpdateBasket(dispatch: Dispatch) {
@@ -77,6 +83,9 @@ export interface BasketLocation {
   address: string
 }
 
+// Update Basket Zone Action Wrapper
+export type UpdateBasketZoneAction = (location: BasketLocation) => void;
+
 export function updateBasketZoneApi(location: BasketLocation) {
   return function thunkUpdateBasketZone(dispatch: Dispatch) {
     dispatch(beginApiCall());
@@ -86,6 +95,9 @@ export function updateBasketZoneApi(location: BasketLocation) {
   };
 }
 
+// Remove Item From Basket Action Wrapper
+export type RemoveItemFromBasketAction = (payload: UpdateBasketPayload) => void;
+
 export function removeItemFromBasket(payload: UpdateBasketPayload) {
   return function thunkRemoveItemFromBasket(dispatch: Dispatch) {
     dispatch(beginApiCall());
@@ -94,6 +106,9 @@ export function removeItemFromBasket(payload: UpdateBasketPayload) {
     ));
   };
 }
+
+// Reset Basket Action Wrapper
+export type ResetBasketAction = () => void;
 
 export function resetBasket() {
   return function thunkResetBasket(dispatch: Dispatch) {

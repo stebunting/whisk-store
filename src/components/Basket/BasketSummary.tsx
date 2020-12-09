@@ -1,9 +1,10 @@
 // Requirements
 import React, { ChangeEvent, MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { capitalise } from '@stebunting/library';
 
 // Functions
-import { priceFormat, rangeFormat, capitaliseFirst } from '../../functions/helpers';
+import { priceFormat, rangeFormat } from '../../functions/helpers';
 
 // Types
 import { Basket, BasketItem } from '../../types/Basket';
@@ -41,7 +42,7 @@ function BasketSummary(props: Props) {
                       {item.details.name}
                     </Link>
                     <div className={css.furtherItemDetails}>
-                      {`${capitaliseFirst(item.deliveryType)}`}
+                      {`${capitalise(item.deliveryType)}`}
                       {item.deliveryDate !== '' && ` // ${rangeFormat(item.deliveryDate, { code: true })}`}
                     </div>
                   </td>

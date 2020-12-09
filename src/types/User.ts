@@ -1,4 +1,5 @@
 export interface User {
+  [key: string]: string | number | boolean | null,
   address: string,
   verifiedAddress: string | null,
   zone: number,

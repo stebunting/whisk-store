@@ -68,14 +68,14 @@ function Basket(props: Props) {
   }, [basket.items.length, basket.delivery.details, validity]);
 
   // Handle update/delete items from summary
-  const handleChange = (event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>, action: string, item: BasketItem) => {
-    const { value } = event.target;
+  const handleChange = (event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>, action: string, item: BasketItem): void => {
+    const value = action === 'update' ? event.target.value : 0;
     const payload = {
       productSlug: item.productSlug,
       deliveryType: item.deliveryType,
       deliveryDate: item.deliveryDate
     };
-    const newQuantity = parseInt(value, 10) || 0;
+    const newQuantity = parseInt(value, 10);
     const quantityChange = newQuantity - item.quantity;
     switch (action) {
       case 'update':
@@ -103,19 +103,22 @@ function Basket(props: Props) {
   // Check Swish Payment Status
   const [orderStatus, setOrderStatus] = useState('');
   const [errors, setErrors] = useState([] as Array<Error>);
-  const fetchSwishStatus = async (swishId) => {
+  const fetchSwishStatus = async (swishId: string): Promise<void> => {
     const SWISH_UPDATE_INTERVAL = 2000;
     const swish = await checkSwishStatus(swishId);
     setOrderStatus(swish.status);
     switch (swish.status) {
       case 'ERROR':
       case 'CANCELLED':
-        setErrors((prevState) => ([
-          ...prevState, {
-            code: swish.errorCode,
-            message: swish.errorMessage
-          }
-        ]));
+        setErrors((prevState) => {
+          return swish.errorCode != null && swish.errorMessage != null
+            ? [
+              ...prevState, {
+                code: swish.errorCode,
+                message: swish.errorMessage
+              }
+            ] : prevState
+          });
         break;
 
       case 'DECLINED':
@@ -132,8 +135,7 @@ function Basket(props: Props) {
         return history.push('/orderconfirmation', { ...swish });
 
       default:
-        return setTimeout(() => fetchSwishStatus(swishId),
-          SWISH_UPDATE_INTERVAL);
+        setTimeout(() => fetchSwishStatus(swishId), SWISH_UPDATE_INTERVAL);
     }
   };
 
@@ -160,12 +162,15 @@ function Basket(props: Props) {
 
       // Swish Error
       case 'ERROR': {
-        return setErrors((prevState) => ([
-          ...prevState, {
-            code: data.errorCode,
-            message: data.errorMessage
-          }
-        ]));
+        return setErrors((prevState) => {
+          return data.errorCode != null && data.errorMessage != null
+            ? [
+              ...prevState, {
+                code: data.errorCode,
+                message: data.errorMessage
+              }
+            ] : prevState
+        });
       }
 
       default:
