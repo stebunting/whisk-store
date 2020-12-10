@@ -45,8 +45,10 @@ export function validate(value: string, validationType: string): boolean {
   return valid;
 }
 
-export function validateAddress(address: string, delivery: Delivery): boolean {
-  return address === delivery.address && delivery.deliverable;
+export function validateAddress(address: string, delivery: Delivery): boolean | null {
+  return address === '' && delivery.address === ''
+    ? null
+    : address === delivery.address && delivery.deliverable;
 }
 
 export function validateAll(values: User, valid: boolean | null) {

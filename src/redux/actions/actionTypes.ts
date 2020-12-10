@@ -22,6 +22,6 @@ const types = {
   // Form Actions
   UPDATE_VALIDITY: 'UPDATE_VALIDITY',
   UPDATE_VALIDITY_ALL: 'UPDATE_VALIDITY_ALL'
-}
+};
 
 export default types;

@@ -1,12 +1,16 @@
 // Config
 import types from '../actions/actionTypes';
-import initialState from './initialState';
+import initialState from '../initialState';
+
+// Redux Actions
+import { BasketAction } from '../actions/basketActions';
 
 // Types
-import { BasketAction } from '../actions/basketActions';
 import { Basket } from '../../types/Basket';
 
-function basketReducer(state = initialState.basket, action: BasketAction): Basket {
+function basketReducer(
+  state = initialState.basket, action: BasketAction
+): Basket {
   switch (action.type) {
     case types.LOAD_BASKET_SUCCESS:
     case types.UPDATE_BASKET_SUCCESS:

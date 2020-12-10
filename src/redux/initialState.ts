@@ -1,5 +1,5 @@
 // Types
-import { ReduxState } from "../../types/ReduxState";
+import { ReduxState } from '../types/ReduxState';
 
 const initialState: ReduxState = {
   basket: {

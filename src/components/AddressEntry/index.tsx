@@ -9,7 +9,12 @@ import useAutoComplete from '../../hooks/useAutoComplete';
 // Redux Actions
 import { updateBasketZoneApi, UpdateBasketZoneAction } from '../../redux/actions/basketActions';
 import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
-import { updateValidity, UpdateValidityType, updateValidityAll, UpdateValidityAllType } from '../../redux/actions/checkoutFormActions';
+import {
+  updateValidity,
+  UpdateValidityType,
+  updateValidityAll,
+  UpdateValidityAllType
+} from '../../redux/actions/checkoutFormActions';
 
 // Functions
 import { validate, validateAddress } from '../../functions/validate';
@@ -17,11 +22,11 @@ import { validate, validateAddress } from '../../functions/validate';
 // Types
 import { User } from '../../types/User';
 import { Basket } from '../../types/Basket';
+import { ReduxState } from '../../types/ReduxState';
+import { Delivery } from '../../types/Delivery';
 
 // Components
 import RenderAddressEntry from './RenderAddressEntry';
-import { ReduxState } from '../../types/ReduxState';
-import { Delivery } from '../../types/Delivery';
 
 interface Props {
   user: User,
@@ -32,7 +37,7 @@ interface Props {
   updateUserAction: UpdateUserAction,
   updateValidityAction: UpdateValidityType,
   updateValidityAllAction: UpdateValidityAllType
-};
+}
 
 function AddressEntry(props: Props): React.ReactElement {
   const {
@@ -98,8 +103,8 @@ function AddressEntry(props: Props): React.ReactElement {
 
 function mapStateToProps(state: ReduxState) {
   return {
-    basket: state.basket,
     user: state.user,
+    basket: state.basket,
     delivery: state.delivery,
     validAddress: state.validity.address
   };

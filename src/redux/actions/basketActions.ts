@@ -1,22 +1,31 @@
 // Requirements
-import { Dispatch } from 'redux';
+import { Action } from 'redux';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 // Redux Actions
 import types from './actionTypes';
-import { beginApiCall } from './apiStatusActions';
+import { ApiDispatch, beginApiCall } from './apiStatusActions';
 
 // API Calls
 import * as actions from '../../functions/apiCalls';
 
 // Types
 import { Basket } from '../../types/Basket';
-import { Delivery } from '../../types/Delivery';
+import { ReduxState } from '../../types/ReduxState';
 
-export interface BasketAction {
-  type: string,
+export interface BasketAction extends Action<string> {
   payload: {
     basket: Basket
   }
+}
+type BasketThunk = ThunkAction<void, ReduxState, null, BasketAction>
+type BasketDispatch = ThunkDispatch<ReduxState, null, BasketAction>
+
+export interface UpdateBasketPayload {
+  productSlug: string
+  quantity?: number,
+  deliveryType: string,
+  deliveryDate: string,
 }
 
 function loadBasketSuccess(basket: Basket): BasketAction {
@@ -55,27 +64,24 @@ function resetBasketSuccess(basket: Basket): BasketAction {
 }
 
 // Load Basket Action Wrapper
-export type LoadBasketAction = () => void;
+export type LoadBasketAction = () => BasketThunk;
 
-export function loadBasket() {
-  return function thunkLoadBasket(dispatch: Dispatch) {
+export function loadBasket(): BasketThunk {
+  return function thunkLoadBasket(
+    dispatch: BasketDispatch & ApiDispatch
+  ): Promise<BasketAction> {
     dispatch(beginApiCall());
     return actions.getBasket().then((data) => dispatch(loadBasketSuccess(data)));
   };
 }
 
-export interface UpdateBasketPayload {
-  productSlug: string
-  quantity?: number,
-  deliveryType: string,
-  deliveryDate: string,
-}
-
 // Update Basket Action Wrapper
-export type UpdateBasketAction = (payload: UpdateBasketPayload) => void;
+export type UpdateBasketAction = (payload: UpdateBasketPayload) => BasketThunk;
 
-export function updateBasket(payload: UpdateBasketPayload) {
-  return function thunkUpdateBasket(dispatch: Dispatch) {
+export function updateBasket(payload: UpdateBasketPayload): BasketThunk {
+  return function thunkUpdateBasket(
+    dispatch: BasketDispatch & ApiDispatch
+  ): Promise<BasketAction> {
     dispatch(beginApiCall());
     return actions.updateBasketApi(payload).then((data) => (
       dispatch(updateBasketSuccess(data))
@@ -84,10 +90,12 @@ export function updateBasket(payload: UpdateBasketPayload) {
 }
 
 // Update Basket Zone Action Wrapper
-export type UpdateBasketZoneAction = (address: string, zone: number) => Promise<BasketAction>;
+export type UpdateBasketZoneAction = (address: string, zone: number) => BasketThunk;
 
-export function updateBasketZoneApi(address: string, zone: number) {
-  return function thunkUpdateBasketZone(dispatch: Dispatch) {
+export function updateBasketZoneApi(address: string, zone: number): BasketThunk {
+  return function thunkUpdateBasketZone(
+    dispatch: BasketDispatch & ApiDispatch
+  ): Promise<BasketAction> {
     dispatch(beginApiCall());
     return actions.updateBasketZoneApi(address, zone).then((data) => (
       dispatch(updateBasketZoneSuccess(data))
@@ -96,10 +104,12 @@ export function updateBasketZoneApi(address: string, zone: number) {
 }
 
 // Remove Item From Basket Action Wrapper
-export type RemoveItemFromBasketAction = (payload: UpdateBasketPayload) => void;
+export type RemoveItemFromBasketAction = (payload: UpdateBasketPayload) => BasketThunk;
 
-export function removeItemFromBasket(payload: UpdateBasketPayload) {
-  return function thunkRemoveItemFromBasket(dispatch: Dispatch) {
+export function removeItemFromBasket(payload: UpdateBasketPayload): BasketThunk {
+  return function thunkRemoveItemFromBasket(
+    dispatch: BasketDispatch & ApiDispatch
+  ): Promise<BasketAction> {
     dispatch(beginApiCall());
     return actions.removeItemFromBasketApi(payload).then((data) => (
       dispatch(removeItemFromBasketSuccess(data))
@@ -108,10 +118,12 @@ export function removeItemFromBasket(payload: UpdateBasketPayload) {
 }
 
 // Reset Basket Action Wrapper
-export type ResetBasketAction = () => void;
+export type ResetBasketAction = () => BasketThunk;
 
-export function resetBasket() {
-  return function thunkResetBasket(dispatch: Dispatch) {
+export function resetBasket(): BasketThunk {
+  return function thunkResetBasket(
+    dispatch: BasketDispatch & ApiDispatch
+  ): Promise<BasketAction> {
     dispatch(beginApiCall());
     return actions.resetBasket().then((data) => dispatch(resetBasketSuccess(data)));
   };

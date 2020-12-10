@@ -1,11 +1,13 @@
 // Config
 import types from '../actions/actionTypes';
-import initialState from './initialState';
+import initialState from '../initialState';
+
+// Redux Actions
+import { DeliveryAction } from '../actions/deliveryActions';
+import { BasketAction } from '../actions/basketActions';
 
 // Types
-import { DeliveryAction } from '../actions/deliveryActions';
 import { Delivery } from '../../types/Delivery';
-import { BasketAction } from '../actions/basketActions';
 
 function deliveryReducer(
   state = initialState.delivery,
