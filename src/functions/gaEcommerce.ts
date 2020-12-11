@@ -33,12 +33,14 @@ function getItemsFromProducts(products: Array<Product>, quantity: number): Array
 }
 
 // Return Analytics items array from items
-function getItemsFromItems(items: Array<BasketItem>): Array<GaEcommerceItem> {
+function getItemsFromItems(
+  items: Array<BasketItem>, purchaseEvent = false
+): Array<GaEcommerceItem> {
   return items.map((item) => ({
     item_id: item.details.slug,
     item_name: item.details.name,
     affiliation: 'Whisk Online Store',
-    price: priceFormat(item.details.grossPrice, {
+    [purchaseEvent ? 'item_price' : 'price']: priceFormat(item.details.grossPrice, {
       includeSymbol: false,
       includeOre: true
     }),
@@ -109,7 +111,9 @@ export function beginCheckoutGaEvent(items: Array<BasketItem>, statement: Statem
   });
 }
 
-export function purchaseGaEvent(items: Array<BasketItem>, statement: Statement, orderId: string) {
+export function purchaseGaEvent(
+  items: Array<BasketItem>, statement: Statement, orderId: string
+): void {
   window.dataLayer.push({
     event: 'purchase',
     ecommerce: {
@@ -129,7 +133,7 @@ export function purchaseGaEvent(items: Array<BasketItem>, statement: Statement, 
           includeSymbol: false
         }),
         currency: 'SEK',
-        items: getItemsFromItems(items)
+        items: getItemsFromItems(items, true)
       }
     }
   });

@@ -6,6 +6,7 @@ export interface GaEcommerceItem {
   item_category: string,
   affiliation: string,
   quantity: string,
-  price: string,
+  price?: string,
+  item_price?: string,
   currency: 'SEK'
 }
