@@ -6,7 +6,7 @@ const initialState: ReduxState = {
     basketId: '',
     delivery: {
       address: '',
-      allCollections: true,
+      deliveryRequired: false,
       deliverable: false,
       deliveryTotal: 0,
       momsRate: 25,
@@ -26,11 +26,11 @@ const initialState: ReduxState = {
   delivery: {
     address: '',
     zone: -1,
-    deliverable: false
+    deliverable: false,
+    deliveryRequired: false
   },
   user: {
     address: '',
-    allCollections: false,
     deliveryNotes: '',
     name: '',
     email: '',

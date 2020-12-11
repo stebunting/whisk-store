@@ -18,7 +18,7 @@ export interface Basket {
   items: Array<BasketItem>,
   delivery: {
     address: string,
-    allCollections: boolean,
+    deliveryRequired: boolean,
     deliverable: boolean,
     deliveryTotal: number,
     momsRate: number,

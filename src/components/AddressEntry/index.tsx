@@ -1,7 +1,7 @@
 // Requirements
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 // Custom Hooks
 import useAutoComplete from '../../hooks/useAutoComplete';
@@ -9,12 +9,7 @@ import useAutoComplete from '../../hooks/useAutoComplete';
 // Redux Actions
 import { updateBasketZoneApi, UpdateBasketZoneAction } from '../../redux/actions/basketActions';
 import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
-import {
-  updateValidity,
-  UpdateValidityType,
-  updateValidityAll,
-  UpdateValidityAllType
-} from '../../redux/actions/checkoutFormActions';
+import { updateValidity, UpdateValidityType } from '../../redux/actions/checkoutFormActions';
 
 // Functions
 import { validate, validateAddress } from '../../functions/validate';
@@ -35,8 +30,7 @@ interface Props {
   validAddress: boolean | null,
   updateBasketZoneAction: UpdateBasketZoneAction,
   updateUserAction: UpdateUserAction,
-  updateValidityAction: UpdateValidityType,
-  updateValidityAllAction: UpdateValidityAllType
+  updateValidityAction: UpdateValidityType
 }
 
 function AddressEntry(props: Props): React.ReactElement {
@@ -48,7 +42,6 @@ function AddressEntry(props: Props): React.ReactElement {
     updateBasketZoneAction,
     updateUserAction,
     updateValidityAction,
-    updateValidityAllAction
   } = props;
 
   // Set up Google Autocomplete
@@ -63,10 +56,6 @@ function AddressEntry(props: Props): React.ReactElement {
   useEffect(() => {
     updateValidityAction('address', validateAddress(user.address, delivery));
   }, [delivery, updateValidityAction]);
-
-  useEffect(() => {
-    updateUserAction('allCollections', basket.delivery && basket.delivery.allCollections);
-  }, [updateUserAction, basket.delivery]);
 
   // Set state on form input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,12 +99,11 @@ function mapStateToProps(state: ReduxState) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     updateBasketZoneAction: bindActionCreators(updateBasketZoneApi, dispatch),
     updateUserAction: bindActionCreators(updateUser, dispatch),
     updateValidityAction: bindActionCreators(updateValidity, dispatch),
-    updateValidityAllAction: bindActionCreators(updateValidityAll, dispatch)
   };
 }
 

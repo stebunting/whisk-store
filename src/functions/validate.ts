@@ -47,7 +47,7 @@ export function validate(value: string, validationType: string): boolean {
 }
 
 export function validateAddress(address: string, delivery: Delivery): boolean | null {
-  return address === '' && delivery.address === ''
+  return !delivery.deliveryRequired || (address === '' && delivery.address === '')
     ? null
     : address === delivery.address && delivery.deliverable;
 }
@@ -66,10 +66,6 @@ export function validateAll(
     allValidated = { ...allValidated, [element]: itemValidity };
     allValid = allValid && (itemValidity === true || itemValidity === null);
   });
-
-  // Validate Address
-  const validatedAddress = validateAddress(user.address, delivery);
-  allValid = allValid && (validatedAddress || false);
 
   return [allValid, allValidated as FormValidity];
 }

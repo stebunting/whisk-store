@@ -8,7 +8,6 @@ export interface DeliveryAction extends Action<string> {
   payload: {
     address?: string,
     zone?: number,
-    deliverable?: boolean
   }
 }
 
