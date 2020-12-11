@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { GaEcommerceItem } from './GaEcommerceItem';
 
 export interface GaEcommerceEvent {

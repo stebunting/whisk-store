@@ -1,7 +1,6 @@
 // Requirements
 import React, { ChangeEvent, FocusEvent, ReactElement } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 // Redux Actions
 import { updateUser } from '../../redux/actions/userActions';
@@ -26,18 +25,23 @@ interface Props {
 }
 
 function DetailsEntry(props: Props): ReactElement {
-  const { user, validity } = props;
+  const {
+    user,
+    validity,
+    updateUserAction,
+    updateValidityAction
+  } = props;
 
   // Set state on form input
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = event.target;
-    props.updateUserAction(name, value);
+    updateUserAction(name, value);
   };
 
   // Validate input field when moving away
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    props.updateValidityAction(name, validate(value, name));
+    updateValidityAction(name, validate(value, name));
   };
 
   return (

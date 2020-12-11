@@ -1,5 +1,5 @@
 export interface User {
-  [key: string]: string | number | boolean | null,
+  [key: string]: string,
   address: string,
   allCollections: boolean,
   deliveryNotes: string,

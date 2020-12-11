@@ -27,13 +27,14 @@ module.exports = {
     'import'
   ],
   settings: {
+    react: { version: 'detect' },
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx']
     },
     'import/resolver': {
       typescript: {
-        directory: './tsconfig.json'
+        project: './tsconfig.json'
       },
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx']
@@ -55,5 +56,7 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error']
   }
 };

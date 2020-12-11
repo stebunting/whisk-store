@@ -8,8 +8,8 @@ import useScript from '../../hooks/useScript';
 import { initialiseBoundaries } from '../../functions/boundaries';
 
 // Redux Actions
-import { loadProducts } from '../../redux/actions/productActions';
-import { loadBasket } from '../../redux/actions/basketActions';
+import { loadProducts, LoadProductsAction } from '../../redux/actions/productActions';
+import { loadBasket, LoadBasketAction } from '../../redux/actions/basketActions';
 
 // Types
 import { Product } from '../../types/Product';
@@ -32,12 +32,17 @@ declare global {
 interface Props {
   products: Array<Product>,
   basket: Basket,
-  loadProductsAction: () => void,
-  loadBasketAction: () => void
-};
+  loadProductsAction: LoadProductsAction,
+  loadBasketAction: LoadBasketAction
+}
 
 function App(props: Props) {
-  const { products, basket, loadProductsAction, loadBasketAction } = props;
+  const {
+    products,
+    basket,
+    loadProductsAction,
+    loadBasketAction
+  } = props;
 
   // Load google maps script, initialise boundaries onLoad
   window.googleMapsLoaded = useScript(

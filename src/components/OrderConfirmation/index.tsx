@@ -1,5 +1,5 @@
 // Requirements
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -7,13 +7,19 @@ import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 
 // Redux Actions
-import { resetBasket } from '../../redux/actions/basketActions';
+import { resetBasketApi } from '../../redux/actions/basketActions';
+
+interface OrderState {
+  paymentMethod: 'swish' | 'paymentLink'
+}
 
 interface Props {
   resetBasketAction: () => void
 }
 
-function OrderConfirmation(props: Props) {
+function OrderConfirmation(props: Props): ReactElement {
+  const { resetBasketAction } = props;
+
   // Set Page Details
   const metadata = useHeaders({
     header: 'Order Confirmation',
@@ -21,13 +27,13 @@ function OrderConfirmation(props: Props) {
     description: 'Order Confirmation from Whisk Store'
   });
 
-  const history = useHistory();
+  const history = useHistory<OrderState>();
   const { location } = history;
   const paymentMethod = location.state != null
     ? location.state.paymentMethod
     : '';
 
-  useEffect(() => props.resetBasketAction(), [props.resetBasketAction]);
+  useEffect(() => resetBasketAction(), [resetBasketAction]);
 
   let message;
   switch (paymentMethod) {
@@ -53,7 +59,7 @@ function OrderConfirmation(props: Props) {
 }
 
 const mapDispatchToProps = {
-  resetBasketAction: resetBasket
-}
+  resetBasketAction: resetBasketApi
+};
 
 export default connect(null, mapDispatchToProps)(OrderConfirmation);

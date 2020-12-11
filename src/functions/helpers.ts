@@ -1,6 +1,7 @@
 // Requirements
-const dayjs = require('dayjs');
-const objectSupport = require('dayjs/plugin/objectSupport');
+import dayjs from 'dayjs';
+import objectSupport from 'dayjs/plugin/objectSupport';
+
 dayjs.extend(objectSupport);
 
 // Format price from stored öre to krona
@@ -46,7 +47,9 @@ interface RangeFormatOptions {
   code?: boolean,
   times?: boolean
 }
-export function rangeFormat(data: DateCodeObject | string, options = {} as RangeFormatOptions): string {
+export function rangeFormat(
+  data: DateCodeObject | string, options = {} as RangeFormatOptions
+): string {
   let range: DateCodeObject;
   if (typeof data === 'string') {
     range = parseDateCode(data);

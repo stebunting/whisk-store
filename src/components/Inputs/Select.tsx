@@ -11,10 +11,18 @@ interface Props {
   name: string,
   value: string,
   handleChange: (event: ChangeEvent<HTMLSelectElement>) => void
-};
+}
 
 function Select(props: Props): ReactElement {
-  const allOptionsDisabled = props.options.reduce((acc, item) => (
+  const {
+    defaultText,
+    options,
+    name,
+    value,
+    handleChange
+  } = props;
+
+  const allOptionsDisabled = options.reduce((acc, item) => (
     acc && item.disabled
   ), true);
 
@@ -22,17 +30,17 @@ function Select(props: Props): ReactElement {
     <div className="form-group">
       <select
         className="form-control"
-        id={props.name}
-        name={props.name}
-        value={props.value}
-        onChange={props.handleChange}
+        id={name}
+        name={name}
+        value={value}
+        onChange={handleChange}
       >
         <option value="">
           {allOptionsDisabled
             ? 'Item Currently Unavailable'
-            : props.defaultText}
+            : defaultText}
         </option>
-        {props.options.map((option) => (
+        {options.map((option) => (
           <option
             key={option.value}
             value={option.value}

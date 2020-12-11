@@ -7,25 +7,33 @@ interface Props {
   label: string,
   checked: boolean,
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void
-};
+}
 
 function Radio(props: Props): ReactElement {
+  const {
+    name,
+    id,
+    label,
+    checked,
+    handleChange
+  } = props;
+
   return (
     <div className="form-check">
       <input
         className="form-check-input"
         type="radio"
-        id={props.id}
-        name={props.name}
-        value={props.id}
-        checked={props.checked}
-        onChange={props.handleChange}
+        id={id}
+        name={name}
+        value={id}
+        checked={checked}
+        onChange={handleChange}
       />
       <label
         className="form-check-label"
-        htmlFor={props.id}
+        htmlFor={id}
       >
-        {props.label}
+        {label}
       </label>
     </div>
   );

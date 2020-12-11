@@ -1,14 +1,16 @@
 // Requirements
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface Props {
   children: Array<ReactNode> | ReactNode
 }
 
-function Loading(props: Props) {
+function Loading(props: Props): ReactElement {
+  const { children } = props;
+
   return (
     <div>
-      {props.children}
+      {children}
       Loading Store...
     </div>
   );

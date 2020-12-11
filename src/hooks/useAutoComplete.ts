@@ -19,7 +19,7 @@ function useAutoComplete(): React.RefObject<HTMLInputElement> {
     let autocompleteListener: google.maps.MapsEventListener;
 
     // Callback on keydown event
-    const keypressListener = (event: React.KeyboardEvent) => {
+    const keypressListener = (event: React.KeyboardEvent<HTMLElement>) => {
       const pacContainers = Array.from(document.getElementsByClassName('pac-container'));
       const pacContainerVisible = pacContainers.reduce((visible, pacContainer) => (
         window.getComputedStyle(pacContainer).display !== 'none' || visible

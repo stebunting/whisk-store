@@ -1,5 +1,5 @@
 // Requirements
-import React, { FocusEvent, ChangeEvent, ReactElement } from 'react';
+import React, { ChangeEvent, FocusEvent, ReactElement } from 'react';
 
 interface Props {
   id: string,
@@ -12,24 +12,34 @@ interface Props {
 }
 
 function TextInput(props: Props): ReactElement {
+  const {
+    id,
+    label,
+    placeholder,
+    value,
+    valid,
+    handleChange,
+    handleBlur
+  } = props;
+
   const classes = ['form-control'];
-  if (props.valid != null) {
-    classes.push(props.valid ? 'is-valid' : 'is-invalid');
+  if (valid != null) {
+    classes.push(valid ? 'is-valid' : 'is-invalid');
   }
 
   return (
     <div className="form-group row">
-      <label htmlFor={props.id} className="col-sm-4 col-form-label">{props.label}</label>
+      <label htmlFor={id} className="col-sm-4 col-form-label">{label}</label>
       <div className="col-sm-6">
         <input
           type="text"
           className={classes.join(' ')}
-          id={props.id}
-          name={props.id}
-          placeholder={props.placeholder}
-          value={props.value}
-          onChange={props.handleChange}
-          onBlur={props.handleBlur}
+          id={id}
+          name={id}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
         />
       </div>
     </div>

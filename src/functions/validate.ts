@@ -1,5 +1,6 @@
 // Types
 import { Delivery } from '../types/Delivery';
+import { FormValidity } from '../types/FormValidity';
 import { User } from '../types/User';
 
 export function validate(value: string, validationType: string): boolean {
@@ -51,15 +52,24 @@ export function validateAddress(address: string, delivery: Delivery): boolean | 
     : address === delivery.address && delivery.deliverable;
 }
 
-export function validateAll(values: User, valid: boolean | null) {
+export function validateAll(
+  user: User, delivery: Delivery, validity: FormValidity
+): [boolean, FormValidity] {
   let allValidated = {};
   let allValid = true;
 
-  Object.keys(valid).forEach((element) => {
-    const validity = validate(values[element], element);
-    allValidated = { ...allValidated, [element]: validity };
-    allValid = allValid && (validity === true || validity === null);
+  // Validate Non-Address Components
+  Object.keys(validity).forEach((element) => {
+    const itemValidity = element === 'address'
+      ? validateAddress(user[element], delivery)
+      : validate(user[element], element);
+    allValidated = { ...allValidated, [element]: itemValidity };
+    allValid = allValid && (itemValidity === true || itemValidity === null);
   });
 
-  return [allValid, allValidated];
+  // Validate Address
+  const validatedAddress = validateAddress(user.address, delivery);
+  allValid = allValid && (validatedAddress || false);
+
+  return [allValid, allValidated as FormValidity];
 }

@@ -1,5 +1,11 @@
 // Requirements
-import React, { useState, useEffect, ChangeEvent, MouseEvent, FormEvent } from 'react';
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  MouseEvent,
+  FormEvent
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -7,8 +13,13 @@ import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 
 // Redux Actions
-import { updateBasket, UpdateBasketPayload, removeItemFromBasket } from '../../redux/actions/basketActions';
-import { updateValidityAll } from '../../redux/actions/checkoutFormActions';
+import {
+  updateBasket,
+  removeItemFromBasket,
+  UpdateBasketAction,
+  RemoveItemFromBasketAction
+} from '../../redux/actions/basketActions';
+import { updateValidityAll, UpdateValidityAllType } from '../../redux/actions/checkoutFormActions';
 
 // Functions
 import { validateAll } from '../../functions/validate';
@@ -19,6 +30,7 @@ import { addItemToBasketGaEvent, removeItemFromBasketGaEvent, purchaseGaEvent } 
 import { Basket, BasketItem } from '../../types/Basket';
 import { Product } from '../../types/Product';
 import { User } from '../../types/User';
+import { Delivery } from '../../types/Delivery';
 import { FormValidity } from '../../types/FormValidity';
 import { ReduxState } from '../../types/ReduxState';
 
@@ -31,13 +43,14 @@ import Loading from '../Loading';
 
 interface Props {
   user: User,
+  delivery: Delivery,
   products: Array<Product>,
   basket: Basket,
   validity: FormValidity,
-  updateBasketAction: (payload: UpdateBasketPayload) => void,
-  removeItemFromBasketAction: (payload: UpdateBasketPayload) => void,
-  updateValidityAllAction: (validity: FormValidity) => void
-};
+  updateBasketAction: UpdateBasketAction,
+  removeItemFromBasketAction: RemoveItemFromBasketAction,
+  updateValidityAllAction: UpdateValidityAllType
+}
 
 interface Error {
   code: string,
@@ -45,7 +58,16 @@ interface Error {
 }
 
 function Basket(props: Props) {
-  const { user, products, basket, validity } = props;
+  const {
+    user,
+    delivery,
+    products,
+    basket,
+    validity,
+    updateBasketAction,
+    removeItemFromBasketAction,
+    updateValidityAllAction
+  } = props;
   const history = useHistory();
 
   // Set Page Details
@@ -59,7 +81,7 @@ function Basket(props: Props) {
   const [checkoutStage, setCheckoutStage] = useState(0);
   useEffect(() => {
     let stage = 0;
-    if (props.basket.items.length > 0
+    if (basket.items.length > 0
       && (Object.keys(basket.delivery.details).length === 0 || validity.address)) {
       stage += 1;
       if (validity.name && validity.email && validity.telephone) stage += 1;
@@ -68,7 +90,10 @@ function Basket(props: Props) {
   }, [basket.items.length, basket.delivery.details, validity]);
 
   // Handle update/delete items from summary
-  const handleChange = (event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>, action: string, item: BasketItem): void => {
+  const handleChange = (
+    event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>,
+    action: string, item: BasketItem
+  ): void => {
     const value = action === 'update' ? event.target.value : 0;
     const payload = {
       productSlug: item.productSlug,
@@ -79,7 +104,7 @@ function Basket(props: Props) {
     const quantityChange = newQuantity - item.quantity;
     switch (action) {
       case 'update':
-        props.updateBasketAction({
+        updateBasketAction({
           ...payload,
           quantity: parseInt(value, 10)
         });
@@ -91,7 +116,7 @@ function Basket(props: Props) {
         break;
 
       case 'remove':
-        props.removeItemFromBasketAction(payload);
+        removeItemFromBasketAction(payload);
         removeItemFromBasketGaEvent(item, Math.abs(quantityChange));
         break;
 
@@ -103,22 +128,22 @@ function Basket(props: Props) {
   // Check Swish Payment Status
   const [orderStatus, setOrderStatus] = useState('');
   const [errors, setErrors] = useState([] as Array<Error>);
-  const fetchSwishStatus = async (swishId: string): Promise<void> => {
+  const fetchSwishStatus = async (swishId: string) => {
     const SWISH_UPDATE_INTERVAL = 2000;
     const swish = await checkSwishStatus(swishId);
     setOrderStatus(swish.status);
     switch (swish.status) {
       case 'ERROR':
       case 'CANCELLED':
-        setErrors((prevState) => {
-          return swish.errorCode != null && swish.errorMessage != null
+        setErrors((prevState) => (
+          swish.errorCode != null && swish.errorMessage != null
             ? [
               ...prevState, {
                 code: swish.errorCode,
                 message: swish.errorMessage
               }
             ] : prevState
-          });
+        ));
         break;
 
       case 'DECLINED':
@@ -162,15 +187,15 @@ function Basket(props: Props) {
 
       // Swish Error
       case 'ERROR': {
-        return setErrors((prevState) => {
-          return data.errorCode != null && data.errorMessage != null
+        return setErrors((prevState) => (
+          data.errorCode != null && data.errorMessage != null
             ? [
               ...prevState, {
                 code: data.errorCode,
                 message: data.errorMessage
               }
             ] : prevState
-        });
+        ));
       }
 
       default:
@@ -178,10 +203,10 @@ function Basket(props: Props) {
     }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): Promise<any> | boolean => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const [allValid, validated] = validateAll(user, validity);
-    props.updateValidityAllAction(validated);
+    const [allValid, validated] = validateAll(user, delivery, validity);
+    updateValidityAllAction(validated);
     if (allValid) return submitForm();
     return false;
   };
@@ -209,6 +234,7 @@ function Basket(props: Props) {
 function mapStateToProps(state: ReduxState) {
   return {
     user: state.user,
+    delivery: state.delivery,
     products: state.products,
     basket: state.basket,
     validity: state.validity

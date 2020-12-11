@@ -21,6 +21,8 @@ interface Props {
 }
 
 function StoreFront(props: Props): ReactElement {
+  const { products } = props;
+
   // Set Page Details
   const metadata = useHeaders({
     header: 'Store',
@@ -28,7 +30,7 @@ function StoreFront(props: Props): ReactElement {
     description: 'Whisk Store Front'
   });
 
-  return props.products.length === 0 ? <Loading>{metadata}</Loading> : (
+  return products.length === 0 ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
 
@@ -46,7 +48,7 @@ function StoreFront(props: Props): ReactElement {
       </div>
 
       <ul className={css.productList}>
-        {props.products.map((product) => (
+        {products.map((product) => (
           <li
             className={css.productItem}
             key={product.slug}

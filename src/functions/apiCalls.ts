@@ -63,8 +63,15 @@ export function resetBasket(): Promise<Basket> {
 }
 
 // Update basket in backend, returns new basket
-export function updateBasketApi(payload): Promise<Basket> {
-  const basketId: String = cookies.get(cookieName);
+export interface UpdateBasketPayload {
+  productSlug: string
+  quantity?: number,
+  deliveryType: string,
+  deliveryDate: string,
+}
+
+export function updateBasketApi(payload: UpdateBasketPayload): Promise<Basket> {
+  const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
     fetch(`${apiUrl}/api/basket/update/quantity/${basketId}`, {
@@ -83,7 +90,7 @@ export function updateBasketApi(payload): Promise<Basket> {
 }
 
 // Update basket in backend, returns new basket
-export function updateBasketZoneApi(address: string, zone: number): Promise<Basket> {
+export function updateBasketZone(address: string, zone: number): Promise<Basket> {
   const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
@@ -100,7 +107,7 @@ export function updateBasketZoneApi(address: string, zone: number): Promise<Bask
 }
 
 // Remove item from basket in backend, returns new basket
-export function removeItemFromBasketApi(payload): Promise<Basket> {
+export function removeItemFromBasketApi(payload: UpdateBasketPayload): Promise<Basket> {
   const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
@@ -116,7 +123,6 @@ export function removeItemFromBasketApi(payload): Promise<Basket> {
   });
 }
 
-
 interface PaymentLinkOrderStatus {
   orderId: string,
   status: 'PAID',
@@ -130,7 +136,9 @@ interface SwishOrderStatusCreated {
 }
 
 // Send completed order to backend
-export function sendOrder(user: User): Promise<PaymentLinkOrderStatus | SwishOrderStatusCreated | SwishResponse> {
+export function sendOrder(
+  user: User
+): Promise<PaymentLinkOrderStatus | SwishOrderStatusCreated | SwishResponse> {
   const basketId: string = cookies.get(cookieName);
 
   return new Promise((resolve, reject) => {
@@ -147,7 +155,9 @@ export function sendOrder(user: User): Promise<PaymentLinkOrderStatus | SwishOrd
 }
 
 // Send completed order to backend
-export function checkSwishStatus(swishId: string): Promise<SwishOrderStatusCreated | SwishResponse> {
+export function checkSwishStatus(
+  swishId: string
+): Promise<SwishOrderStatusCreated | SwishResponse> {
   return new Promise((resolve, reject) => {
     fetch(`${apiUrl}/api/order/swish/${swishId}`)
       .then((response) => response.json())

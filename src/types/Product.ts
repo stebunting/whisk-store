@@ -14,25 +14,26 @@ interface Date {
   }
 }
 
-export interface Product {
-  _id: string,
-  name: string,
-  slug: string,
-  brand: string,
-  category: string,
-  contents?: Array<string>,
-  description: Array<string>,
-  ingredients?: Array<{
-    item: string,
-    details: string
-  }>,
-  links?: Array<{
-    text: string,
-    url: string
-  }>,
-  momsRate: number,
-  grossPrice: number,
-  deliveryMethods: Array<string>,
+interface Ingredient {
+  item: string,
+  details: string
+}
+
+interface Link {
+  text: string,
+  url: string
+}
+
+interface Image {
+  thumb: string,
+  url: string,
+  description: string
+}
+
+interface DeliveryTypes {
+  [key: string]: {
+    dates: Array<Date>
+  },
   delivery?: {
     dates: Array<Date>,
     costs: {
@@ -47,8 +48,20 @@ export interface Product {
   collection?: {
     dates: Array<Date>
   },
-  images: Array<{
-    thumb: string,
-    url: string
-  }>
+}
+
+export type Product = DeliveryTypes & {
+  _id: string,
+  name: string,
+  slug: string,
+  brand: string,
+  category: string,
+  contents?: Array<string>,
+  description: Array<string>,
+  ingredients?: Array<Ingredient>,
+  links?: Array<Link>,
+  momsRate: number,
+  grossPrice: number,
+  deliveryMethods: Array<string>,
+  images: Array<Image>
 }

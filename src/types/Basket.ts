@@ -39,7 +39,6 @@ export interface Basket {
   }
   statement: Statement
 
-
   // THIS IS THE SAME AS BASKETID, CAN BE REMOVED
   _id?: string,
 }

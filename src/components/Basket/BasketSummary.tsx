@@ -1,5 +1,5 @@
 // Requirements
-import React, { ChangeEvent, MouseEvent } from 'react';
+import React, { ChangeEvent, MouseEvent, ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { capitalise } from '@stebunting/library';
 
@@ -17,10 +17,14 @@ import css from './basket.module.less';
 
 interface Props {
   basket: Basket,
-  handleChange: (event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>, action: string, item: BasketItem) => void
+  handleChange: (
+    event: ChangeEvent<HTMLSelectElement> | MouseEvent<HTMLButtonElement>,
+    action: string, item: BasketItem
+  ) => void
 }
 
-function BasketSummary(props: Props) {
+function BasketSummary(props: Props): ReactElement {
+  const { basket, handleChange } = props;
   return (
     <>
       <table className="table table-striped">
@@ -33,9 +37,9 @@ function BasketSummary(props: Props) {
           </tr>
         </thead>
         <tbody>
-          {props.basket.items.length > 0 ? (
+          {basket.items.length > 0 ? (
             <>
-              {props.basket.items.map((item) => (!item.details ? null : (
+              {basket.items.map((item) => (!item.details ? null : (
                 <tr key={`${item.productSlug}-${item.deliveryDate}`}>
                   <td className={css.tableCell}>
                     <Link to={`/product/${item.details.slug}`}>
@@ -52,7 +56,7 @@ function BasketSummary(props: Props) {
                         <QuantityDropdown
                           strValue={`${item.quantity}`}
                           name={`update|${item.productSlug}`}
-                          handleChange={(e) => props.handleChange(e, 'update', item)}
+                          handleChange={(e) => handleChange(e, 'update', item)}
                         />
                       </div>
                       <div className="col-sm-auto">
@@ -60,7 +64,7 @@ function BasketSummary(props: Props) {
                           className="btn btn-link form-control"
                           type="button"
                           name={`remove|${item.productSlug}`}
-                          onClick={(e) => props.handleChange(e, 'remove', item)}
+                          onClick={(e) => handleChange(e, 'remove', item)}
                         >
                           <img src="/icons/delete.svg" alt="Remove item from basket" />
                         </button>
@@ -71,7 +75,7 @@ function BasketSummary(props: Props) {
                   <td className={css.tableCellAmount}>{priceFormat(item.linePrice)}</td>
                 </tr>
               )))}
-              {Object.keys(props.basket.delivery.details).map((key) => (
+              {Object.keys(basket.delivery.details).map((key) => (
                 <tr key={`DELIVERY-${key}`}>
                   <td className={css.tableCell}>
                     Delivery //&nbsp;
@@ -89,16 +93,16 @@ function BasketSummary(props: Props) {
               <tr>
                 <th className={css.bottomLine} colSpan={3}>DELIVERY TOTAL</th>
                 <td className={css.bottomLine}>
-                  {props.basket.statement && priceFormat(
-                    props.basket.statement.bottomLine.totalDelivery
+                  {basket.statement && priceFormat(
+                    basket.statement.bottomLine.totalDelivery
                   )}
                 </td>
               </tr>
               <tr>
                 <th className={css.bottomLine} colSpan={3}>MOMS TOTAL</th>
                 <td className={css.bottomLine}>
-                  {props.basket.statement && priceFormat(
-                    props.basket.statement.bottomLine.totalMoms,
+                  {basket.statement && priceFormat(
+                    basket.statement.bottomLine.totalMoms,
                     { includeOre: true }
                   )}
                 </td>
@@ -106,8 +110,8 @@ function BasketSummary(props: Props) {
               <tr>
                 <th className={css.bottomLine} colSpan={3}>TOTAL</th>
                 <td className={css.bottomLine}>
-                  {props.basket.statement && priceFormat(
-                    props.basket.statement.bottomLine.totalPrice
+                  {basket.statement && priceFormat(
+                    basket.statement.bottomLine.totalPrice
                   )}
                 </td>
               </tr>

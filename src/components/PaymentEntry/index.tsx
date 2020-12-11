@@ -1,10 +1,10 @@
 // Requirements
 import React, { FormEvent, ChangeEvent } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 // Functions
-import { updateUser } from '../../redux/actions/userActions';
+import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
 import { ReduxState } from '../../types/ReduxState';
 
 // Components
@@ -17,24 +17,32 @@ interface Props {
     code: string,
     message: string
   }>,
-  updateUserAction: (name: string, value: string) => void,
+  updateUserAction: UpdateUserAction,
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void
-};
+}
 
 function PaymentEntry(props: Props) {
+  const {
+    paymentMethod,
+    orderStatus,
+    errors,
+    updateUserAction,
+    handleSubmit
+  } = props;
+
   // Set state on form input
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
-    props.updateUserAction(name, value);
+    updateUserAction(name, value);
   };
 
   return (
     <RenderPaymentEntry
-      paymentMethod={props.paymentMethod}
-      orderStatus={props.orderStatus}
-      errors={props.errors}
+      paymentMethod={paymentMethod}
+      orderStatus={orderStatus}
+      errors={errors}
       handleChange={handleChange}
-      handleSubmit={props.handleSubmit}
+      handleSubmit={handleSubmit}
     />
   );
 }
@@ -45,7 +53,7 @@ function mapStateToProps({ user }: ReduxState) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     updateUserAction: bindActionCreators(updateUser, dispatch)
   };

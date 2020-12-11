@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import useHeaders from '../../hooks/useHeaders';
 
 // Redux Actions
-import { updateBasket, UpdateBasketPayload } from '../../redux/actions/basketActions';
+import { updateBasket, UpdateBasketAction } from '../../redux/actions/basketActions';
 
 // Functions
 import { priceFormat, rangeFormat, hasDatePassed } from '../../functions/helpers';
@@ -31,11 +31,16 @@ interface Props {
   products: Array<Product>
   product: Product,
   basket: Basket,
-  updateBasketAction: (payload: UpdateBasketPayload) => void
+  updateBasketAction: UpdateBasketAction
 }
 
 function Product(props: Props): ReactElement {
-  const { products, product, basket, updateBasketAction } = props;
+  const {
+    products,
+    product,
+    basket,
+    updateBasketAction
+  } = props;
 
   // Set Page Details
   const headerPayload = products.length > 0
@@ -222,12 +227,9 @@ function Product(props: Props): ReactElement {
   );
 }
 
-interface MatchParams {
-  slug: string;
-}
-interface OwnProps extends RouteComponentProps<MatchParams> {}
-
-function mapStateToProps({ products, basket }: ReduxState, ownProps: OwnProps) {
+function mapStateToProps(
+  state: ReduxState, ownProps: RouteComponentProps<{ slug: string }>
+) {
   const { slug } = ownProps.match.params;
 
   const defaultProduct = {
@@ -247,10 +249,14 @@ function mapStateToProps({ products, basket }: ReduxState, ownProps: OwnProps) {
     },
     grossPrice: 0
   };
-  const filteredProducts = products.filter((product) => product.slug === slug);
+  const filteredProducts = state.products.filter((product) => product.slug === slug);
   const product = filteredProducts.length < 1 ? defaultProduct : filteredProducts[0];
 
-  return { products, product, basket };
+  return {
+    products: state.products,
+    product,
+    basket: state.basket
+  };
 }
 
 const mapDispatchToProps = {

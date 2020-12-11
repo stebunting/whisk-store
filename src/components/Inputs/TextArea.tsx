@@ -10,22 +10,30 @@ interface Props {
 }
 
 function TextArea(props: Props): ReactElement {
+  const {
+    id,
+    label,
+    placeholder,
+    value,
+    handleChange
+  } = props;
+
   return (
     <div className="form-group row">
       <label
-        htmlFor={props.id}
+        htmlFor={id}
         className="col-sm-4 col-form-label"
       >
-        {props.label}
+        {label}
       </label>
       <div className="col-sm-6">
         <textarea
           className="form-control"
-          id={props.id}
-          name={props.id}
-          placeholder={props.placeholder}
-          value={props.value}
-          onChange={props.handleChange}
+          id={id}
+          name={id}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
         />
       </div>
     </div>

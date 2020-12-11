@@ -1,5 +1,5 @@
 // Requirements
-import React, { ChangeEvent, FocusEvent, ReactElement, RefObject } from 'react';
+import React from 'react';
 
 // Components
 import TextInput from '../Inputs/TextInput';
@@ -12,12 +12,21 @@ interface Props {
   validAddress: boolean | null,
   deliverable: boolean,
   deliveryNotes: string,
-  autoCompleteRef: RefObject<HTMLInputElement>,
-  handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
-  handleBlur: (event: FocusEvent<HTMLInputElement>) => void
-};
+  autoCompleteRef: React.RefObject<HTMLInputElement>,
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleBlur: (event: React.FocusEvent<HTMLInputElement>) => void
+}
 
-function RenderAddressEntry(props: Props): ReactElement {
+function RenderAddressEntry(props: Props): React.ReactElement {
+  const {
+    address,
+    validAddress,
+    deliverable,
+    deliveryNotes,
+    autoCompleteRef,
+    handleChange,
+    handleBlur,
+  } = props;
   return (
     <fieldset className="form-group" id="delivery-details">
       <legend>Delivery</legend>
@@ -27,21 +36,21 @@ function RenderAddressEntry(props: Props): ReactElement {
           id="address"
           label="Address"
           placeholder="Address"
-          value={props.address}
-          valid={props.validAddress}
-          deliverable={props.deliverable}
-          autoCompleteRef={props.autoCompleteRef}
-          handleChange={props.handleChange}
-          handleBlur={props.handleBlur}
+          value={address}
+          valid={validAddress}
+          deliverable={deliverable}
+          autoCompleteRef={autoCompleteRef}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
         />
         <TextInput
           id="deliveryNotes"
           label="Delivery Notes (please include doorcode and floor)"
           placeholder="Delivery Notes"
-          value={props.deliveryNotes}
+          value={deliveryNotes}
           valid={null}
-          handleChange={props.handleChange}
-          handleBlur={props.handleBlur}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
         />
         <div className="row">
           <div className="offset-sm-4 col-sm-6">

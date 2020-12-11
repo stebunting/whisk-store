@@ -1,5 +1,5 @@
 // Requirements
-import React, { ChangeEvent, FormEvent } from 'react';
+import React, { ChangeEvent, FormEvent, ReactElement } from 'react';
 
 // Components
 import Radio from '../Inputs/Radio';
@@ -16,14 +16,22 @@ interface Props {
   }>,
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void
-};
+}
 
-function PaymentEntry(props: Props) {
-  const message = props.orderStatus === 'CREATED'
+function PaymentEntry(props: Props): ReactElement {
+  const {
+    paymentMethod,
+    orderStatus,
+    errors,
+    handleChange,
+    handleSubmit
+  } = props;
+
+  const message = orderStatus === 'CREATED'
     ? 'Please open Swish on your mobile phone to complete payment'
     : '';
 
-  const buttonStatus = props.orderStatus === 'CALLING API' || props.orderStatus === 'CREATED'
+  const buttonStatus = orderStatus === 'CALLING API' || orderStatus === 'CREATED'
     ? { disabled: true, text: 'Ordering...' }
     : { disabled: false, text: 'Order and Pay' };
 
@@ -33,20 +41,20 @@ function PaymentEntry(props: Props) {
 
       <div className="row">
         <div className="col-sm-6 offset-md-4" id="deliveryType">
-          <form method="post" onSubmit={props.handleSubmit}>
+          <form method="post" onSubmit={handleSubmit}>
             <Radio
               name="paymentMethod"
               id="swish"
               label="Swish"
-              checked={props.paymentMethod === 'swish'}
-              handleChange={props.handleChange}
+              checked={paymentMethod === 'swish'}
+              handleChange={handleChange}
             />
             <Radio
               name="paymentMethod"
               id="paymentLink"
               label="Payment Link (SMS after order)"
-              checked={props.paymentMethod === 'paymentLink'}
-              handleChange={props.handleChange}
+              checked={paymentMethod === 'paymentLink'}
+              handleChange={handleChange}
             />
             <button
               className="btn btn-success"
@@ -61,9 +69,9 @@ function PaymentEntry(props: Props) {
         </div>
       </div>
       {message && <div className={css.message}>{message}</div>}
-      {props.errors.length > 0 && (
+      {errors.length > 0 && (
       <ul className={css.errors}>
-        {props.errors.map((error) => (
+        {errors.map((error) => (
           <li key={error.code}>{error.message}</li>
         ))}
       </ul>
