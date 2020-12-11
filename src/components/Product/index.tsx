@@ -232,24 +232,29 @@ function mapStateToProps(
 ) {
   const { slug } = ownProps.match.params;
 
-  const defaultProduct = {
+  const defaultProduct: Product = {
     name: '',
     slug: '',
+    productId: '',
     contents: [],
     description: [],
-    details: [],
+    ingredients: [],
     links: [],
     deliveryMethods: [],
     images: [],
     delivery: {
-      dates: []
+      dates: [],
+      costs: {},
+      maxZone: 0
     },
     collection: {
       dates: []
     },
     grossPrice: 0
   };
-  const filteredProducts = state.products.filter((product) => product.slug === slug);
+  const filteredProducts = state.products.filter((product) => (
+    product.slug === slug || product.productId === slug
+  ));
   const product = filteredProducts.length < 1 ? defaultProduct : filteredProducts[0];
 
   return {

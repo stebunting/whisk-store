@@ -51,7 +51,7 @@ interface DeliveryTypes {
 }
 
 export type Product = DeliveryTypes & {
-  _id: string,
+  productId: string,
   name: string,
   slug: string,
   brand: string,
