@@ -48,7 +48,7 @@ function StoreFront(props: Props): ReactElement {
       </div>
 
       <ul className={css.productList}>
-        {products.map((product) => (
+        {products.filter((product) => product.available).map((product) => (
           <li
             className={css.productItem}
             key={product.slug}

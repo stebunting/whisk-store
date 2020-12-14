@@ -15,6 +15,12 @@ function productsReducer(
     case types.LOAD_PRODUCTS_SUCCESS:
       return action.products;
 
+    case types.ADD_PRODUCT_TO_STORE:
+      return [
+        ...state,
+        ...action.products
+      ];
+
     default:
       return state;
   }

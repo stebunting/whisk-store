@@ -23,6 +23,18 @@ export function getProducts(): Promise<Array<Product>> {
   });
 }
 
+// Get single product from backend
+export function getProduct(slug: string): Promise<Array<Product>> {
+  return new Promise((resolve, reject) => {
+    fetch(`${apiUrl}/api/product/${slug}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') resolve(data.products);
+        reject(new Error());
+      }).catch((error) => reject(error));
+  });
+}
+
 // Get Basket from id in cookie
 export function getBasket(): Promise<Basket> {
   const basketId: string = cookies.get(cookieName);

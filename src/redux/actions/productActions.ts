@@ -35,3 +35,13 @@ export function loadProducts(): ProductThunk {
     return getProducts().then((data) => dispatch(loadProductsSuccess(data)));
   };
 }
+
+// Add products to the product store
+export type AddProductsToStoreAction = (products: Array<Product>) => ProductAction;
+
+export function addProductsToStore(products: Array<Product>): ProductAction {
+  return {
+    type: types.ADD_PRODUCT_TO_STORE,
+    products
+  };
+}

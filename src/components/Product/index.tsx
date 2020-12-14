@@ -1,6 +1,7 @@
 // Requirements
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useHistory, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 // Custom Hooks
@@ -8,6 +9,7 @@ import useHeaders from '../../hooks/useHeaders';
 
 // Redux Actions
 import { updateBasket, UpdateBasketAction } from '../../redux/actions/basketActions';
+import { addProductsToStore, AddProductsToStoreAction } from '../../redux/actions/productActions';
 
 // Functions
 import { priceFormat, rangeFormat, hasDatePassed } from '../../functions/helpers';
@@ -26,12 +28,18 @@ import Select from '../Inputs/Select';
 
 // Style
 import css from './product.module.less';
+import { getProduct } from '../../functions/apiCalls';
 
-interface Props {
+interface RouterParams {
+  slug: string
+}
+
+interface Props extends RouteComponentProps<RouterParams> {
   products: Array<Product>
   product: Product,
   basket: Basket,
-  updateBasketAction: UpdateBasketAction
+  updateBasketAction: UpdateBasketAction,
+  addProductsToStoreAction: AddProductsToStoreAction
 }
 
 function Product(props: Props): ReactElement {
@@ -39,8 +47,12 @@ function Product(props: Props): ReactElement {
     products,
     product,
     basket,
-    updateBasketAction
+    updateBasketAction,
+    addProductsToStoreAction,
+    match,
+    history
   } = props;
+  const { slug } = match.params;
 
   // Set Page Details
   const headerPayload = products.length > 0
@@ -55,10 +67,14 @@ function Product(props: Props): ReactElement {
     };
   const metadata = useHeaders(headerPayload);
 
-  const history = useHistory();
   useEffect(() => {
-    if (products.length > 0 && product.slug === '') history.push('/');
-  }, [products.length, product.slug, history]);
+    if (products.length > 0 && product.slug === '') {
+      getProduct(slug).then((data) => {
+        addProductsToStoreAction(data);
+        if (data.length === 0) history.push('/');
+      });
+    }
+  }, [slug, products.length, product.slug, history, addProductsToStoreAction]);
 
   // Send Google Analytics Impression Data
   useEffect(() => {
@@ -108,7 +124,7 @@ function Product(props: Props): ReactElement {
     });
   }
 
-  return products.length === 0 ? <Loading>{metadata}</Loading> : (
+  return product.slug === '' ? <Loading>{metadata}</Loading> : (
     <>
       {metadata}
       <ul className={css.productImages}>
@@ -228,7 +244,7 @@ function Product(props: Props): ReactElement {
 }
 
 function mapStateToProps(
-  state: ReduxState, ownProps: RouteComponentProps<{ slug: string }>
+  state: ReduxState, ownProps: RouteComponentProps<RouterParams>
 ) {
   const { slug } = ownProps.match.params;
 
@@ -236,6 +252,7 @@ function mapStateToProps(
     name: '',
     slug: '',
     productId: '',
+    available: false,
     contents: [],
     description: [],
     ingredients: [],
@@ -252,8 +269,10 @@ function mapStateToProps(
     },
     grossPrice: 0
   };
-  const filteredProducts = state.products.filter((product) => (
-    product.slug === slug || product.productId === slug
+
+  // Check if product in store
+  const filteredProducts = state.products.filter((productInStore) => (
+    productInStore.slug === slug || productInStore.productId === slug
   ));
   const product = filteredProducts.length < 1 ? defaultProduct : filteredProducts[0];
 
@@ -264,8 +283,11 @@ function mapStateToProps(
   };
 }
 
-const mapDispatchToProps = {
-  updateBasketAction: updateBasket
-};
+function mapDispatchToProps(dispatch: Dispatch) {
+  return {
+    updateBasketAction: bindActionCreators(updateBasket, dispatch),
+    addProductsToStoreAction: bindActionCreators(addProductsToStore, dispatch)
+  };
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product);

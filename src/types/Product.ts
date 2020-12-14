@@ -54,6 +54,7 @@ export type Product = DeliveryTypes & {
   productId: string,
   name: string,
   slug: string,
+  available: boolean,
   brand: string,
   category: string,
   contents?: Array<string>,
