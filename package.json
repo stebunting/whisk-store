@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "webpack serve --mode development",
     "prebuild": "rm -rf ./dist",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production --env API_URL=https://whisk-store-api.herokuapp.com",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "npm run build",
     "deploy": "rsync -av dist/* whisk:store"
   },
   "author": "Steve Bunting",
