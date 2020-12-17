@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import { priceFormat } from '@stebunting/library';
 
 // Custom Hooks
 import useHeaders from '../../hooks/useHeaders';
@@ -12,7 +13,7 @@ import { updateBasket, UpdateBasketAction } from '../../redux/actions/basketActi
 import { addProductsToStore, AddProductsToStoreAction } from '../../redux/actions/productActions';
 
 // Functions
-import { priceFormat, rangeFormat, hasDatePassed } from '../../functions/helpers';
+import { rangeFormat, hasDatePassed } from '../../functions/helpers';
 import { viewItemGaEvent, addToBasketGaEvent } from '../../functions/gaEcommerce';
 
 // Types

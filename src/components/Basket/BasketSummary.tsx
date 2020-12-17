@@ -1,10 +1,10 @@
 // Requirements
 import React, { ChangeEvent, MouseEvent, ReactElement } from 'react';
 import { Link } from 'react-router-dom';
-import { capitalise } from '@stebunting/library';
+import { priceFormat, capitalise } from '@stebunting/library';
 
 // Functions
-import { priceFormat, rangeFormat } from '../../functions/helpers';
+import { rangeFormat } from '../../functions/helpers';
 
 // Types
 import { Basket, BasketItem } from '../../types/Basket';

@@ -1,5 +1,5 @@
 // Functions
-import { priceFormat } from './helpers';
+import { priceFormat } from '@stebunting/library';
 
 // Types
 import { GaEcommerceItem } from '../types/GaEcommerceItem';

@@ -4,25 +4,6 @@ import objectSupport from 'dayjs/plugin/objectSupport';
 
 dayjs.extend(objectSupport);
 
-// Format price from stored öre to krona
-interface PriceFormatOptions {
-  includeOre?: boolean,
-  includeSymbol?: boolean
-}
-
-export function priceFormat(num: number, userOptions = {} as PriceFormatOptions): string {
-  const options = {
-    includeOre: userOptions.includeOre || false
-  };
-  let str = (num / 100).toLocaleString(undefined, {
-    minimumFractionDigits: options.includeOre ? 2 : 0,
-    maximumFractionDigits: options.includeOre ? 2 : 0
-  });
-  str = str.replace(',', '');
-  str += userOptions.includeSymbol === false ? '' : ' SEK';
-  return str;
-}
-
 interface DateCodeObject {
   year: number,
   month: number,
