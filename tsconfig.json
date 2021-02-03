@@ -11,7 +11,13 @@
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    },
   },
   "include": [
     "src/**/*"

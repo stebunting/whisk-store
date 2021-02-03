@@ -13,15 +13,22 @@ interface Props {
 }
 
 function Icon(props: Props): ReactElement {
+  const {
+    link,
+    imgSrc,
+    description,
+    visible
+  } = props;
+
   return (
     <div
       className={css.icon}
-      style={{ visibility: props.visible ? 'visible' : 'hidden' }}
+      style={{ visibility: visible ? 'visible' : 'hidden' }}
     >
-      <Link to={props.link}>
+      <Link to={link}>
         <img
-          src={`/icons/${props.imgSrc}`}
-          alt={props.description}
+          src={`/icons/${imgSrc}`}
+          alt={description}
         />
       </Link>
     </div>

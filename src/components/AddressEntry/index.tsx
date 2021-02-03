@@ -7,17 +7,17 @@ import { bindActionCreators, Dispatch } from 'redux';
 import useAutoComplete from '../../hooks/useAutoComplete';
 
 // Redux Actions
-import { updateBasketZoneApi, UpdateBasketZoneAction } from '../../redux/actions/basketActions';
-import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
-import { updateValidity, UpdateValidityType } from '../../redux/actions/checkoutFormActions';
+import { updateBasketZoneApi, UpdateBasketZoneAction } from '../../lib/redux/actions/basketActions';
+import { updateUser, UpdateUserAction } from '../../lib/redux/actions/userActions';
+import { updateValidity, UpdateValidityType } from '../../lib/redux/actions/checkoutFormActions';
 
 // Functions
-import { validate, validateAddress } from '../../functions/validate';
+import { validate, validateAddress } from '../../lib/validate';
 
 // Types
 import { User } from '../../types/User';
 import { Basket } from '../../types/Basket';
-import { ReduxState } from '../../types/ReduxState';
+import { AppState } from '../../types/AppState';
 import { Delivery } from '../../types/Delivery';
 
 // Components
@@ -59,13 +59,13 @@ function AddressEntry(props: Props): React.ReactElement {
 
   // Set state on form input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     updateUserAction(name, value);
   };
 
   // Validate input field when moving away
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     if (name === 'address') {
       updateValidityAction('address', validateAddress(user.address, delivery));
     } else {
@@ -90,7 +90,7 @@ function AddressEntry(props: Props): React.ReactElement {
     )) || <></>;
 }
 
-function mapStateToProps(state: ReduxState) {
+function mapStateToProps(state: AppState) {
   return {
     user: state.user,
     basket: state.basket,

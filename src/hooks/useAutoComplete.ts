@@ -4,11 +4,11 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 // Redux Actions
-import { updateDelivery } from '../redux/actions/deliveryActions';
+import { updateDelivery } from '../lib/redux/actions/deliveryActions';
 
 // Functions
-import { getZone } from '../functions/boundaries';
-import { updateUser } from '../redux/actions/userActions';
+import { getZone } from '../lib/boundaries';
+import { updateUser } from '../lib/redux/actions/userActions';
 
 function useAutoComplete(): React.RefObject<HTMLInputElement> {
   const dispatch = useDispatch();

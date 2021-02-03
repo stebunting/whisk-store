@@ -3,19 +3,19 @@ import React, { ChangeEvent, FocusEvent, ReactElement } from 'react';
 import { connect } from 'react-redux';
 
 // Redux Actions
-import { updateUser } from '../../redux/actions/userActions';
-import { updateValidity } from '../../redux/actions/checkoutFormActions';
+import { updateUser } from '../../lib/redux/actions/userActions';
+import { updateValidity } from '../../lib/redux/actions/checkoutFormActions';
 
 // Functions
-import { validate } from '../../functions/validate';
+import { validate } from '../../lib/validate';
 
 // Types
 import { User } from '../../types/User';
 import { FormValidity } from '../../types/FormValidity';
+import { AppState } from '../../types/AppState';
 
 // Components
 import RenderDetailsEntry from './RenderDetailsEntry';
-import { ReduxState } from '../../types/ReduxState';
 
 interface Props {
   user: User,
@@ -34,13 +34,13 @@ function DetailsEntry(props: Props): ReactElement {
 
   // Set state on form input
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     updateUserAction(name, value);
   };
 
   // Validate input field when moving away
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     updateValidityAction(name, validate(value, name));
   };
 
@@ -59,7 +59,7 @@ function DetailsEntry(props: Props): ReactElement {
   );
 }
 
-function mapStateToProps(state: ReduxState) {
+function mapStateToProps(state: AppState) {
   return {
     user: state.user,
     validity: state.validity

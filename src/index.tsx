@@ -4,10 +4,10 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 // Config
-import configureStore from './redux';
+import configureStore from './lib/redux';
 
 // Components
-import App from './components/App';
+import App from './views/App';
 
 const store = configureStore();
 

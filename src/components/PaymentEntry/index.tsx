@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
 // Functions
-import { updateUser, UpdateUserAction } from '../../redux/actions/userActions';
-import { ReduxState } from '../../types/ReduxState';
+import { updateUser, UpdateUserAction } from '../../lib/redux/actions/userActions';
+import { AppState } from '../../types/AppState';
 
 // Components
 import RenderPaymentEntry from './RenderPaymentEntry';
@@ -32,7 +32,7 @@ function PaymentEntry(props: Props) {
 
   // Set state on form input
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     updateUserAction(name, value);
   };
 
@@ -47,7 +47,7 @@ function PaymentEntry(props: Props) {
   );
 }
 
-function mapStateToProps({ user }: ReduxState) {
+function mapStateToProps({ user }: AppState) {
   return {
     paymentMethod: user.paymentMethod
   };
