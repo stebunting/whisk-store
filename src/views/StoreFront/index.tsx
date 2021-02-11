@@ -64,6 +64,26 @@ function StoreFront(props: Props): ReactElement {
             </Link>
           </li>
         ))}
+        <li className={css.productItem}>
+          <a
+            href="http://www.lillalaback.se"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              className={css.productImage}
+              src={`${process.env.ASSETS_LOCATION}/images/lilla-laback-vegetables/lilla-laback-vegetables-thumb.jpg`}
+              alt="Lilla Labäck Vegetables"
+            />
+          </a>
+          <a
+            href="http://www.lillalaback.se"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Lilla Labäck Vegetables
+          </a>
+        </li>
       </ul>
     </>
   );
