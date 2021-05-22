@@ -18,7 +18,7 @@ interface Props {
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void
 }
 
-function PaymentEntry(props: Props): ReactElement {
+function RenderPaymentEntry(props: Props): ReactElement {
   const {
     paymentMethod,
     orderStatus,
@@ -42,13 +42,6 @@ function PaymentEntry(props: Props): ReactElement {
       <div className="row">
         <div className="col-sm-6 offset-md-4" id="deliveryType">
           <form method="post" onSubmit={handleSubmit}>
-            <Radio
-              name="paymentMethod"
-              id="swish"
-              label="Swish"
-              checked={paymentMethod === 'swish'}
-              handleChange={handleChange}
-            />
             <Radio
               name="paymentMethod"
               id="paymentLink"
@@ -80,4 +73,4 @@ function PaymentEntry(props: Props): ReactElement {
   );
 }
 
-export default PaymentEntry;
+export default RenderPaymentEntry;

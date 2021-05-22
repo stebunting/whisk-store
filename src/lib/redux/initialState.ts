@@ -36,7 +36,7 @@ const initialState: AppState = {
     email: '',
     telephone: '',
     notes: '',
-    paymentMethod: 'swish'
+    paymentMethod: 'paymentLink'
   },
   validity: {
     address: null,
